@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">JRow</string>
+    <string name="connect">CONNECT</string>
+    <string name="disconnect">DISCONNECT</string>
+</resources>
