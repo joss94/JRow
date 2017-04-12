@@ -17,6 +17,10 @@ import android.widget.TextView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.joss.jrow.DataProcessingThreads.BluetoothConnectThread;
+import com.joss.jrow.DataProcessingThreads.BluetoothListenThread;
+import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Models.Measures;
 
 import java.io.IOException;
 import java.util.ArrayList;

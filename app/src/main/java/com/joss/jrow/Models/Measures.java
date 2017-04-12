@@ -1,4 +1,4 @@
-package com.joss.jrow;
+package com.joss.jrow.Models;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import java.util.List;
  * Created by joss on 24/03/17.
  */
 
-class Measures extends ArrayList<Measure>{
+public class Measures extends ArrayList<Measure>{
 
     private final int MAX_SIZE = 500;
     private final int LOCAL_MAX_RANGE = 50;
@@ -31,7 +31,7 @@ class Measures extends ArrayList<Measure>{
         }
     }
 
-    static synchronized Measures getMeasures(){
+    public static synchronized Measures getMeasures(){
         if(measures == null){
             measures = new Measures();
         }
@@ -45,11 +45,11 @@ class Measures extends ArrayList<Measure>{
         return null;
     }
 
-    ArrayList<Measure> getDataToProcess() {
+    public ArrayList<Measure> getDataToProcess() {
         return dataToProcess;
     }
 
-    void processData(){
+    public void processData(){
         if(dataToProcess.size()>0){
             saveDataRow(dataToProcess.get(0));
         }
@@ -107,12 +107,12 @@ class Measures extends ArrayList<Measure>{
     }
 
 
-    synchronized void wipeData(){
+    public synchronized void wipeData(){
         measures = new Measures();
         dataToProcess = new ArrayList<>();
     }
 
-    synchronized void addToProcess(Measure measure){
+    public synchronized void addToProcess(Measure measure){
         dataToProcess.add(measure);
     }
 
@@ -132,7 +132,7 @@ class Measures extends ArrayList<Measure>{
         }
     }
 
-    void addOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+    public void addOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
         listeners.add(listener);
     }
 
