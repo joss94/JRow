@@ -1,9 +1,11 @@
-package com.joss.jrow;
+package com.joss.jrow.DataProcessingThreads;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.joss.jrow.MainActivity;
 
 import java.io.IOException;
 import java.io.InputStream;

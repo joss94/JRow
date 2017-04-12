@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/start_and_pause_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_rowing"
+        android:layout_marginEnd="@dimen/margin_normal"
+        android:scaleType="centerInside"
+        android:layout_alignTop="@+id/stroke_rate"
+        android:layout_alignBottom="@id/stroke_rate"
+        android:layout_alignStart="@id/table"/>
+
+    <ImageView
+        android:id="@+id/calibrate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_calibrate"
+        android:layout_toEndOf="@id/start_and_pause_button"
+        android:scaleType="centerInside"
+        android:layout_alignTop="@+id/start_and_pause_button"
+        android:layout_alignBottom="@id/start_and_pause_button"/>
+
+    <ImageView
+        android:id="@+id/stop_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/ic_action_playback_stop"
+        android:scaleType="centerInside"
+        android:layout_alignTop="@+id/start_and_pause_button"
+        android:layout_alignBottom="@id/start_and_pause_button"
+        android:layout_alignEnd="@+id/graph"/>
+
+    <TextView
+        android:id="@+id/stroke_rate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_very_big"
+        android:layout_centerHorizontal="true"
+        android:text="@string/strokerate_default"
+        android:layout_alignStart="@id/graph"
+        android:layout_alignEnd="@+id/graph"
+        android:textAlignment="textStart"
+        android:layout_marginTop="@dimen/margin_small"
+        android:layout_marginBottom="@dimen/margin_small"/>
+
+    <com.jjoe64.graphview.GraphView
+        android:id="@+id/graph"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/stroke_rate"
+        android:layout_toEndOf="@+id/table"
+        android:layout_marginEnd="@dimen/margin_big"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:layout_marginBottom="@dimen/margin_big"/>
+
+    <TableLayout
+        android:id="@+id/table"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignTop="@id/graph"
+        android:layout_alignBottom="@id/graph"
+        android:layout_marginStart="@dimen/margin_normal"
+        android:gravity="center_vertical">
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+        <TableRow
+            android:layout_weight="1"
+            android:gravity="center_vertical">
+            <TextView
+                android:text="@string/dummy_rower"
+                android:textSize="@dimen/text_small"/>
+
+            <TextView
+                android:text="@string/dummy_delay"/>
+        </TableRow>
+
+    </TableLayout>
+
+
+</RelativeLayout>

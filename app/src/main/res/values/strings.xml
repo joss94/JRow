@@ -2,4 +2,8 @@
     <string name="app_name">JRow</string>
     <string name="connect">CONNECT</string>
     <string name="disconnect">DISCONNECT</string>
+    <string name="strokerate_default">0 st / min</string>
+
+    <string name="dummy_rower">rower 1: </string>
+    <string name="dummy_delay">0.000 s</string>
 </resources>

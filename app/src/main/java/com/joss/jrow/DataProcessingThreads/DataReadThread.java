@@ -1,8 +1,12 @@
-package com.joss.jrow;
+package com.joss.jrow.DataProcessingThreads;
 
 /*
  * Created by joss on 27/03/17.
  */
+
+import com.joss.jrow.MainActivity;
+import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Models.Measures;
 
 class DataReadThread extends Thread {
 

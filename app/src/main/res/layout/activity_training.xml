@@ -5,6 +5,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.joss.jrow.TrainingActivity">
+    tools:context="com.joss.jrow.TrainingEnvironment.TrainingActivity">
+
+    <com.joss.utils.SlidingDrawer.DrawerSlidingPane
+        android:id="@+id/drawer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:closed_color="@color/dark_gray"
+        app:closed_selected_color="@color/white"
+        app:open_color="@color/dark_gray"
+        app:open_selected_color="@color/white"
+        app:text_color="@color/white"
+        app:text_selected_color="@color/dark_gray"
+        app:paddingEnd="@dimen/margin_normal"
+        app:paddingStart="@dimen/margin_normal"
+        >
+
+
+    </com.joss.utils.SlidingDrawer.DrawerSlidingPane>
 
 </RelativeLayout>

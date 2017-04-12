@@ -17,6 +17,10 @@ import android.widget.TextView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.joss.jrow.DataProcessingThreads.BluetoothConnectThread;
+import com.joss.jrow.DataProcessingThreads.BluetoothListenThread;
+import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Models.Measures;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -36,16 +40,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnectT
     boolean receive=true;
     boolean calibrated = false;
 
-    private int test;
-
     BluetoothAdapter adapter;
     BluetoothSocket socket;
 
     TextView serial, lastCatch;
     Button connectButton;
-    GraphView graph;
-    View load1;
-    View load2;
 
     ArrayList<LineGraphSeries<DataPoint>> data;
 

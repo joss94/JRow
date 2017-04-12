@@ -1,4 +1,4 @@
-package com.joss.jrow;
+package com.joss.jrow.DataProcessingThreads;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -12,13 +12,13 @@ import java.util.UUID;
  * Created by joss on 23/03/17.
  */
 
-class BluetoothConnectThread extends Thread {
+public class BluetoothConnectThread extends Thread {
 
     private final BluetoothSocket mmSocket;
     private final BluetoothAdapter adapter;
     private final onConnectionResponseListener listener;
 
-    BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, UUID uuid, onConnectionResponseListener listener) {
+    public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, UUID uuid, onConnectionResponseListener listener) {
         this.listener = listener;
         BluetoothSocket tmp = null;
         this.adapter = adapter;
@@ -50,7 +50,7 @@ class BluetoothConnectThread extends Thread {
         listener.onConnectionResponse(true, "success", mmSocket);
     }
 
-    void cancel() {
+    public void cancel() {
         try {
             mmSocket.close();
         } catch (IOException e) {
@@ -58,7 +58,7 @@ class BluetoothConnectThread extends Thread {
         }
     }
 
-    interface onConnectionResponseListener{
+    public interface onConnectionResponseListener{
         void onConnectionResponse(boolean result, String message, BluetoothSocket socket);
     }
 
