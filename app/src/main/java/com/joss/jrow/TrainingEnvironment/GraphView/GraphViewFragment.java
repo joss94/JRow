@@ -26,8 +26,7 @@ public class GraphViewFragment extends TrainingFragment {
     ArrayList<LineGraphSeries<DataPoint>> data;
 
     public static GraphViewFragment newInstance(){
-        GraphViewFragment fr = new GraphViewFragment();
-        return fr;
+        return new GraphViewFragment();
     }
 
     @Override
@@ -54,6 +53,7 @@ public class GraphViewFragment extends TrainingFragment {
 
         for(int i=0; i<table.getChildCount(); i++){
             ((TextView)((TableRow)table.getChildAt(i)).getChildAt(0)).setText(rowersNames[i].isEmpty()?"Rower i:":rowersNames[i]+" :");
+            table.getChildAt(i).setVisibility(isSensorActive(i)?View.VISIBLE:View.GONE);
         }
     }
 
@@ -93,6 +93,10 @@ public class GraphViewFragment extends TrainingFragment {
                     data.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getRowAngle(i)), true, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
+                }
+
+                for(int j=0; j<table.getChildCount(); j++){
+                    ((TextView)((TableRow)table.getChildAt(j)).getChildAt(1)).setText(String.valueOf(measure.getRowAngle(j)));
                 }
             }
         }

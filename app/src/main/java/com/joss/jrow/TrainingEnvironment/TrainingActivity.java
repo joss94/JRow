@@ -9,6 +9,7 @@ import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.GraphView.GraphViewFragment;
+import com.joss.jrow.TrainingEnvironment.LoadbarView.LoadbarViewFragment;
 import com.joss.jrow.TrainingEnvironment.SerialView.SerialViewFragment;
 import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
@@ -53,6 +54,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
         drawer.addDrawerItem(new DrawerMenuItem("Serial data", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
+        drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
 
         drawer.setOnDrawerItemClickListener(this);
 
@@ -93,6 +95,11 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             case 1:
                 fragment = SerialViewFragment.newInstance();
                 drawer.replaceFragment(fragment, "SERIAL_VIEW");
+                break;
+
+            case 2:
+                fragment = LoadbarViewFragment.newInstance();
+                drawer.replaceFragment(fragment, "LOADBAR_VIEW");
                 break;
         }
     }
