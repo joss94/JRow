@@ -1,9 +1,11 @@
-package com.joss.jrow;
+package com.joss.jrow.DataProcessingThreads;
 
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+
+import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,7 +48,7 @@ public class BluetoothListenThread extends Thread {
         running=true;
         byte[] buffer = new byte[90];
         if(!running){
-            MainActivity.addToSerial("thread stopped listening");
+            TrainingActivity.addToSerial("thread stopped listening");
         }
 
         while(running){

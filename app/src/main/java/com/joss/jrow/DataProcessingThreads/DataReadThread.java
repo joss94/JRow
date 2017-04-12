@@ -1,8 +1,12 @@
-package com.joss.jrow;
+package com.joss.jrow.DataProcessingThreads;
 
 /*
  * Created by joss on 27/03/17.
  */
+
+import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Models.Measures;
+import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 
 class DataReadThread extends Thread {
 
@@ -53,7 +57,7 @@ class DataReadThread extends Thread {
     private void decodeRow(String message){
         //*
         if(!isValidRow(message)){
-            MainActivity.addToSerial("error");
+            TrainingActivity.addToSerial("error");
             return;
         }
 
@@ -80,12 +84,12 @@ class DataReadThread extends Thread {
     private boolean isValidRow(String message){
         for(int i=0; i<8; i++){
             if(!message.contains("$row"+i+":")){
-                MainActivity.addToSerial("not row" + i);
+                TrainingActivity.addToSerial("not row" + i);
                 return false;
             }
         }
         if(!message.contains("$time:")){
-            MainActivity.addToSerial("not time");
+            TrainingActivity.addToSerial("not time");
             return false;
         }
 
@@ -93,7 +97,7 @@ class DataReadThread extends Thread {
         for(int i=1; i<substrings.length; i++){
             String substring = substrings[i];
             if(!substring.contains(":")){
-                MainActivity.addToSerial("no :");
+                TrainingActivity.addToSerial("no :");
                 return false;
             }
         }

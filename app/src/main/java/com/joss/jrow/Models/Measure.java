@@ -1,4 +1,4 @@
-package com.joss.jrow;
+package com.joss.jrow.Models;
 
 import java.util.HashMap;
 
