@@ -136,7 +136,7 @@ public class Measures extends ArrayList<Measure>{
         listeners.add(listener);
     }
 
-    interface OnNewMeasureProcessedListener{
+    public interface OnNewMeasureProcessedListener{
         void onNewMeasureProcessed(Measure measure);
         void onMovementChanged(boolean ascending, int index, long time);
     }

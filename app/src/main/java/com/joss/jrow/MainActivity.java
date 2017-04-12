@@ -40,16 +40,11 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnectT
     boolean receive=true;
     boolean calibrated = false;
 
-    private int test;
-
     BluetoothAdapter adapter;
     BluetoothSocket socket;
 
     TextView serial, lastCatch;
     Button connectButton;
-    GraphView graph;
-    View load1;
-    View load2;
 
     ArrayList<LineGraphSeries<DataPoint>> data;
 

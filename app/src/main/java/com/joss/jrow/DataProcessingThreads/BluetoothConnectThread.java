@@ -18,7 +18,7 @@ public class BluetoothConnectThread extends Thread {
     private final BluetoothAdapter adapter;
     private final onConnectionResponseListener listener;
 
-    BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, UUID uuid, onConnectionResponseListener listener) {
+    public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, UUID uuid, onConnectionResponseListener listener) {
         this.listener = listener;
         BluetoothSocket tmp = null;
         this.adapter = adapter;
@@ -58,7 +58,7 @@ public class BluetoothConnectThread extends Thread {
         }
     }
 
-    interface onConnectionResponseListener{
+    public interface onConnectionResponseListener{
         void onConnectionResponse(boolean result, String message, BluetoothSocket socket);
     }
 
