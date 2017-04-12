@@ -4,6 +4,8 @@
     <string name="disconnect">DISCONNECT</string>
     <string name="strokerate_default">0 st / min</string>
 
-    <string name="dummy_rower">rower 1: </string>
+    <string name="dummy_rower">R1: </string>
     <string name="dummy_delay">0.000 s</string>
+    <string name="start_pause">Start/Pause</string>
+    <string name="calibrate">calibrate</string>
 </resources>

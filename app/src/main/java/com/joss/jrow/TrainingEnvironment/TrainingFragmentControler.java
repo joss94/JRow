@@ -7,8 +7,4 @@ package com.joss.jrow.TrainingEnvironment;
 public interface TrainingFragmentControler {
     public void startTraining();
     public void stopTraining();
-    public String[] getRowersNames();
-    public boolean isSensorActive(int index);
-    public void activateSensor(int index);
-    public void deactivateSensor(int index);
 }

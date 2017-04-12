@@ -1,9 +1,9 @@
 package com.joss.jrow.TrainingEnvironment.SerialView;
 
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
@@ -14,13 +14,11 @@ import com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
 public class SerialViewFragment extends TrainingFragment {
 
-    String serialContent;
-    TextView serial;
-    TextView measure;
+    private TextView serial;
+    private TextView measure;
 
     public static SerialViewFragment newInstance(){
-        SerialViewFragment fr = new SerialViewFragment();
-        return fr;
+        return new SerialViewFragment();
     }
 
     @Override
@@ -36,26 +34,32 @@ public class SerialViewFragment extends TrainingFragment {
 
     @Override
     protected void setViews() {
-
+        if(serialContent != null && !serialContent.isEmpty()){
+            serial.setText("");
+            showData();
+        }
     }
 
     @Override
     public void onMovementChanged(boolean ascending, int index, long time) {
-        displaySerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
+        serialContent += "\n Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time);
+        showData();
     }
 
     @Override
-    public void updateData(Measure measure) {
-        String result="";
-        result += "Time: " + String.valueOf((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
-        for(int i=0; i<8; i++){
-            result += i+": " + measure.getRowAngle(i) + "\n";
-        }
-        this.measure.setText(result);
-    }
+    public void showData() {
+        if (serial != null && measure != null) {
+            if (lastMeasure != null) {
+                String result="";
+                result += "Time: " + String.valueOf((double) (lastMeasure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
+                for(int i=0; i<8; i++){
+                    result += i+": " + lastMeasure.getRowAngle(i) + "\n";
+                }
+                this.measure.setText(result);
+            }
 
-    public void displaySerial(String message) {
-        serialContent += message + "\n";
-        serial.setText(serialContent);
+            serial.setText(serialContent);
+            ((ScrollView)serial.getParent()).fullScroll(View.FOCUS_DOWN);
+        }
     }
 }

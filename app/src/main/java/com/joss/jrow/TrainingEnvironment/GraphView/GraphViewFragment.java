@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
@@ -19,11 +18,13 @@ import java.util.ArrayList;
  * Created by joss on 11/04/17.
  */
 
+@SuppressWarnings("deprecation")
 public class GraphViewFragment extends TrainingFragment {
 
-    GraphView graph;
-    TableLayout table;
-    ArrayList<LineGraphSeries<DataPoint>> data;
+    private GraphView graph;
+    private TableLayout table;
+    protected static ArrayList<LineGraphSeries<DataPoint>> graphData;
+
 
     public static GraphViewFragment newInstance(){
         return new GraphViewFragment();
@@ -50,11 +51,6 @@ public class GraphViewFragment extends TrainingFragment {
         graph.getViewport().setScalableY(true);
         graph.getViewport().setScrollableY(true);
         initData();
-
-        for(int i=0; i<table.getChildCount(); i++){
-            ((TextView)((TableRow)table.getChildAt(i)).getChildAt(0)).setText(rowersNames[i].isEmpty()?"Rower i:":rowersNames[i]+" :");
-            table.getChildAt(i).setVisibility(isSensorActive(i)?View.VISIBLE:View.GONE);
-        }
     }
 
     @Override
@@ -63,13 +59,13 @@ public class GraphViewFragment extends TrainingFragment {
     }
 
     private void initData(){
-        data = new ArrayList<>();
+        graphData = new ArrayList<>();
         for(int i=0; i<8; i++){
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
-            data.add(series);
+            graphData.add(series);
             graph.addSeries(series);
         }
-        data.get(0).setColor(getResources().getColor(android.R.color.holo_green_dark));
+        graphData.get(0).setColor(getResources().getColor(R.color.colorAccent));
     }
 
 
@@ -86,17 +82,17 @@ public class GraphViewFragment extends TrainingFragment {
     }
 
     @Override
-    public void updateData(Measure measure) {
+    public void showData() {
         for(int i=0; i<1; i++){
             if (isSensorActive(i)) {
                 try {
-                    data.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getRowAngle(i)), true, 2000);
+                    graphData.get(i).appendData(new DataPoint((double) (lastMeasure.getTime()- Measures.getMeasures().getStartTime())/1000, lastMeasure.getRowAngle(i)), true, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 for(int j=0; j<table.getChildCount(); j++){
-                    ((TextView)((TableRow)table.getChildAt(j)).getChildAt(1)).setText(String.valueOf(measure.getRowAngle(j)));
+                    ((TextView)((TableRow)table.getChildAt(j)).getChildAt(1)).setText(String.valueOf(lastMeasure.getRowAngle(j)));
                 }
             }
         }

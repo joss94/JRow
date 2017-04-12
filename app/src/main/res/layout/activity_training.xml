@@ -19,6 +19,7 @@
         app:text_selected_color="@color/colorPrimary"
         app:paddingEnd="@dimen/margin_normal"
         app:paddingStart="@dimen/margin_normal"
+        app:item_height="50dp"
         >
 
 

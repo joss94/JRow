@@ -28,6 +28,7 @@ dependencies {
     compile 'com.jjoe64:graphview:4.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:recyclerview-v7:25.2.0'
+    compile 'net.xpece.material:navigation-drawer:0.7.7@aar'
     testCompile 'junit:junit:4.12'
     compile(name:'utils', ext:'aar')
 }

@@ -22,9 +22,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private DrawerSlidingPane drawer;
 
-    private String[] rowersNames;
-    private boolean[] activeSensors;
-
     private static final int SERIAL_DISPLAY_DELAY = 0;
 
     private static String serialContent;
@@ -32,16 +29,18 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     boolean calibrated = false;
 
     private TrainingFragment fragment;
+    private GraphViewFragment graphViewFragment;
+    private SerialViewFragment serialViewFragment;
+    private LoadbarViewFragment loadbarViewFragment;
 
-    Handler serialDisplayHandler;
+    private Handler serialDisplayHandler;
 
     private Runnable displaySerial = new Runnable() {
         @Override
         public void run() {
-            if(fragment instanceof SerialViewFragment){
-                ((SerialViewFragment)fragment).displaySerial(serialContent);
-                serialContent = "";
-            }
+            TrainingFragment.updateData(null, serialContent);
+            serialViewFragment.showData();
+            serialContent = "";
             serialDisplayHandler.postDelayed(displaySerial, SERIAL_DISPLAY_DELAY);
         }
     };
@@ -51,15 +50,18 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
+        graphViewFragment = GraphViewFragment.newInstance();
+        serialViewFragment = SerialViewFragment.newInstance();
+        loadbarViewFragment = LoadbarViewFragment.newInstance();
+
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Serial data", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
+        drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
 
         drawer.setOnDrawerItemClickListener(this);
 
-        rowersNames = new String[] {"", "", "", "", "", "", "", ""};
-        activeSensors = new boolean[] {false, false, false, false, false, false, false, false};
+        drawer.goTo(0);
 
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
 
@@ -88,18 +90,18 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void onDrawerItemClick(int i, DrawerMenuItem drawerMenuItem) {
         switch(i){
             case 0:
-                fragment = GraphViewFragment.newInstance();
+                fragment = graphViewFragment;
                 drawer.replaceFragment(fragment, "GRAPH_VIEW");
                 break;
 
             case 1:
-                fragment = SerialViewFragment.newInstance();
-                drawer.replaceFragment(fragment, "SERIAL_VIEW");
+                fragment = loadbarViewFragment;
+                drawer.replaceFragment(fragment, "LOADBAR_VIEW");
                 break;
 
             case 2:
-                fragment = LoadbarViewFragment.newInstance();
-                drawer.replaceFragment(fragment, "LOADBAR_VIEW");
+                fragment = serialViewFragment;
+                drawer.replaceFragment(fragment, "SERIAL_VIEW");
                 break;
         }
     }
@@ -132,51 +134,34 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void startTraining() {
         Measures.getMeasures().wipeData();
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
+
+        graphViewFragment.onStartTraining();
+        loadbarViewFragment.onStartTraining();
+        serialViewFragment.onStartTraining();
+
         connect();
     }
 
     @Override
     public void stopTraining() {
+        graphViewFragment.onStopTraining();
+        loadbarViewFragment.onStopTraining();
+        serialViewFragment.onStopTraining();
+
         disconnect();
-    }
-
-    @Override
-    public String[] getRowersNames() {
-        return rowersNames;
-    }
-
-    @Override
-    public boolean isSensorActive(int index){
-        if(index > 7 || index <0){
-            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
-        }
-        return activeSensors[index];
-    }
-
-    @Override
-    public void activateSensor(int index){
-        if(index > 7 || index <0){
-            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
-        }
-        activeSensors[index] = true;
-    }
-
-    @Override
-    public void deactivateSensor(int index){
-        if(index > 7 || index <0){
-            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
-        }
-        activeSensors[index] = false;
     }
     //</editor-fold>
 
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
+        TrainingFragment.updateData(measure, "");
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                fragment.updateData(measure);
+                graphViewFragment.showData();
+                loadbarViewFragment.showData();
+                serialViewFragment.showData();
             }
         });
     }

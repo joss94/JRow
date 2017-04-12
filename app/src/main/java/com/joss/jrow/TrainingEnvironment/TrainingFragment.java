@@ -23,16 +23,31 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
     protected TextView strokeRateView;
     private ImageView stopButton, startAndPauseButton, calibrateButton;
 
-    protected String[] rowersNames = new String[8];
-
-    protected boolean receivingData=false;
+    protected static boolean training =false;
 
     protected TrainingFragmentControler listener;
+
+    protected static String serialContent;
+    protected static Measure lastMeasure;
+
+    protected static boolean[] activeSensors;
+    protected static String[] rowersNames;
+
+    @Override
+    public void onCreate(Bundle args){
+        super.onCreate(args);
+        if(activeSensors == null){
+            activeSensors = new boolean[] {false, false, false, false, false, false, false, false};
+        }
+        if(rowersNames == null){
+            rowersNames = new String[] {"", "", "", "", "", "", "", ""};
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         super.onCreateView(inflater, parent, savedInstanceState);
-        View v = inflater.inflate(getLayoutID(), parent, true);
+        View v = inflater.inflate(getLayoutID(), parent, false);
         findAndSetViews(v);
 
         return v;
@@ -44,7 +59,7 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
         if(!(context instanceof TrainingFragmentControler)){
             throw new Error("TrainingFragment parent ativity must implement TrainingFragmentControler");
         }
-        rowersNames = ((TrainingActivity)getActivity()).getRowersNames();
+        listener = (TrainingFragmentControler) context;
     }
 
 
@@ -73,6 +88,13 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
         calibrateButton.setImageResource(R.drawable.ic_calibrate);
         stopButton.setImageResource(R.drawable.ic_action_playback_stop);
 
+        if(training){
+            onStartTraining();
+        }
+        else{
+            onStopTraining();
+        }
+
         startAndPauseButton.setOnClickListener(this);
         stopButton.setOnClickListener(this);
         calibrateButton.setOnClickListener(this);
@@ -81,42 +103,42 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
         setViews();
     }
 
-    public boolean isSensorActive(int index){
-        return ((TrainingActivity)getActivity()).isSensorActive(index);
+    public static boolean isSensorActive(int index){
+        if(index > 7 || index <0){
+            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
+        }
+        return activeSensors[index];
     }
 
-    public void activateSensor(int index){
-        ((TrainingActivity)getActivity()).activateSensor(index);
+    public static void activateSensor(int index){
+        if(index > 7 || index <0){
+            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
+        }
+        activeSensors[index] = true;
     }
 
-    public void deactivateSensor(int index){
-        ((TrainingActivity)getActivity()).deactivateSensor(index);
+    public static void deactivateSensor(int index){
+        if(index > 7 || index <0){
+            throw new Error("Index of "+String.valueOf(index)+" when the maximum number of sensors is 8");
+        }
+        activeSensors[index] = false;
     }
 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.start_and_pause_button:
-                if(receivingData){
+                if(training){
                     listener.stopTraining();
-                    stopButton.setVisibility(View.INVISIBLE);
-                    calibrateButton.setVisibility(View.VISIBLE);
-                    startAndPauseButton.setImageResource(R.drawable.ic_rowing);
                 }
                 else{
                     listener.startTraining();
-                    stopButton.setVisibility(View.VISIBLE);
-                    calibrateButton.setVisibility(View.INVISIBLE);
-                    startAndPauseButton.setImageResource(R.drawable.ic_pause);
                 }
                 break;
 
             case R.id.stop_button:
-                if(receivingData){
-                    listener.startTraining();
-                    calibrateButton.setVisibility(View.VISIBLE);
-                    stopButton.setVisibility(View.INVISIBLE);
-                    startAndPauseButton.setImageResource(R.drawable.ic_rowing);
+                if(training){
+                    listener.stopTraining();
                 }
                 break;
 
@@ -127,11 +149,34 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
         }
     }
 
+    public void onStartTraining(){
+        training =true;
+        if (stopButton != null && calibrateButton != null && startAndPauseButton != null) {
+            stopButton.setVisibility(View.VISIBLE);
+            calibrateButton.setVisibility(View.GONE);
+            startAndPauseButton.setImageResource(R.drawable.ic_pause);
+        }
+    }
+
+    public void onStopTraining(){
+        training =false;
+        if (stopButton != null && calibrateButton != null && startAndPauseButton != null) {
+            calibrateButton.setVisibility(View.VISIBLE);
+            startAndPauseButton.setImageResource(R.drawable.ic_rowing);
+        }
+    }
+
+    public static void updateData(Measure measure, String serial){
+        if (measure != null) {
+            lastMeasure = measure;
+        }
+        serialContent += serial;
+    }
 
     protected abstract int getLayoutID();
     protected abstract void findViews(View v);
     protected abstract void setViews();
     public abstract void onMovementChanged(boolean ascending, int index, long time);
-    public abstract void updateData(Measure measure);
+    public abstract void showData();
 
 }
