@@ -36,6 +36,8 @@ public class MainActivity extends AppCompatActivity implements BluetoothConnectT
     boolean receive=true;
     boolean calibrated = false;
 
+    private int test;
+
     BluetoothAdapter adapter;
     BluetoothSocket socket;
 
