@@ -5,8 +5,8 @@ android {
     buildToolsVersion "25.0.2"
     defaultConfig {
         applicationId "com.apps.joss.jrow"
-        minSdkVersion 16
-        targetSdkVersion 16
+        minSdkVersion 21
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -27,5 +27,7 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.2.0'
     compile 'com.jjoe64:graphview:4.2.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
     testCompile 'junit:junit:4.12'
+    compile(name:'utils', ext:'aar')
 }
