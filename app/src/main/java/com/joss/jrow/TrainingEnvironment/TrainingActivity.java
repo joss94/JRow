@@ -3,13 +3,13 @@ package com.joss.jrow.TrainingEnvironment;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.os.Handler;
-import android.widget.TextView;
 
 import com.joss.jrow.BluetoothConnectionActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.GraphView.GraphViewFragment;
+import com.joss.jrow.TrainingEnvironment.SerialView.SerialViewFragment;
 import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
@@ -35,15 +35,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private TrainingFragment fragment;
 
-    private TextView serial;
-
     Handler serialDisplayHandler;
 
     private Runnable displaySerial = new Runnable() {
         @Override
         public void run() {
-            serialContent = serialContent.substring(Math.max(0, serialContent.length() - 100));
-            //TODO display serial
+            if(fragment instanceof SerialViewFragment){
+                ((SerialViewFragment)fragment).displaySerial(serialContent);
+                serialContent = "";
+            }
             serialDisplayHandler.postDelayed(displaySerial, SERIAL_DISPLAY_DELAY);
         }
     };
@@ -66,8 +66,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         serialContent="";
 
-        serial = (TextView) findViewById(R.id.serial);
-
         serialDisplayHandler = new Handler();
         runOnUiThread(displaySerial);
     }
@@ -85,34 +83,23 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         serialContent += '\n';
     }
 
-    private void showMeasureInSerial(Measure measure){
-        String result="";
-        result += "Time: " + String.valueOf((double) (measure.getTime()-Measures.getMeasures().getStartTime())/1000) + "\n";
-        for(int i=0; i<8; i++){
-            result += i+": " + measure.getRowAngle(i) + "\n";
-        }
-        serialContent = result;
-    }
 
-
-
-
+    //<editor-fold desc="DRAWER INTERFACE">
     @Override
     public void onDrawerItemClick(int i, DrawerMenuItem drawerMenuItem) {
         switch(i){
             case 0:
-                fragment = GraphViewFragment.newInstance(R.layout.fragment_graph_view);
+                fragment = GraphViewFragment.newInstance();
                 drawer.replaceFragment(fragment, "GRAPH_VIEW");
                 break;
 
             case 1:
-                fragment = GraphViewFragment.newInstance(R.layout.fragment_graph_view);
-                drawer.replaceFragment(fragment, "GRAPH_VIEW");
+                fragment = SerialViewFragment.newInstance();
+                drawer.replaceFragment(fragment, "SERIAL_VIEW");
                 break;
         }
     }
-
-
+    //</editor-fold>
 
     //<editor-fold desc="BLUETOOTH INTERFACE">
     @Override
@@ -185,7 +172,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                showMeasureInSerial(measure);
                 fragment.updateData(measure);
             }
         });
