@@ -14,9 +14,6 @@ import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
         Measures.OnNewMeasureProcessedListener,
@@ -24,7 +21,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private DrawerSlidingPane drawer;
 
-    private List<String> rowersNames;
+    private String[] rowersNames;
     private boolean[] activeSensors;
 
     private static final int SERIAL_DISPLAY_DELAY = 0;
@@ -59,7 +56,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         drawer.setOnDrawerItemClickListener(this);
 
-        rowersNames = new ArrayList<>();
+        rowersNames = new String[] {"", "", "", "", "", "", "", ""};
         activeSensors = new boolean[] {false, false, false, false, false, false, false, false};
 
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
@@ -137,7 +134,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     @Override
-    public List<String> getRowersNames() {
+    public String[] getRowersNames() {
         return rowersNames;
     }
 

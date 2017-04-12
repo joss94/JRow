@@ -14,8 +14,6 @@ import com.joss.jrow.CalibrationActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.R;
 
-import java.util.List;
-
 /*
  * Created by joss on 11/04/17.
  */
@@ -25,7 +23,7 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
     protected TextView strokeRateView;
     private ImageView stopButton, startAndPauseButton, calibrateButton;
 
-    protected List<String> rowersNames;
+    protected String[] rowersNames = new String[8];
 
     protected boolean receivingData=false;
 
@@ -47,7 +45,6 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
             throw new Error("TrainingFragment parent ativity must implement TrainingFragmentControler");
         }
         rowersNames = ((TrainingActivity)getActivity()).getRowersNames();
-
     }
 
 

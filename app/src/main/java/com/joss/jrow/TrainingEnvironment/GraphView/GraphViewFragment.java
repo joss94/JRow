@@ -1,6 +1,9 @@
 package com.joss.jrow.TrainingEnvironment.GraphView;
 
 import android.view.View;
+import android.widget.TableLayout;
+import android.widget.TableRow;
+import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -19,6 +22,7 @@ import java.util.ArrayList;
 public class GraphViewFragment extends TrainingFragment {
 
     GraphView graph;
+    TableLayout table;
     ArrayList<LineGraphSeries<DataPoint>> data;
 
     public static GraphViewFragment newInstance(){
@@ -29,6 +33,7 @@ public class GraphViewFragment extends TrainingFragment {
     @Override
     protected void findViews(View v){
         graph = (GraphView) v.findViewById(R.id.graph);
+        table = (TableLayout) v.findViewById(R.id.table);
     }
 
     @Override
@@ -45,6 +50,11 @@ public class GraphViewFragment extends TrainingFragment {
         graph.getViewport().setScalable(true);
         graph.getViewport().setScalableY(true);
         graph.getViewport().setScrollableY(true);
+        initData();
+
+        for(int i=0; i<table.getChildCount(); i++){
+            ((TextView)((TableRow)table.getChildAt(i)).getChildAt(0)).setText(rowersNames[i].isEmpty()?"Rower i:":rowersNames[i]+" :");
+        }
     }
 
     @Override
