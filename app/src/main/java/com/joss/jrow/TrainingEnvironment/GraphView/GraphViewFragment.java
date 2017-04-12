@@ -21,10 +21,7 @@ public class GraphViewFragment extends TrainingFragment {
     GraphView graph;
     ArrayList<LineGraphSeries<DataPoint>> data;
 
-    public GraphViewFragment() {
-    }
-
-    public static GraphViewFragment newInstance(int layoutId){
+    public static GraphViewFragment newInstance(){
         GraphViewFragment fr = new GraphViewFragment();
         return fr;
     }
