@@ -35,6 +35,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private List<String> rowersNames;
 
+    private DrawerSlidingPane drawer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +52,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             trainingFragment.setRowersNames(rowersNames);
         }
 
-        DrawerSlidingPane drawer;
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
         drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
@@ -95,10 +96,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     @Override
-    protected void onConnectionError(String error) {
-        serialContent.addToSerial(error);
-        Toast.makeText(this, "Unable to connect to Arduino", Toast.LENGTH_SHORT).show();
-        stopTraining();
+    protected void onConnectionError(final String error) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                serialContent.addToSerial(error);
+                Toast.makeText(getApplicationContext(), "Unable to connect to Arduino", Toast.LENGTH_SHORT).show();
+                stopTraining();
+            }
+        });
     }
 
     @Override
@@ -154,6 +160,10 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
     //</editor-fold>
 
+    public void goToGraphView(){
+        drawer.goTo(0);
+    };
+
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
@@ -191,6 +201,10 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     private void saveTraining() {
         //TODO implement method
         training = null;
+    }
+
+    public void calibrate() {
+        trainingFragment.calibrate();
     }
     //</editor-fold>
 }

@@ -14,6 +14,7 @@ import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.R;
+import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingControler;
 
 import java.util.Locale;
@@ -99,8 +100,7 @@ public class TrainingControlerFragment extends Fragment implements View.OnClickL
                 break;
 
             case R.id.calibrate_button:
-                Intent intent = new Intent(getContext(), CalibrationActivity.class);
-                startActivity(intent);
+                ((TrainingActivity)getActivity()).calibrate();
                 break;
         }
     }

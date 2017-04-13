@@ -1,5 +1,6 @@
 package com.joss.jrow;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -26,6 +27,8 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     private BluetoothConnectThread connectThread;
     private BluetoothListenThread listenThread;
 
+    ProgressDialog progress;
+
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -42,6 +45,11 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         super.onCreate(savedInstanceState);
         IntentFilter filter  = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
+
+        progress = new ProgressDialog(this);
+        progress.setTitle("Connecting");
+        progress.setMessage("Wait while connecting to the Arduino..");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
     }
 
     @Override
@@ -101,6 +109,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
+        progress.show();
         connectThread = new BluetoothConnectThread(device, adapter, this);
         connectThread.start();
     }
@@ -121,6 +130,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
 
     @Override
     public void onConnectionResponse(final boolean result, final String message, final BluetoothSocket socket) {
+        progress.dismiss();
         if(result){
             onConnectionEstablished();
             this.socket = socket;

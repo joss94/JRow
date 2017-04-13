@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.joss.jrow.Calibration.CalibrationFragment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
+import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.DataDisplayFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.LoadbarViewFragment;
@@ -47,11 +49,13 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         tableFragment = new TrainingTableFragment();
         tableFragment.setRowersNames(rowersNames);
         controlerFragment = new TrainingControlerFragment();
-        displayFragment = new SerialViewFragment();
+        displayFragment = new GraphViewFragment();
 
         fm.beginTransaction().replace(R.id.table_fragment, tableFragment).disallowAddToBackStack().commit();
         fm.beginTransaction().replace(R.id.controler_fragment, controlerFragment).disallowAddToBackStack().commit();
         fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+
+        ((TrainingActivity)getActivity()).goToGraphView();
 
         return v;
     }
@@ -111,5 +115,9 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     public void setRowersNames(List<String> rowersNames) {
         this.rowersNames = new ArrayList<>();
         this.rowersNames.addAll(rowersNames);
+    }
+
+    public void calibrate() {
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, new CalibrationFragment()).disallowAddToBackStack().commit();
     }
 }

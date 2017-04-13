@@ -32,4 +32,7 @@
     <string name="start_ntraining">Start\ntraining</string>
     <string name="time" translatable="false">%1$.2f s</string>
     <string name="save_this_training">Save this training ?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
