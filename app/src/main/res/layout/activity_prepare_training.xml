@@ -17,8 +17,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:text="Crew"
-        android:textSize="48sp"
+        android:text="@string/crew"
+        android:textSize="36sp"
         android:layout_marginStart="@dimen/margin_big"
         android:layout_marginTop="@dimen/margin_big"
         android:shadowColor="@color/white"
@@ -55,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
-                android:text="(Bow)  1."
+                android:text="@string/bow_1"
                 android:textAlignment="textEnd"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal" />
@@ -63,7 +63,7 @@
             <EditText
                 android:id="@+id/name1"
                 android:textColor="@color/white"
-                android:hint="Rower1"
+                android:hint="@string/rower1"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -77,14 +77,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="2."
+                android:text="@string/_2"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name2"
                 android:textColor="@color/white"
-                android:hint="Rower2"
+                android:hint="@string/rower2"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -98,14 +98,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="3."
+                android:text="@string/_3"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name3"
                 android:textColor="@color/white"
-                android:hint="Rower3"
+                android:hint="@string/rower3"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -119,14 +119,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="4."
+                android:text="@string/_4"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name4"
                 android:textColor="@color/white"
-                android:hint="Rower4"
+                android:hint="@string/rower4"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -140,14 +140,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="5."
+                android:text="@string/_5"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name5"
                 android:textColor="@color/white"
-                android:hint="Rower5"
+                android:hint="@string/rower5"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -161,14 +161,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="6."
+                android:text="@string/_6"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name6"
                 android:textColor="@color/white"
-                android:hint="Rower6"
+                android:hint="@string/rower6"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -182,14 +182,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="7."
+                android:text="@string/_7"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name7"
                 android:textColor="@color/white"
-                android:hint="Rower7"
+                android:hint="@string/rower7"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -203,14 +203,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="(Stern)  8."
+                android:text="@string/stern_8"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name8"
                 android:textColor="@color/white"
-                android:hint="Rower8"
+                android:hint="@string/rower8"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />
@@ -224,14 +224,14 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
                 android:textAlignment="textEnd"
-                android:text="(Coax)  9."
+                android:text="@string/cox_9"
                 android:layout_marginEnd="@dimen/margin_small"
                 android:textSize="@dimen/text_normal"/>
 
             <EditText
                 android:id="@+id/name_timo"
                 android:textColor="@color/white"
-                android:hint="Coax"
+                android:hint="@string/cox"
                 android:textColorHint="@color/light_gray"
                 android:textSize="@dimen/text_normal"
                 />

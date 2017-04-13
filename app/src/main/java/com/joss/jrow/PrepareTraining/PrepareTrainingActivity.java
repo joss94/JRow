@@ -5,10 +5,12 @@ package com.joss.jrow.PrepareTraining;
  */
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
@@ -24,6 +26,9 @@ public class PrepareTrainingActivity extends AppCompatActivity{
     protected void onCreate(Bundle saveInstanceState){
         super.onCreate(saveInstanceState);
         setContentView(R.layout.activity_prepare_training);
+
+        Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/JuliusSansOne-Regular.ttf");
+        ((TextView)findViewById(R.id.crew)).setTypeface(custom_font);
 
         names = new ArrayList<>();
 

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JRow</string>
+    <string name="bow_1">(Proa) 1.</string>
+    <string name="calibrate">Calibração</string>
+    <string name="cox">Timoneiro</string>
+    <string name="cox_9" translatable="false">(Timo) 9.</string>
+    <string name="crew">Tripulação</string>
+    <string name="rower1">Remador1</string>
+    <string name="rower2">Remador2</string>
+    <string name="rower3">Remador3</string>
+    <string name="rower4">Remador4</string>
+    <string name="rower5">Remador5</string>
+    <string name="rower6">Remador6</string>
+    <string name="rower7">Remador7</string>
+    <string name="rower8">Remador8</string>
+    <string name="start_ntraining">Iniciar\no treino</string>
+    <string name="stern_8">(Voga) 8.</string>
+    <string name="strokes_per_min">%.2f rem / min</string>
+    <string name="strokerate_default">0 rem / min</string>
+</resources>

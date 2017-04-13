@@ -61,7 +61,7 @@
             android:textColor="@color/white"
             android:layout_below="@+id/clock_button"
             android:textAlignment="center"
-            android:text="Start\nTraining"
+            android:text="@string/start_ntraining"
             android:layout_marginTop="@dimen/margin_small"
             android:layout_centerHorizontal="true"
             android:textSize="@dimen/text_big" />

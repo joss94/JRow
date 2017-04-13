@@ -5,15 +5,6 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/start_and_pause_button"
-        android:layout_width="@dimen/training_button_size"
-        android:layout_height="@dimen/training_button_size"
-        android:src="@drawable/ic_rowing"
-        android:layout_marginEnd="@dimen/margin_normal"
-        android:scaleType="fitXY"
-        android:contentDescription="@string/start_pause" />
-
-    <ImageView
         android:id="@+id/calibrate_button"
         android:layout_width="@dimen/training_button_size"
         android:layout_height="@dimen/training_button_size"
@@ -21,6 +12,15 @@
         android:layout_marginEnd="@dimen/margin_normal"
         android:scaleType="fitXY"
         android:contentDescription="@string/calibrate" />
+
+    <ImageView
+        android:id="@+id/start_and_pause_button"
+        android:layout_width="@dimen/training_button_size"
+        android:layout_height="@dimen/training_button_size"
+        android:src="@drawable/ic_rowing"
+        android:layout_marginEnd="@dimen/margin_normal"
+        android:scaleType="fitXY"
+        android:contentDescription="@string/start_pause" />
 
     <ImageView
         android:id="@+id/stop_button"

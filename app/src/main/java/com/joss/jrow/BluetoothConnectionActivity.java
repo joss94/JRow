@@ -119,6 +119,9 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
                 if(resultCode == RESULT_OK){
                     showDevicesAndConnect();
                 }
+                else{
+                    onConnectionError("Bluetooth must be turned on");
+                }
                 break;
         }
     }

@@ -127,6 +127,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     protected void onConnectionError(String error) {
         addToSerial(error);
+        stopTraining();
     }
 
     @Override
@@ -137,6 +138,9 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     protected void onConnectionEstablished() {
         addToSerial("Connection established!");
+        graphViewFragment.onStartTraining();
+        loadbarViewFragment.onStartTraining();
+        serialViewFragment.onStartTraining();
     }
     //</editor-fold>
 
@@ -146,20 +150,16 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         Measures.getMeasures().wipeData();
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
 
-        graphViewFragment.onStartTraining();
-        loadbarViewFragment.onStartTraining();
-        serialViewFragment.onStartTraining();
-
         connect();
     }
 
     @Override
     public void stopTraining() {
+        disconnect();
+
         graphViewFragment.onStopTraining();
         loadbarViewFragment.onStopTraining();
         serialViewFragment.onStopTraining();
-
-        disconnect();
     }
     //</editor-fold>
 
@@ -191,6 +191,11 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 fragment.onMovementChanged(ascending, index, time);
             }
         });
+    }
+
+    @Override
+    public void onConnectionClosed(boolean result, String message) {
+        addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
     }
     //</editor-fold>
 }

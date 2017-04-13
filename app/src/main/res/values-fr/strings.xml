@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">JRow</string>
+    <string name="bow_1">(Proue) 1.</string>
+    <string name="calibrate">Calibrer</string>
+    <string name="cox">Barreur</string>
+    <string name="cox_9" translatable="false">(Barreur) 9.</string>
+    <string name="crew">Equipage</string>
+    <string name="delay"></string>
+    <string name="rower1">Rameur1</string>
+    <string name="rower2">Rameur2</string>
+    <string name="rower3">Rameur3</string>
+    <string name="rower4">Rameur4</string>
+    <string name="rower5">Rameur5</string>
+    <string name="rower6">Rameur6</string>
+    <string name="rower7">Rameur7</string>
+    <string name="rower8">Rameur8</string>
+    <string name="start_ntraining">Débuter\nla session</string>
+    <string name="start_pause"></string>
+    <string name="stern_8">(Pointe) 8.</string>
+    <string name="strokes_per_min">%.2f coups / min</string>
+    <string name="strokerate_default">0 coups / min</string>
+</resources>
