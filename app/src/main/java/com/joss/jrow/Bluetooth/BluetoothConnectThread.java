@@ -1,4 +1,4 @@
-package com.joss.jrow.DataProcessingThreads;
+package com.joss.jrow.Bluetooth;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -6,11 +6,6 @@ import android.bluetooth.BluetoothSocket;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.UUID;
-
-/*
- * Created by joss on 23/03/17.
- */
 
 public class BluetoothConnectThread extends Thread {
 
@@ -18,7 +13,7 @@ public class BluetoothConnectThread extends Thread {
     private final BluetoothAdapter adapter;
     private final onConnectionResponseListener listener;
 
-    public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, UUID uuid, onConnectionResponseListener listener) {
+    public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, onConnectionResponseListener listener) {
         this.listener = listener;
         BluetoothSocket tmp = null;
         this.adapter = adapter;

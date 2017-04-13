@@ -3,10 +3,6 @@ package com.joss.jrow.Models;
 import java.util.ArrayList;
 import java.util.List;
 
-/*e
- * Created by joss on 24/03/17.
- */
-
 public class Measures extends ArrayList<Measure>{
 
     private final int MAX_SIZE = 500;
@@ -21,6 +17,8 @@ public class Measures extends ArrayList<Measure>{
 
     private long startTime = 0;
 
+    private volatile long[] catchTimes;
+
     private Measures() {
         super();
         dataToProcess = new ArrayList<>();
@@ -29,6 +27,7 @@ public class Measures extends ArrayList<Measure>{
         for(int i=0; i<8;i++){
             maxsTimes.add(new ArrayList<Long>());
         }
+        catchTimes = new long[] {0,0,0,0,0,0,0,0};
     }
 
     public static synchronized Measures getMeasures(){
@@ -36,13 +35,6 @@ public class Measures extends ArrayList<Measure>{
             measures = new Measures();
         }
         return measures;
-    }
-
-    synchronized Measure getLast() {
-        if (!isEmpty()) {
-            return get(size()-1);
-        }
-        return null;
     }
 
     public ArrayList<Measure> getDataToProcess() {
@@ -80,18 +72,9 @@ public class Measures extends ArrayList<Measure>{
                     && Math.abs(max.getRowAngle(i)-localData.get(localData.size()-1).getRowAngle(i))>50
                     && !maxsTimes.get(i).contains(max.getTime()-startTime)){
                 maxsTimes.get(i).add(max.getTime()-startTime);
-                onMovementChangedDetected(true, i, max.getTime()-startTime);
+                onMovementChangedDetected(i, max.getTime()-startTime);
             }
         }
-        /*
-        for(int i=0; i<8; i++){
-            for(Measure measure : this){
-                if(measure.getRowAngle(i)>get(MAX_SIZE/2).getRowAngle(i)){
-                    return;
-                }
-            }
-            onMovementChangedDetected(true, i, get(MAX_SIZE/2).getTime()-startTime);
-        }/**/
     }
 
     @Override
@@ -120,15 +103,20 @@ public class Measures extends ArrayList<Measure>{
         return startTime;
     }
 
+    public long[] getCatchTimes() {
+        return catchTimes;
+    }
+
     private void onNewMeasureProcessed(Measure measure){
         for(OnNewMeasureProcessedListener listener : listeners){
             listener.onNewMeasureProcessed(measure);
         }
     }
 
-    private void onMovementChangedDetected(boolean ascending, int index, long time){
+    private void onMovementChangedDetected(int index, long time){
+        catchTimes[index] = time;
         for(OnNewMeasureProcessedListener listener : listeners){
-            listener.onMovementChanged(ascending, index, time);
+            listener.onMovementChanged(index, time);
         }
     }
 
@@ -138,6 +126,6 @@ public class Measures extends ArrayList<Measure>{
 
     public interface OnNewMeasureProcessedListener{
         void onNewMeasureProcessed(Measure measure);
-        void onMovementChanged(boolean ascending, int index, long time);
+        void onMovementChanged(int index, long time);
     }
 }

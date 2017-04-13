@@ -2,97 +2,50 @@ package com.joss.jrow.TrainingEnvironment;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
-import android.os.Handler;
-
 import com.joss.jrow.BluetoothConnectionActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
-import com.joss.jrow.TrainingEnvironment.GraphView.GraphViewFragment;
-import com.joss.jrow.TrainingEnvironment.LoadbarView.LoadbarViewFragment;
-import com.joss.jrow.TrainingEnvironment.SerialView.SerialViewFragment;
+import com.joss.jrow.SerialContent;
+import com.joss.jrow.TrainingEnvironment.TrainingFragment.TrainingFragment;
 import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
-
-import java.util.ArrayList;
+import java.io.Serializable;
+import java.util.List;
 
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
         Measures.OnNewMeasureProcessedListener,
-        TrainingFragmentControler{
+        TrainingControler {
 
-    private DrawerSlidingPane drawer;
+    private TrainingFragment trainingFragment;
 
-    private static final int SERIAL_DISPLAY_DELAY = 0;
-
-    private static String serialContent;
-
-    boolean calibrated = false;
-
-    private TrainingFragment fragment;
-    private GraphViewFragment graphViewFragment;
-    private SerialViewFragment serialViewFragment;
-    private LoadbarViewFragment loadbarViewFragment;
-
-    private Handler serialDisplayHandler;
-
-    private Runnable displaySerial = new Runnable() {
-        @Override
-        public void run() {
-            TrainingFragment.updateData(null, serialContent);
-            serialViewFragment.showData();
-            serialContent = "";
-            serialDisplayHandler.postDelayed(displaySerial, SERIAL_DISPLAY_DELAY);
-        }
-    };
+    private SerialContent serialContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
-        graphViewFragment = GraphViewFragment.newInstance();
-        serialViewFragment = SerialViewFragment.newInstance();
-        loadbarViewFragment = LoadbarViewFragment.newInstance();
+        serialContent = SerialContent.getInstance();
 
+        trainingFragment = new TrainingFragment();
         if(getIntent().hasExtra("rowers")){
-            ArrayList<String> rowersNames = (ArrayList<String>) getIntent().getSerializableExtra("rowers");
-            for(int i=0; i<8; i++){
-                if(rowersNames.size()>i){
-                    TrainingFragment.rowersNames = rowersNames;
-                }
-            }
+            Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
+            List<String> rowersNames = (List<String>) rowersNamesSerializable;
+            trainingFragment.setRowersNames(rowersNames);
         }
 
+        DrawerSlidingPane drawer;
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
-
+        drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
-
-        drawer.goTo(0);
+        drawer.displayFragment(trainingFragment, "TRAINING_FRAGMENT");
 
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
-
-        serialContent="";
-
-        serialDisplayHandler = new Handler();
-        runOnUiThread(displaySerial);
-    }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        calibrated = false;
-        serialContent="";
-    }
-
-
-    public static synchronized void addToSerial(String message){
-        serialContent += message;
-        serialContent += '\n';
     }
 
 
@@ -101,18 +54,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void onDrawerItemClick(int i, DrawerMenuItem drawerMenuItem) {
         switch(i){
             case 0:
-                fragment = graphViewFragment;
-                drawer.replaceFragment(fragment, "GRAPH_VIEW");
+                trainingFragment.setGraphView();
                 break;
 
             case 1:
-                fragment = loadbarViewFragment;
-                drawer.replaceFragment(fragment, "LOADBAR_VIEW");
+                trainingFragment.setLoadbarView();
                 break;
 
             case 2:
-                fragment = serialViewFragment;
-                drawer.replaceFragment(fragment, "SERIAL_VIEW");
+                trainingFragment.setSerialView();
                 break;
         }
     }
@@ -121,81 +71,80 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     //<editor-fold desc="BLUETOOTH INTERFACE">
     @Override
     protected void onDeviceFound(BluetoothDevice device) {
-        addToSerial("Found device "+device.getName());
+        serialContent.addToSerial("Found device "+device.getName());
     }
 
     @Override
     protected void onConnectionError(String error) {
-        addToSerial(error);
+        serialContent.addToSerial(error);
         stopTraining();
     }
 
     @Override
     protected void onDevicePaired(BluetoothDevice device) {
-        addToSerial("Paired with "+device.getName());
+        serialContent.addToSerial("Paired with "+device.getName());
     }
 
     @Override
     protected void onConnectionEstablished() {
-        addToSerial("Connection established!");
-        graphViewFragment.onStartTraining();
-        loadbarViewFragment.onStartTraining();
-        serialViewFragment.onStartTraining();
+        serialContent.addToSerial("Connection established!");
+        trainingFragment.setTraining(true);
     }
     //</editor-fold>
+
 
     //<editor-fold desc="TRAINING FRAGMENT CONTROLER INTERFACE">
     @Override
     public void startTraining() {
-        Measures.getMeasures().wipeData();
-        Measures.getMeasures().addOnNewMeasureProcessedListener(this);
+        if (!trainingFragment.isTraining() && !trainingFragment.isPaused()) {
+            Measures.getMeasures().wipeData();
+            Measures.getMeasures().addOnNewMeasureProcessedListener(this);
 
-        connect();
+            connect();
+        }
+        else if(!trainingFragment.isTraining() && trainingFragment.isPaused()){
+            resumeTraining();
+        }
     }
 
     @Override
     public void stopTraining() {
-        disconnect();
+        if (trainingFragment.isTraining()) {
+            disconnect();
+            trainingFragment.setTraining(false);
+            trainingFragment.setPaused(false);
+        }
+    }
 
-        graphViewFragment.onStopTraining();
-        loadbarViewFragment.onStopTraining();
-        serialViewFragment.onStopTraining();
+    @Override
+    public void pauseTraining() {
+        if (trainingFragment.isTraining()) {
+            disconnect();
+            trainingFragment.setTraining(false);
+            trainingFragment.setPaused(true);
+        }
+    }
+
+    @Override
+    public void resumeTraining() {
+        connect();
     }
     //</editor-fold>
 
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
-        TrainingFragment.updateData(measure, "");
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                if (fragment == graphViewFragment) {
-                    graphViewFragment.showData();
-                }
-                else if (fragment == loadbarViewFragment) {
-                    loadbarViewFragment.showData();
-                }
-                else if (fragment == serialViewFragment) {
-                    serialViewFragment.showData();
-                }
-            }
-        });
+        trainingFragment.onNewMeasureProcessed(measure);
     }
 
     @Override
-    public void onMovementChanged(final boolean ascending, final int index, final long time) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                fragment.onMovementChanged(ascending, index, time);
-            }
-        });
+    public void onMovementChanged(int index, long time) {
+        trainingFragment.onMovementChanged(index, time);
     }
 
     @Override
     public void onConnectionClosed(boolean result, String message) {
-        addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
+        serialContent.addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
     }
     //</editor-fold>
 }

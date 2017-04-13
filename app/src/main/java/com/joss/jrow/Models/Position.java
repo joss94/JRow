@@ -1,8 +1,4 @@
-package com.joss.jrow;
-
-/*
- * Created by joss on 13/04/17.
- */
+package com.joss.jrow.Models;
 
 public class Position {
     public static final int STERN = 7;

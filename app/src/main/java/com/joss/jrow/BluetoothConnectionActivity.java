@@ -10,23 +10,16 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
-import com.joss.jrow.DataProcessingThreads.BluetoothConnectThread;
-import com.joss.jrow.DataProcessingThreads.BluetoothListenThread;
+import com.joss.jrow.Bluetooth.BluetoothConnectThread;
+import com.joss.jrow.Bluetooth.BluetoothListenThread;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.UUID;
-
-/*
- * Created by joss on 12/04/17.
- */
 
 public abstract class BluetoothConnectionActivity extends AppCompatActivity implements BluetoothConnectThread.onConnectionResponseListener {
 
     private final int REQUEST_ENABLE_BT = 12;
     private final String MAC_ADDRESS = "20:16:11:21:11:43";
-    private static final UUID uuid = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-
     private BluetoothAdapter adapter;
     private BluetoothSocket socket;
 
@@ -89,7 +82,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         }
     }
 
-    public void showDevicesAndConnect(){
+    private void showDevicesAndConnect(){
         Set<BluetoothDevice> devices = adapter.getBondedDevices();
         if(devices.size()>0){
             for(BluetoothDevice device : devices){
@@ -108,7 +101,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
-        connectThread = new BluetoothConnectThread(device, adapter, uuid, this);
+        connectThread = new BluetoothConnectThread(device, adapter, this);
         connectThread.start();
     }
 
@@ -139,11 +132,11 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         }
     }
 
-    public void connect(){
+    protected void connect(){
         setUpBluetooth();
     }
 
-    public void disconnect(){
+    protected void disconnect(){
         if(connectThread!=null){
             connectThread.cancel();
         }

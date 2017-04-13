@@ -2,10 +2,6 @@ package com.joss.jrow.Models;
 
 import java.util.HashMap;
 
-/**
- * Created by joss on 24/03/17.
- */
-
 public class Measure extends HashMap<String, Long> {
 
     public Measure() {
@@ -35,9 +31,5 @@ public class Measure extends HashMap<String, Long> {
             return get("row"+i);
         }
         return (long) -1;
-    }
-
-    void setRowAngle(int i, long value){
-        put("row"+i, value);
     }
 }

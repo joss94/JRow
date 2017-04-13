@@ -1,9 +1,5 @@
 package com.joss.jrow.PrepareTraining;
 
-/*
- * Created by joss on 13/04/17.
- */
-
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
