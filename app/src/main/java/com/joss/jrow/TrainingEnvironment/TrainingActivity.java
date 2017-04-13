@@ -15,6 +15,8 @@ import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
 
+import java.util.ArrayList;
+
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
         Measures.OnNewMeasureProcessedListener,
@@ -53,6 +55,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         graphViewFragment = GraphViewFragment.newInstance();
         serialViewFragment = SerialViewFragment.newInstance();
         loadbarViewFragment = LoadbarViewFragment.newInstance();
+
+        if(getIntent().hasExtra("rowers")){
+            ArrayList<String> rowersNames = (ArrayList<String>) getIntent().getSerializableExtra("rowers");
+            for(int i=0; i<8; i++){
+                if(rowersNames.size()>i){
+                    TrainingFragment.rowersNames = rowersNames;
+                }
+            }
+        }
 
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));

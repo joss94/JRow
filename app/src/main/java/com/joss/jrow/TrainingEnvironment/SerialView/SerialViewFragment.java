@@ -3,6 +3,7 @@ package com.joss.jrow.TrainingEnvironment.SerialView;
 import android.view.View;
 import android.widget.TextView;
 
+import com.joss.jrow.Position;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
@@ -39,14 +40,16 @@ public class SerialViewFragment extends TrainingFragment {
 
     @Override
     public void onMovementChanged(boolean ascending, int index, long time) {
-        serialContent += "\n Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time);
-        showData();
+        super.onMovementChanged(ascending, index, time);
+        if (index == Position.STERN) {
+            serialContent += "\n Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time);
+            showData();
+        }
     }
 
     @Override
     public synchronized void showData() {
         super.showData();
-
         if(serial != null){
             serial.setText(serialContent);
         }

@@ -10,13 +10,17 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.joss.jrow.CalibrationActivity;
 import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Position;
 import com.joss.jrow.R;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /*
  * Created by joss on 11/04/17.
@@ -24,7 +28,7 @@ import java.util.ArrayList;
 
 public abstract class TrainingFragment extends Fragment implements View.OnClickListener {
 
-    protected TextView strokeRateView;
+    protected volatile TextView strokeRateView, timeView;
     private ImageView stopButton, startAndPauseButton, calibrateButton;
 
     protected static boolean training =false;
@@ -35,27 +39,13 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
     protected static volatile Measure lastMeasure;
 
     protected static boolean[] activeSensors;
-    protected static String[] rowersNames;
+    protected static List<String> rowersNames;
 
-    protected volatile ArrayList<CheckBox> checkBoxes;
-    protected volatile CheckBox checkBox1;
-    protected volatile CheckBox checkBox2;
-    protected volatile CheckBox checkBox3;
-    protected volatile CheckBox checkBox4;
-    protected volatile CheckBox checkBox5;
-    protected volatile CheckBox checkBox6;
-    protected volatile CheckBox checkBox7;
-    protected volatile CheckBox checkBox8;
+    protected volatile List<CheckBox> checkBoxes;
+    protected volatile List<TextView> delays;
+    protected List<TextView> namesLabels;
 
-    protected volatile ArrayList<TextView> angles;
-    protected volatile TextView angle1;
-    protected volatile TextView angle2;
-    protected volatile TextView angle3;
-    protected volatile TextView angle4;
-    protected volatile TextView angle5;
-    protected volatile TextView angle6;
-    protected volatile TextView angle7;
-    protected volatile TextView angle8;
+    protected static volatile long[] catchTimes;
 
     @Override
     public void onCreate(Bundle args){
@@ -63,17 +53,30 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
         if(activeSensors == null){
             activeSensors = new boolean[] {false, false, false, false, false, false, false, false};
         }
-        if(rowersNames == null){
-            rowersNames = new String[] {"", "", "", "", "", "", "", ""};
+        if (rowersNames == null) {
+            rowersNames = new ArrayList<>();
+        }
+        if(catchTimes == null){
+            catchTimes = new long[] {0,0,0,0,0,0,0,0};
         }
         checkBoxes = new ArrayList<>();
-        angles = new ArrayList<>();
+        delays = new ArrayList<>();
+        namesLabels = new ArrayList<>();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         super.onCreateView(inflater, parent, savedInstanceState);
         View v = inflater.inflate(getLayoutID(), parent, false);
+
+        View border= new View(getContext());
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(getResources().getDimensionPixelSize(R.dimen.drawer_border_size), RelativeLayout.LayoutParams.MATCH_PARENT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_START);
+        border.setLayoutParams(params);
+        border.setBackgroundColor(getContext().getResources().getColor(R.color.colorAccent));
+
+        ((RelativeLayout)v).addView(border);
+
         findAndSetViews(v);
 
         return v;
@@ -95,6 +98,11 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
             throw new Error("Fragment must contain TextView with stroke_rate_view id within its layout");
         }
 
+        timeView = (TextView) v.findViewById(R.id.time);
+        if(timeView == null){
+            throw new Error("Fragment must contain TextView with time id within its layout");
+        }
+
         startAndPauseButton = (ImageView) v.findViewById(R.id.start_and_pause_button);
         if(startAndPauseButton == null){
             throw new Error("Fragment must contain ImageView with start_and_pause_button id within its layout");
@@ -110,23 +118,14 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
             throw new Error("Fragment must contain ImageView with calibrate_button id within its layout");
         }
 
-        checkBox1 = (CheckBox) v.findViewById(R.id.checkbox1);
-        checkBox2 = (CheckBox) v.findViewById(R.id.checkbox2);
-        checkBox3 = (CheckBox) v.findViewById(R.id.checkbox3);
-        checkBox4 = (CheckBox) v.findViewById(R.id.checkbox4);
-        checkBox5 = (CheckBox) v.findViewById(R.id.checkbox5);
-        checkBox6 = (CheckBox) v.findViewById(R.id.checkbox6);
-        checkBox7 = (CheckBox) v.findViewById(R.id.checkbox7);
-        checkBox8 = (CheckBox) v.findViewById(R.id.checkbox8);
-
-        checkBoxes.add(checkBox1);
-        checkBoxes.add(checkBox2);
-        checkBoxes.add(checkBox3);
-        checkBoxes.add(checkBox4);
-        checkBoxes.add(checkBox5);
-        checkBoxes.add(checkBox6);
-        checkBoxes.add(checkBox7);
-        checkBoxes.add(checkBox8);
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox1));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox2));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox3));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox4));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox5));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox6));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox7));
+        checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox8));
 
         for(final CheckBox checkBox : checkBoxes){
             if(isSensorActive(checkBoxes.indexOf(checkBox))){
@@ -148,23 +147,28 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
             });
         }
 
-        angle1 = (TextView)v.findViewById(R.id.angle1);
-        angle2 = (TextView)v.findViewById(R.id.angle2);
-        angle3 = (TextView)v.findViewById(R.id.angle3);
-        angle4 = (TextView)v.findViewById(R.id.angle4);
-        angle5 = (TextView)v.findViewById(R.id.angle5);
-        angle6 = (TextView)v.findViewById(R.id.angle6);
-        angle7 = (TextView)v.findViewById(R.id.angle7);
-        angle8 = (TextView)v.findViewById(R.id.angle8);
+        delays.add((TextView)v.findViewById(R.id.angle1));
+        delays.add((TextView)v.findViewById(R.id.angle2));
+        delays.add((TextView)v.findViewById(R.id.angle3));
+        delays.add((TextView)v.findViewById(R.id.angle4));
+        delays.add((TextView)v.findViewById(R.id.angle5));
+        delays.add((TextView)v.findViewById(R.id.angle6));
+        delays.add((TextView)v.findViewById(R.id.angle7));
+        delays.add((TextView)v.findViewById(R.id.angle8));
 
-        angles.add(angle1);
-        angles.add(angle2);
-        angles.add(angle3);
-        angles.add(angle4);
-        angles.add(angle5);
-        angles.add(angle6);
-        angles.add(angle7);
-        angles.add(angle8);
+        namesLabels.add((TextView)v.findViewById(R.id.name1));
+        namesLabels.add((TextView)v.findViewById(R.id.name2));
+        namesLabels.add((TextView)v.findViewById(R.id.name3));
+        namesLabels.add((TextView)v.findViewById(R.id.name4));
+        namesLabels.add((TextView)v.findViewById(R.id.name5));
+        namesLabels.add((TextView)v.findViewById(R.id.name6));
+        namesLabels.add((TextView)v.findViewById(R.id.name7));
+        namesLabels.add((TextView)v.findViewById(R.id.name8));
+
+        for(TextView nameLabel : namesLabels){
+            String name = rowersNames.get(namesLabels.indexOf(nameLabel));
+            nameLabel.setText(name);
+        }
 
         startAndPauseButton.setImageResource(R.drawable.ic_rowing);
         calibrateButton.setImageResource(R.drawable.ic_calibrate);
@@ -261,16 +265,31 @@ public abstract class TrainingFragment extends Fragment implements View.OnClickL
     protected abstract int getLayoutID();
     protected abstract void findViews(View v);
     protected abstract void setViews();
-    public abstract void onMovementChanged(boolean ascending, int index, long time);
 
-    public synchronized void showData(){
-        if (lastMeasure!=null) {
-            for(int i=0; i<8; i++){
-                if(isSensorActive(i) && angles != null && angles.size()==8){
-                    angles.get(i).setText(String.valueOf(lastMeasure.getRowAngle(i)/10)+"°");
+    public void onMovementChanged(boolean ascending, int index, long time){
+        if(index == Position.STERN){
+            float frequency = (float)60000/(((float)(time-catchTimes[Position.STERN])));
+            strokeRateView.setText(String.format(Locale.ENGLISH, getString(R.string.strokes_per_min), frequency));
+        }
+        catchTimes[index] = time;
+        if (isSensorActive(index)) {
+            if(index == Position.STERN){
+                delays.get(index).setText(String.valueOf((double)time/1000));
+                for(int i=0; i<8; i++){
+                    if(time - catchTimes[Position.STERN]<1000 && isSensorActive(i)){
+                        delays.get(index).setText(String.format(Locale.ENGLISH, getString(R.string.delay), ((double)(time - catchTimes[Position.STERN]))/1000));
+                    }
+                }
+            }
+            else{
+                if(time - catchTimes[Position.STERN]<1000){
+                    delays.get(index).setText(String.format(Locale.ENGLISH, getString(R.string.delay), ((double)(time - catchTimes[Position.STERN]))/1000));
                 }
             }
         }
+    }
+
+    public synchronized void showData(){
     }
 
 }

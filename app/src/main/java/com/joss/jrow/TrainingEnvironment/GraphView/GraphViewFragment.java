@@ -1,5 +1,6 @@
 package com.joss.jrow.TrainingEnvironment.GraphView;
 
+import android.graphics.Color;
 import android.view.View;
 import android.widget.TableLayout;
 
@@ -7,6 +8,7 @@ import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.joss.jrow.Models.Measures;
+import com.joss.jrow.Position;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
@@ -18,6 +20,8 @@ import java.util.ArrayList;
 
 @SuppressWarnings("deprecation")
 public class GraphViewFragment extends TrainingFragment {
+
+    private final int[] colors = {Color.GRAY, Color.rgb(255,102,0), Color.BLUE, Color.MAGENTA, Color.BLACK, Color.rgb(0, 150, 0), Color.rgb(100, 50, 130)};
 
     private GraphView graph;
     private TableLayout table;
@@ -62,14 +66,17 @@ public class GraphViewFragment extends TrainingFragment {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             graphData.add(series);
             graph.addSeries(series);
+            graphData.get(i).setColor((i<7)?colors[i]:getResources().getColor(R.color.red));
+            namesLabels.get(i).setTextColor((i<7)?colors[i]:getResources().getColor(R.color.red));
+            graphData.get(i).setThickness(2);
         }
-        graphData.get(0).setColor(getResources().getColor(R.color.colorAccent));
     }
 
 
     @Override
     public void onMovementChanged(final boolean ascending, final int index, final long time) {
-        if (index==0) {
+        super.onMovementChanged(ascending, index, time);
+        if (index == Position.STERN) {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             series.appendData(new DataPoint((double) (time)/1000, 10000), true, 200);
             series.appendData(new DataPoint((double) (time)/1000, -10000), true, 200);
