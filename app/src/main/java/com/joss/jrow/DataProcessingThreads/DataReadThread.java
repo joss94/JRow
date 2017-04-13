@@ -1,26 +1,22 @@
 package com.joss.jrow.DataProcessingThreads;
 
-/*
- * Created by joss on 27/03/17.
- */
-
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
-import com.joss.jrow.TrainingEnvironment.TrainingActivity;
+import com.joss.jrow.SerialContent;
 
-class DataReadThread extends Thread {
+public class DataReadThread extends Thread {
 
-    private final int PROCESS_DELAY = 20;
-
-    public static volatile String data;
+    private static volatile String data;
     private Measures measures;
 
     private volatile boolean running = true;
 
+    private SerialContent serialContent;
 
-    DataReadThread(){
+    public DataReadThread(){
         data="";
         measures = Measures.getMeasures();
+        serialContent = SerialContent.getInstance();
     }
 
     @Override
@@ -38,7 +34,7 @@ class DataReadThread extends Thread {
         running = false;
     }
 
-    synchronized void addData(String additional){
+    public synchronized void addData(String additional){
         data+=additional;
     }
 
@@ -57,7 +53,7 @@ class DataReadThread extends Thread {
     private void decodeRow(String message){
         //*
         if(!isValidRow(message)){
-            TrainingActivity.addToSerial("error");
+            serialContent.addToSerial("Error: Invalid row...");
             return;
         }
 
@@ -84,12 +80,12 @@ class DataReadThread extends Thread {
     private boolean isValidRow(String message){
         for(int i=0; i<8; i++){
             if(!message.contains("$row"+i+":")){
-                TrainingActivity.addToSerial("not row" + i);
+                serialContent.addToSerial("Row not found: " + i);
                 return false;
             }
         }
         if(!message.contains("$time:")){
-            TrainingActivity.addToSerial("not time");
+            serialContent.addToSerial("Time not found");
             return false;
         }
 
@@ -97,7 +93,7 @@ class DataReadThread extends Thread {
         for(int i=1; i<substrings.length; i++){
             String substring = substrings[i];
             if(!substring.contains(":")){
-                TrainingActivity.addToSerial("no :");
+                serialContent.addToSerial("Not found :");
                 return false;
             }
         }

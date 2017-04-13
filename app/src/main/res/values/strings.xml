@@ -7,9 +7,9 @@
     <string name="start_pause" translatable="false">Start/Pause</string>
     <string name="calibrate">calibrate</string>
     <string name="jrow" translatable="false">JRow</string>
-    <string name="strokes_per_min">%.2f str / min</string>
-    <string name="delay" translatable="false">%.2f s</string>
-    <string name="time_default">0.00 s</string>
+    <string name="strokes_per_min">%1$.2f str / min</string>
+    <string name="delay" translatable="false">%1$.2f s</string>
+    <string name="time_default" translatable="false">0.00 s</string>
     <string name="cox">Coxswain</string>
     <string name="cox_9">(Cox) 9.</string>
     <string name="rower8">Rower8</string>
@@ -30,4 +30,5 @@
     <string name="bow_1">(Bow) 1.</string>
     <string name="crew">Crew</string>
     <string name="start_ntraining">Start\ntraining</string>
+    <string name="time" translatable="false">%1$.2f s</string>
 </resources>

@@ -2,53 +2,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/stroke_rate"
-        android:layout_alignStart="@+id/table">
-
-        <include
-            layout="@layout/training_buttons_layout" />
-
-    </RelativeLayout>
-
-
-    <TextView
-        android:id="@+id/stroke_rate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_very_big"
-        android:text="@string/strokerate_default"
-        android:layout_alignEnd="@+id/data_container"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginEnd="@dimen/margin_small"/>
-
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_very_big"
-        android:text="@string/time_default"
-        android:layout_toStartOf="@+id/stroke_rate"
-        android:layout_alignTop="@id/stroke_rate"
-        android:layout_marginEnd="@dimen/margin_big"/>
-
     <com.jjoe64.graphview.GraphView
         android:id="@+id/data_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/stroke_rate"
-        android:layout_toEndOf="@+id/table"
-        android:layout_marginEnd="@dimen/margin_normal"
-        android:layout_marginStart="@dimen/margin_normal"
-        android:layout_marginBottom="@dimen/margin_normal" />
-
-    <include
-        android:id="@+id/table"
-        layout="@layout/rowers_table_layout"/>
+        android:layout_margin="@dimen/margin_normal" />
 
 </RelativeLayout>

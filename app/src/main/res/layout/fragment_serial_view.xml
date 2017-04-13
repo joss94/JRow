@@ -1,88 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/data_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="horizontal"
+    android:layout_margin="@dimen/margin_normal">
+
+    <ScrollView
+        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_weight="1">
+
+        <TextView
+            android:id="@+id/serial"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_small"
+            android:layout_margin="@dimen/margin_normal" />
+
+    </ScrollView>
+
+    <View
+        android:layout_width="2dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:layout_marginBottom="@dimen/margin_normal"
+        android:background="@color/colorPrimary" />
 
     <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/stroke_rate"
-        android:layout_alignStart="@+id/data_container">
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
-        <include
-            layout="@layout/training_buttons_layout" />
+        <TextView
+            android:id="@+id/current_measure"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="@dimen/text_small"
+            android:layout_margin="@dimen/margin_normal" />
 
     </RelativeLayout>
 
 
-    <TextView
-        android:id="@+id/stroke_rate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_very_big"
-        android:text="@string/strokerate_default"
-        android:layout_alignEnd="@+id/data_container"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/margin_small"
-        android:layout_marginEnd="@dimen/margin_small"/>
-
-    <TextView
-        android:id="@+id/time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/text_very_big"
-        android:text="@string/time_default"
-        android:layout_toStartOf="@+id/stroke_rate"
-        android:layout_alignTop="@id/stroke_rate"
-        android:layout_marginEnd="@dimen/margin_big"/>
-
-
-    <LinearLayout
-        android:id="@+id/data_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:layout_marginStart="@dimen/margin_normal"
-        android:layout_marginEnd="@dimen/margin_normal"
-        android:layout_marginBottom="@dimen/margin_normal"
-        android:layout_below="@+id/stroke_rate">
-
-        <ScrollView
-            android:layout_height="wrap_content"
-            android:layout_width="0dp"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/serial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="@dimen/text_small"
-                android:layout_margin="@dimen/margin_normal" />
-
-        </ScrollView>
-
-        <View
-            android:layout_width="2dp"
-            android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:layout_marginBottom="@dimen/margin_normal"
-            android:background="@color/colorPrimary" />
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-
-            <include
-                android:id="@+id/table"
-                layout="@layout/rowers_table_layout" />
-        </RelativeLayout>
-
-
-    </LinearLayout>
-
-
-</RelativeLayout>
+</LinearLayout>
