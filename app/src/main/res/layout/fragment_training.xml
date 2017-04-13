@@ -8,7 +8,7 @@
         android:id="@+id/controler_fragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:layout="@layout/fragment_training_header"/>
+        tools:layout="@layout/fragment_training_controler"/>
 
     <RelativeLayout
         android:id="@+id/table_fragment"

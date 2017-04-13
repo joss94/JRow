@@ -43,7 +43,7 @@ public class TrainingControlerFragment extends Fragment implements View.OnClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_training_header, container, false);
+        View v = inflater.inflate(R.layout.fragment_training_controler, container, false);
 
         strokeRateView = (TextView) v.findViewById(R.id.stroke_rate);
         timeView = (TextView) v.findViewById(R.id.time);

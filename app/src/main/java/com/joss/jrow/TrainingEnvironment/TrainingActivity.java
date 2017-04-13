@@ -2,26 +2,38 @@ package com.joss.jrow.TrainingEnvironment;
 
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
+import android.widget.Toast;
+
 import com.joss.jrow.BluetoothConnectionActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
+import com.joss.jrow.Models.Position;
+import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
 import com.joss.jrow.SerialContent;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.TrainingFragment;
+import com.joss.utils.AbstractDialog.OnDialogFragmentInteractionListener;
 import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
         Measures.OnNewMeasureProcessedListener,
-        TrainingControler {
+        TrainingControler, OnDialogFragmentInteractionListener {
 
+    private static final int SAVE_REQUEST_CODE = 6854;
     private TrainingFragment trainingFragment;
 
     private SerialContent serialContent;
+
+    private Training training;
+
+    private List<String> rowersNames;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +43,10 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         serialContent = SerialContent.getInstance();
 
         trainingFragment = new TrainingFragment();
+        rowersNames = new ArrayList<>();
         if(getIntent().hasExtra("rowers")){
             Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
-            List<String> rowersNames = (List<String>) rowersNamesSerializable;
+            rowersNames = (List<String>) rowersNamesSerializable;
             trainingFragment.setRowersNames(rowersNames);
         }
 
@@ -48,6 +61,13 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
     }
 
+    private void askForSaving() {
+        SaveTrainingDialog d = new SaveTrainingDialog();
+        d.setTitle("Save");
+        d.setTraining(training);
+        d.setRequestCode(SAVE_REQUEST_CODE);
+        d.setOnFragmentInteractionListener(this);
+    }
 
     //<editor-fold desc="DRAWER INTERFACE">
     @Override
@@ -77,6 +97,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     protected void onConnectionError(String error) {
         serialContent.addToSerial(error);
+        Toast.makeText(this, "Unable to connect to Arduino", Toast.LENGTH_SHORT).show();
         stopTraining();
     }
 
@@ -88,39 +109,41 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     protected void onConnectionEstablished() {
         serialContent.addToSerial("Connection established!");
-        trainingFragment.setTraining(true);
+        trainingFragment.setRecording(true);
     }
     //</editor-fold>
-
 
     //<editor-fold desc="TRAINING FRAGMENT CONTROLER INTERFACE">
     @Override
     public void startTraining() {
-        if (!trainingFragment.isTraining() && !trainingFragment.isPaused()) {
+        training = new Training();
+        training.setRowers(rowersNames);
+        if (!trainingFragment.isRecording() && !trainingFragment.isPaused()) {
             Measures.getMeasures().wipeData();
             Measures.getMeasures().addOnNewMeasureProcessedListener(this);
 
             connect();
         }
-        else if(!trainingFragment.isTraining() && trainingFragment.isPaused()){
+        else if(!trainingFragment.isRecording() && trainingFragment.isPaused()){
             resumeTraining();
         }
     }
 
     @Override
     public void stopTraining() {
-        if (trainingFragment.isTraining()) {
+        if (trainingFragment.isRecording()) {
             disconnect();
-            trainingFragment.setTraining(false);
+            trainingFragment.setRecording(false);
             trainingFragment.setPaused(false);
+            askForSaving();
         }
     }
 
     @Override
     public void pauseTraining() {
-        if (trainingFragment.isTraining()) {
+        if (trainingFragment.isRecording()) {
             disconnect();
-            trainingFragment.setTraining(false);
+            trainingFragment.setRecording(false);
             trainingFragment.setPaused(true);
         }
     }
@@ -140,11 +163,34 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     public void onMovementChanged(int index, long time) {
         trainingFragment.onMovementChanged(index, time);
+        if(index == Position.STERN && training != null){
+            double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
+            training.getStrokeRates().put(time, frequency);
+        }
     }
 
     @Override
     public void onConnectionClosed(boolean result, String message) {
         serialContent.addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
+    }
+
+    @Override
+    public void onFragmentInteraction(int requestCode, int resultCode, Object... objects) {
+        switch(requestCode){
+            case SAVE_REQUEST_CODE:
+                if(resultCode == RESULT_OK){
+                    saveTraining();
+                }
+                else{
+                    training = null;
+                }
+                break;
+        }
+    }
+
+    private void saveTraining() {
+        //TODO implement method
+        training = null;
     }
     //</editor-fold>
 }

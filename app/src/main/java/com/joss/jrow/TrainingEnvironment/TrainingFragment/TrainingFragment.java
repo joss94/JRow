@@ -6,6 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
@@ -13,12 +14,13 @@ import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.DataDisp
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.LoadbarViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.SerialViewFragment;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class TrainingFragment extends Fragment implements Measures.OnNewMeasureProcessedListener{
 
-    private boolean training = false;
+    private boolean recording = false;
     private boolean paused = false;
 
     private List<String> rowersNames;
@@ -83,9 +85,9 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         controlerFragment.onMovementChanged(index, time);
     }
 
-    public void setTraining(boolean training) {
-        this.training = training;
-        if(training){
+    public void setRecording(boolean recording) {
+        this.recording = recording;
+        if(recording){
             controlerFragment.onStartTraining();
             paused = false;
         }
@@ -94,8 +96,8 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         }
     }
 
-    public boolean isTraining() {
-        return training;
+    public boolean isRecording() {
+        return recording;
     }
 
     public boolean isPaused() {
