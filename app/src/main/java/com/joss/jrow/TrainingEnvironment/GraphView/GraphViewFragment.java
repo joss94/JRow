@@ -2,8 +2,6 @@ package com.joss.jrow.TrainingEnvironment.GraphView;
 
 import android.view.View;
 import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
@@ -32,15 +30,15 @@ public class GraphViewFragment extends TrainingFragment {
 
     @Override
     protected void findViews(View v){
-        graph = (GraphView) v.findViewById(R.id.graph);
+        graph = (GraphView) v.findViewById(R.id.data_container);
         table = (TableLayout) v.findViewById(R.id.table);
     }
 
     @Override
     protected void setViews(){
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-50.0);
-        graph.getViewport().setMaxY(1500.0);
+        graph.getViewport().setMinY(-5.0);
+        graph.getViewport().setMaxY(100.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
@@ -82,17 +80,14 @@ public class GraphViewFragment extends TrainingFragment {
     }
 
     @Override
-    public void showData() {
+    public synchronized void showData() {
+        super.showData();
         for(int i=0; i<1; i++){
             if (isSensorActive(i)) {
                 try {
-                    graphData.get(i).appendData(new DataPoint((double) (lastMeasure.getTime()- Measures.getMeasures().getStartTime())/1000, lastMeasure.getRowAngle(i)), true, 2000);
+                    graphData.get(i).appendData(new DataPoint((double) (lastMeasure.getTime()- Measures.getMeasures().getStartTime())/1000, (float)lastMeasure.getRowAngle(i)/10), true, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }
-
-                for(int j=0; j<table.getChildCount(); j++){
-                    ((TextView)((TableRow)table.getChildAt(j)).getChildAt(1)).setText(String.valueOf(lastMeasure.getRowAngle(j)));
                 }
             }
         }

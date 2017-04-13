@@ -8,7 +8,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/stroke_rate"
-        android:layout_alignStart="@+id/serial_container">
+        android:layout_alignStart="@+id/data_container">
 
         <include
             layout="@layout/training_buttons_layout" />
@@ -24,8 +24,8 @@
         android:textSize="@dimen/text_very_big"
         android:layout_centerHorizontal="true"
         android:text="@string/strokerate_default"
-        android:layout_alignStart="@+id/serial_container"
-        android:layout_alignEnd="@+id/serial_container"
+        android:layout_alignStart="@+id/data_container"
+        android:layout_alignEnd="@+id/data_container"
         android:textAlignment="textEnd"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
@@ -33,7 +33,7 @@
 
 
     <LinearLayout
-        android:id="@+id/serial_container"
+        android:id="@+id/data_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
@@ -63,11 +63,17 @@
             android:layout_marginBottom="@dimen/margin_normal"
             android:background="@color/colorPrimary" />
 
-        <TextView
-            android:id="@+id/measure"
+        <RelativeLayout
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1">
+
+            <include
+                android:id="@+id/table"
+                layout="@layout/rowers_table_layout" />
+        </RelativeLayout>
+
+
     </LinearLayout>
 
 

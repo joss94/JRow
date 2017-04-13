@@ -22,15 +22,15 @@
         android:textSize="@dimen/text_very_big"
         android:layout_centerHorizontal="true"
         android:text="@string/strokerate_default"
-        android:layout_alignStart="@+id/graph"
-        android:layout_alignEnd="@+id/graph"
+        android:layout_alignStart="@+id/data_container"
+        android:layout_alignEnd="@+id/data_container"
         android:textAlignment="textEnd"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"/>
 
     <com.jjoe64.graphview.GraphView
-        android:id="@+id/graph"
+        android:id="@+id/data_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/stroke_rate"
@@ -39,152 +39,8 @@
         android:layout_marginStart="@dimen/margin_normal"
         android:layout_marginBottom="@dimen/margin_normal" />
 
-    <TableLayout
+    <include
         android:id="@+id/table"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignTop="@id/graph"
-        android:layout_alignBottom="@id/graph"
-        android:layout_marginStart="@dimen/margin_normal"
-        android:gravity="center_vertical">
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:textSize="@dimen/text_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-    </TableLayout>
-
+        layout="@layout/rowers_table_layout"/>
 
 </RelativeLayout>

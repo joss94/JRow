@@ -159,9 +159,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                graphViewFragment.showData();
-                loadbarViewFragment.showData();
-                serialViewFragment.showData();
+                if (fragment == graphViewFragment) {
+                    graphViewFragment.showData();
+                }
+                else if (fragment == loadbarViewFragment) {
+                    loadbarViewFragment.showData();
+                }
+                else if (fragment == serialViewFragment) {
+                    serialViewFragment.showData();
+                }
             }
         });
     }

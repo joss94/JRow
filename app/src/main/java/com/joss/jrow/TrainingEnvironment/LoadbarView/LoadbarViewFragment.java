@@ -2,9 +2,6 @@ package com.joss.jrow.TrainingEnvironment.LoadbarView;
 
 import android.view.View;
 import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
-import android.widget.TextView;
 
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
@@ -16,9 +13,7 @@ import java.util.ArrayList;
  */
 
 public class LoadbarViewFragment extends TrainingFragment{
-
-    private TableLayout table;
-    private ArrayList<View> barLimits;
+    private volatile ArrayList<View> barLimits;
 
     public static LoadbarViewFragment newInstance() {
         return new LoadbarViewFragment();
@@ -31,7 +26,6 @@ public class LoadbarViewFragment extends TrainingFragment{
 
     @Override
     protected void findViews(View v) {
-        table = (TableLayout)v.findViewById(R.id.table);
 
         barLimits = new ArrayList<>();
         barLimits.add(v.findViewById(R.id.bar8limit));
@@ -42,6 +36,8 @@ public class LoadbarViewFragment extends TrainingFragment{
         barLimits.add(v.findViewById(R.id.bar3limit));
         barLimits.add(v.findViewById(R.id.bar2limit));
         barLimits.add(v.findViewById(R.id.bar1limit));
+
+
     }
 
     @Override
@@ -54,23 +50,27 @@ public class LoadbarViewFragment extends TrainingFragment{
     }
 
     @Override
-    public void showData() {
-        for(View barLimit : barLimits){
-            int position = barLimits.indexOf(barLimit);
-            if (isSensorActive(position)) {
+    public synchronized void showData() {
+        super.showData();
+        if (barLimits != null) {
+            for(View barLimit : barLimits){
+                int position = barLimits.indexOf(barLimit);
+                if (isSensorActive(position)) {
 
-                int maxMargin = (int) (0.9*((RelativeLayout)barLimit.getParent()).getMeasuredWidth());
-                int margin = (int) (maxMargin*(1-lastMeasure.getRowAngle(position)/1000));
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) barLimit.getLayoutParams();
-                if(position%2 == 0){
-                    params.setMarginEnd(margin);
-                }else{
-                    params.setMarginStart(margin);
-                }
-                barLimit.setLayoutParams(params);
 
-                for(int j=0; j<table.getChildCount(); j++){
-                    ((TextView)((TableRow)table.getChildAt(j)).getChildAt(1)).setText(String.valueOf(lastMeasure.getRowAngle(j)));
+                    int maxMargin = (int) (0.9*((RelativeLayout)barLimit.getParent()).getMeasuredWidth()/2);
+                    //*
+                    int margin = (int) (maxMargin*(1-(float)lastMeasure.getRowAngle(position)/1000));
+                    RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) barLimit.getLayoutParams();
+                    if(position%2 == 0){
+                        params.setMarginEnd(margin);
+                    }else{
+                        params.setMarginStart(margin);
+                    }
+                    barLimit.setLayoutParams(params);
+                    barLimit.invalidate();/**/
+                    //barLimit.setTranslationX(maxMargin*(float)(lastMeasure.getRowAngle(position))/1000);
+
                 }
             }
         }

@@ -23,15 +23,15 @@
         android:textSize="@dimen/text_very_big"
         android:layout_centerHorizontal="true"
         android:text="@string/strokerate_default"
-        android:layout_alignStart="@+id/bars_container"
-        android:layout_alignEnd="@+id/bars_container"
+        android:layout_alignStart="@+id/data_container"
+        android:layout_alignEnd="@+id/data_container"
         android:textAlignment="textEnd"
         android:layout_marginTop="@dimen/margin_small"
         android:layout_marginBottom="@dimen/margin_small"
         android:layout_marginEnd="@dimen/margin_small"/>
 
     <LinearLayout
-        android:id="@+id/bars_container"
+        android:id="@+id/data_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -56,7 +56,7 @@
                 android:layout_centerInParent="true"/>
 
             <View
-                android:id="@+id/bar1limit"
+                android:id="@+id/bar7limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -68,7 +68,7 @@
                 android:layout_marginStart="60dp"/>
 
             <View
-                android:id="@+id/bar2limit"
+                android:id="@+id/bar8limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -80,14 +80,14 @@
                 android:layout_marginEnd="80dp"/>
 
             <View
-                android:id="@+id/bar1"
+                android:id="@+id/bar7"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:layout_toStartOf="@+id/bow"
-                android:layout_toEndOf="@id/bar1limit"
-                android:layout_alignTop="@+id/bar1limit"
-                android:layout_alignBottom="@+id/bar1limit"/>
+                android:layout_toEndOf="@id/bar7limit"
+                android:layout_alignTop="@+id/bar7limit"
+                android:layout_alignBottom="@+id/bar7limit"/>
 
             <View
                 android:id="@+id/bow"
@@ -99,14 +99,14 @@
                 android:layout_centerHorizontal="true"/>
 
             <View
-                android:id="@+id/bar2"
+                android:id="@+id/bar8"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
-                android:layout_toStartOf="@+id/bar2limit"
+                android:layout_toStartOf="@+id/bar8limit"
                 android:layout_toEndOf="@+id/bow"
-                android:layout_alignTop="@+id/bar2limit"
-                android:layout_alignBottom="@+id/bar2limit"/>
+                android:layout_alignTop="@+id/bar8limit"
+                android:layout_alignBottom="@+id/bar8limit"/>
 
         </RelativeLayout>
 
@@ -125,7 +125,7 @@
                 android:layout_centerInParent="true"/>
 
             <View
-                android:id="@+id/bar3limit"
+                android:id="@+id/bar5limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -137,7 +137,7 @@
                 android:layout_marginStart="50dp"/>
 
             <View
-                android:id="@+id/bar4limit"
+                android:id="@+id/bar6limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -149,14 +149,14 @@
                 android:layout_marginEnd="70dp"/>
 
             <View
-                android:id="@+id/bar3"
+                android:id="@+id/bar5"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:layout_toStartOf="@+id/center_bow"
-                android:layout_toEndOf="@id/bar3limit"
-                android:layout_alignTop="@+id/bar3limit"
-                android:layout_alignBottom="@+id/bar3limit"/>
+                android:layout_toEndOf="@id/bar5limit"
+                android:layout_alignTop="@+id/bar5limit"
+                android:layout_alignBottom="@+id/bar5limit"/>
 
 
             <View
@@ -169,14 +169,14 @@
                 android:layout_centerHorizontal="true"/>
 
             <View
-                android:id="@+id/bar4"
+                android:id="@+id/bar6"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
-                android:layout_toStartOf="@+id/bar4limit"
+                android:layout_toStartOf="@+id/bar6limit"
                 android:layout_toEndOf="@+id/center_bow"
-                android:layout_alignTop="@+id/bar4limit"
-                android:layout_alignBottom="@+id/bar4limit"
+                android:layout_alignTop="@+id/bar6limit"
+                android:layout_alignBottom="@+id/bar6limit"
                  />
         </RelativeLayout>
 
@@ -193,7 +193,7 @@
                 android:layout_centerInParent="true"/>
 
             <View
-                android:id="@+id/bar5limit"
+                android:id="@+id/bar3limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -205,7 +205,7 @@
                 android:layout_marginStart="80dp"/>
 
             <View
-                android:id="@+id/bar6limit"
+                android:id="@+id/bar4limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -221,9 +221,9 @@
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:layout_toStartOf="@+id/center_stern"
-                android:layout_toEndOf="@id/bar5limit"
-                android:layout_alignTop="@+id/bar5limit"
-                android:layout_alignBottom="@id/bar5limit"/>
+                android:layout_toEndOf="@id/bar3limit"
+                android:layout_alignTop="@+id/bar3limit"
+                android:layout_alignBottom="@id/bar3limit"/>
 
 
             <View
@@ -236,14 +236,14 @@
                 android:layout_centerHorizontal="true"/>
 
             <View
-                android:id="@+id/bar6"
+                android:id="@+id/bar4"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
-                android:layout_toStartOf="@+id/bar6limit"
+                android:layout_toStartOf="@+id/bar4limit"
                 android:layout_toEndOf="@id/center_stern"
-                android:layout_alignTop="@id/bar6limit"
-                android:layout_alignBottom="@id/bar6limit"/>
+                android:layout_alignTop="@id/bar4limit"
+                android:layout_alignBottom="@id/bar4limit"/>
 
         </RelativeLayout>
 
@@ -260,7 +260,7 @@
                 android:layout_centerInParent="true"/>
 
             <View
-                android:id="@+id/bar7limit"
+                android:id="@+id/bar1limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -272,7 +272,7 @@
                 android:layout_marginStart="70dp"/>
 
             <View
-                android:id="@+id/bar8limit"
+                android:id="@+id/bar2limit"
                 android:layout_width="@dimen/loadbar_tip_width"
                 android:layout_height="match_parent"
                 android:background="@color/colorPrimary"
@@ -284,14 +284,14 @@
                 android:layout_marginEnd="70dp"/>
 
             <View
-                android:id="@+id/bar7"
+                android:id="@+id/bar1"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
                 android:layout_toStartOf="@+id/stern"
-                android:layout_toEndOf="@id/bar7limit"
-                android:layout_alignTop="@+id/bar7limit"
-                android:layout_alignBottom="@+id/bar7limit"/>
+                android:layout_toEndOf="@id/bar1limit"
+                android:layout_alignTop="@+id/bar1limit"
+                android:layout_alignBottom="@+id/bar1limit"/>
 
             <View
                 android:id="@+id/stern"
@@ -303,164 +303,21 @@
                 android:layout_centerHorizontal="true"/>
 
             <View
-                android:id="@+id/bar8"
+                android:id="@+id/bar2"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:background="@color/colorAccent"
-                android:layout_toStartOf="@+id/bar8limit"
+                android:layout_toStartOf="@+id/bar2limit"
                 android:layout_toEndOf="@id/stern"
-                android:layout_alignTop="@+id/bar8limit"
-                android:layout_alignBottom="@+id/bar8limit" />
+                android:layout_alignTop="@+id/bar2limit"
+                android:layout_alignBottom="@+id/bar2limit" />
 
         </RelativeLayout>
 
     </LinearLayout>
 
-    <TableLayout
+    <include
         android:id="@+id/table"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_alignTop="@id/bars_container"
-        android:layout_alignBottom="@id/bars_container"
-        android:layout_marginStart="@dimen/margin_normal"
-        android:gravity="center_vertical">
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:textSize="@dimen/text_small"
-                android:layout_marginEnd="@dimen/margin_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-        <TableRow
-            android:layout_weight="1"
-            android:gravity="center_vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_rower"
-                android:layout_marginEnd="@dimen/margin_small"
-                android:textSize="@dimen/text_small"/>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"/>
-        </TableRow>
-
-    </TableLayout>
+        layout="@layout/rowers_table_layout"/>
 
 </RelativeLayout>

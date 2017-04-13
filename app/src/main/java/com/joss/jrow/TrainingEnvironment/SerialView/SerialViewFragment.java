@@ -1,10 +1,8 @@
 package com.joss.jrow.TrainingEnvironment.SerialView;
 
 import android.view.View;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
-import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
@@ -14,8 +12,8 @@ import com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
 public class SerialViewFragment extends TrainingFragment {
 
-    private TextView serial;
-    private TextView measure;
+    private volatile TextView serial;
+    private volatile TextView measure;
 
     public static SerialViewFragment newInstance(){
         return new SerialViewFragment();
@@ -29,7 +27,6 @@ public class SerialViewFragment extends TrainingFragment {
     @Override
     protected void findViews(View v) {
         serial = (TextView) v.findViewById(R.id.serial);
-        measure = (TextView) v.findViewById(R.id.measure);
     }
 
     @Override
@@ -47,19 +44,11 @@ public class SerialViewFragment extends TrainingFragment {
     }
 
     @Override
-    public void showData() {
-        if (serial != null && measure != null) {
-            if (lastMeasure != null) {
-                String result="";
-                result += "Time: " + String.valueOf((double) (lastMeasure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
-                for(int i=0; i<8; i++){
-                    result += i+": " + lastMeasure.getRowAngle(i) + "\n";
-                }
-                this.measure.setText(result);
-            }
+    public synchronized void showData() {
+        super.showData();
 
+        if(serial != null){
             serial.setText(serialContent);
-            ((ScrollView)serial.getParent()).fullScroll(View.FOCUS_DOWN);
         }
     }
 }
