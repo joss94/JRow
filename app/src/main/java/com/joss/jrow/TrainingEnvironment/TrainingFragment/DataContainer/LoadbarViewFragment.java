@@ -84,4 +84,14 @@ public class LoadbarViewFragment extends DataDisplayFragment{
             barCatches.get(index).setX(barCatches.get(index).getX());
         }
     }
+
+    @Override
+    public void onStartTraining() {
+
+    }
+
+    @Override
+    public void onStopTraining() {
+        onNewMeasureProcessed(new Measure());
+    }
 }

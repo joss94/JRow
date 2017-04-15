@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Measures extends ArrayList<Measure>{
 
+    private static final long serialVersionUID = -5836923295713874526L;
+
     private final int MAX_SIZE = 500;
     private final int LOCAL_MAX_RANGE = 50;
 
@@ -16,11 +18,16 @@ public class Measures extends ArrayList<Measure>{
     private ArrayList<ArrayList<Long>> maxsTimes;
 
     private long startTime = 0;
-
     private volatile long[] catchTimes;
+    private volatile float strokeRate;
+
+    private Measure backPosition;
+    private Measure frontPosition;
+    private Measure neutralPosition;
 
     private Measures() {
         super();
+        strokeRate = 0;
         dataToProcess = new ArrayList<>();
         listeners = new ArrayList<>();
         maxsTimes = new ArrayList<>();
@@ -107,6 +114,38 @@ public class Measures extends ArrayList<Measure>{
         return catchTimes;
     }
 
+    public Measure getBackPosition() {
+        return backPosition;
+    }
+
+    public void setBackPosition(Measure backPosition) {
+        this.backPosition = backPosition;
+    }
+
+    public Measure getFrontPosition() {
+        return frontPosition;
+    }
+
+    public void setFrontPosition(Measure frontPosition) {
+        this.frontPosition = frontPosition;
+    }
+
+    public Measure getNeutralPosition() {
+        return neutralPosition;
+    }
+
+    public float getStrokeRate() {
+        return strokeRate;
+    }
+
+    public boolean isCalibrated(){
+        return(getBackPosition() != null && getFrontPosition() != null && getNeutralPosition() != null);
+    }
+
+    public void setNeutralPosition(Measure neutralPosition) {
+        this.neutralPosition = neutralPosition;
+    }
+
     private void onNewMeasureProcessed(Measure measure){
         for(OnNewMeasureProcessedListener listener : listeners){
             listener.onNewMeasureProcessed(measure);
@@ -115,6 +154,9 @@ public class Measures extends ArrayList<Measure>{
 
     private void onMovementChangedDetected(int index, long time){
         catchTimes[index] = time;
+        if(index == Position.STERN){
+            strokeRate = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
+        }
         for(OnNewMeasureProcessedListener listener : listeners){
             listener.onMovementChanged(index, time);
         }

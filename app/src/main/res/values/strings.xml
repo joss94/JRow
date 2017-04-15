@@ -35,4 +35,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="rows_front">ROWS FRONT...</string>
+    <string name="rows_neutral">ROWS PERPENDICULAR...</string>
+    <string name="race_time_format">%1$d : %2$d : %3$d</string>
 </resources>
