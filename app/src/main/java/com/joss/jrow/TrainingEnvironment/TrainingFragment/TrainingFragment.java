@@ -30,6 +30,7 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     private TrainingTableFragment tableFragment;
     private TrainingControlerFragment controlerFragment;
     private DataDisplayFragment displayFragment;
+    private CalibrationFragment calibrationFragment;
 
     private FragmentManager fm;
 
@@ -50,18 +51,43 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
             fm = getActivity().getSupportFragmentManager();
         }
 
-        tableFragment = new TrainingTableFragment();
-        tableFragment.setRowersNames(rowersNames);
-        controlerFragment = new TrainingControlerFragment();
-        displayFragment = new GraphViewFragment();
+        if (tableFragment == null) {
+            tableFragment = new TrainingTableFragment();
+            tableFragment.setRowersNames(rowersNames);
+        }
+
+        if (controlerFragment == null) {
+            controlerFragment = new TrainingControlerFragment();
+        }
+
+        if (displayFragment == null) {
+            displayFragment = new GraphViewFragment();
+        }
 
         fm.beginTransaction().replace(R.id.table_fragment, tableFragment).disallowAddToBackStack().commit();
         fm.beginTransaction().replace(R.id.controler_fragment, controlerFragment).disallowAddToBackStack().commit();
         fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
 
-        ((TrainingActivity)getActivity()).goToGraphView();
-
         return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null){
+        }
+        else{
+            ((TrainingActivity)getActivity()).goToGraphView();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("recording", recording);
+        getActivity().getSupportFragmentManager().putFragment(outState, "CONTROLER_FRAGMENT", controlerFragment);
+        getActivity().getSupportFragmentManager().putFragment(outState, "TABLE_FRAGMENT", tableFragment);
+        getActivity().getSupportFragmentManager().putFragment(outState, "DISPLAY_FRAGMENT", displayFragment);
     }
 
     public void setGraphView(){

@@ -37,6 +37,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private DrawerSlidingPane drawer;
 
+    private int drawerPosition;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +46,12 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         serialContent = SerialContent.getInstance();
 
-        trainingFragment = new TrainingFragment();
+        if (savedInstanceState != null) {
+            trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
+        }
+        else{
+            trainingFragment = new TrainingFragment();
+        }
         rowersNames = new ArrayList<>();
         if(getIntent().hasExtra("rowers")){
             Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
@@ -60,6 +67,19 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         drawer.displayFragment(trainingFragment, "TRAINING_FRAGMENT");
 
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
+
+        if (savedInstanceState!=null) {
+            if(savedInstanceState.containsKey("drawer_position")){
+                drawer.goTo(savedInstanceState.getInt("drawer_position"));
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt("drawer_position", drawerPosition);
+        getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
     }
 
     private void askForSaving() {
@@ -86,6 +106,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 trainingFragment.setSerialView();
                 break;
         }
+        drawerPosition = i;
     }
     //</editor-fold>
 
@@ -162,7 +183,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     public void goToGraphView(){
         drawer.goTo(0);
-    };
+    }
 
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
