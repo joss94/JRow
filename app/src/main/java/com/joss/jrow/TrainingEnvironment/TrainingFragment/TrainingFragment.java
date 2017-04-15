@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.joss.jrow.Calibration.CalibrationFragment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
@@ -31,7 +30,6 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     private TrainingTableFragment tableFragment;
     private TrainingControlerFragment controlerFragment;
     private DataDisplayFragment displayFragment;
-    private CalibrationFragment calibrationFragment;
 
     private FragmentManager fm;
 
@@ -86,6 +84,7 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putBoolean("recording", recording);
+        outState.putBoolean("paused", paused);
         getActivity().getSupportFragmentManager().putFragment(outState, "CONTROLER_FRAGMENT", controlerFragment);
         getActivity().getSupportFragmentManager().putFragment(outState, "TABLE_FRAGMENT", tableFragment);
         getActivity().getSupportFragmentManager().putFragment(outState, "DISPLAY_FRAGMENT", displayFragment);

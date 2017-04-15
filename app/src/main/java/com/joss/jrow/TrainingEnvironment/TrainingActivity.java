@@ -69,7 +69,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         drawer.addDrawerItem(new DrawerMenuItem("Race !", R.drawable.ic_race, R.drawable.ic_race_on));
         drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
-        drawer.displayFragment(trainingFragment, "TRAINING_FRAGMENT");
+        drawer.replaceFragment(trainingFragment, "TRAINING_FRAGMENT");
 
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
 
