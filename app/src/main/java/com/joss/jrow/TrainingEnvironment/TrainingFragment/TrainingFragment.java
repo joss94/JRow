@@ -31,6 +31,8 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     private TrainingControlerFragment controlerFragment;
     private DataDisplayFragment displayFragment;
 
+    private FragmentManager fm;
+
     @Override
     public void onCreate(Bundle args){
         super.onCreate(args);
@@ -44,7 +46,9 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         super.onCreateView(inflater, parent, savedInstanceState);
         View v = inflater.inflate(R.layout.fragment_training, parent, false);
 
-        FragmentManager fm = getActivity().getSupportFragmentManager();
+        if (fm == null) {
+            fm = getActivity().getSupportFragmentManager();
+        }
 
         tableFragment = new TrainingTableFragment();
         tableFragment.setRowersNames(rowersNames);
@@ -62,17 +66,23 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
 
     public void setGraphView(){
         displayFragment = new GraphViewFragment();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        if (fm != null) {
+            fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        }
     }
 
     public void setLoadbarView(){
         displayFragment = new LoadbarViewFragment();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        if (fm != null) {
+            fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        }
     }
 
     public void setSerialView(){
         displayFragment = new SerialViewFragment();
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        if (fm != null) {
+            fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+        }
     }
 
     @Override
@@ -118,6 +128,8 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     }
 
     public void calibrate() {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, new CalibrationFragment()).disallowAddToBackStack().commit();
+        if (fm != null) {
+            fm.beginTransaction().replace(R.id.display_fragment, new CalibrationFragment()).disallowAddToBackStack().commit();
+        }
     }
 }
