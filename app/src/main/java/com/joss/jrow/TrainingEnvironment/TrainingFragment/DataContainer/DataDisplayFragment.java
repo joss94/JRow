@@ -5,8 +5,11 @@ import android.support.v4.app.Fragment;
 
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.SensorManager;
+import com.joss.jrow.TrainingEnvironment.OnTrainingChangeListener;
 
-public abstract class DataDisplayFragment extends Fragment implements Measures.OnNewMeasureProcessedListener{
+public abstract class DataDisplayFragment extends Fragment implements
+        Measures.OnNewMeasureProcessedListener,
+        OnTrainingChangeListener{
 
     SensorManager sensorManager;
 

@@ -22,7 +22,7 @@ public class GraphViewFragment extends DataDisplayFragment {
     private final int[] colors = {Color.GRAY, Color.rgb(255,102,0), Color.BLUE, Color.MAGENTA, Color.BLACK, Color.rgb(0, 150, 0), Color.rgb(100, 50, 130)};
 
     private GraphView graph;
-    private static ArrayList<LineGraphSeries<DataPoint>> graphData;
+    private ArrayList<LineGraphSeries<DataPoint>> graphData;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
@@ -83,5 +83,15 @@ public class GraphViewFragment extends DataDisplayFragment {
             series.setThickness(3);
             graph.addSeries(series);
         }
+    }
+
+    @Override
+    public void onStartTraining() {
+
+    }
+
+    @Override
+    public void onStopTraining() {
+
     }
 }

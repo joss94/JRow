@@ -65,4 +65,13 @@ public class SerialViewFragment extends DataDisplayFragment {
             serialContent.addToSerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
         }
     }
+
+    @Override
+    public void onStartTraining() {
+    }
+
+    @Override
+    public void onStopTraining() {
+
+    }
 }

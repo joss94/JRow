@@ -59,6 +59,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
         drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
+        drawer.addDrawerItem(new DrawerMenuItem("Race !", R.drawable.ic_race, R.drawable.ic_race_on));
         drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
         drawer.displayFragment(trainingFragment, "TRAINING_FRAGMENT");
@@ -87,6 +88,10 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 break;
 
             case 2:
+                trainingFragment.setRaceView();
+                break;
+
+            case 3:
                 trainingFragment.setSerialView();
                 break;
         }

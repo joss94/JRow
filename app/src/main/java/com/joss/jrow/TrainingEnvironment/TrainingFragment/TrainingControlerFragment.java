@@ -1,7 +1,6 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,17 +8,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import com.joss.jrow.CalibrationActivity;
+
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
-import com.joss.jrow.Models.Position;
 import com.joss.jrow.R;
+import com.joss.jrow.SerialContent;
+import com.joss.jrow.TrainingEnvironment.OnTrainingChangeListener;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingControler;
 
 import java.util.Locale;
 
-public class TrainingControlerFragment extends Fragment implements View.OnClickListener, Measures.OnNewMeasureProcessedListener {
+public class TrainingControlerFragment extends Fragment implements
+        View.OnClickListener,
+        Measures.OnNewMeasureProcessedListener,
+        OnTrainingChangeListener{
 
     private volatile TextView strokeRateView;
     private volatile TextView timeView;
@@ -78,6 +81,7 @@ public class TrainingControlerFragment extends Fragment implements View.OnClickL
             calibrateButton.setVisibility(View.GONE);
             startAndPauseButton.setImageResource(R.drawable.ic_pause);
         }
+        SerialContent.getInstance().addToSerial("Started training");
     }
 
     public void onStopTraining(){
@@ -85,6 +89,7 @@ public class TrainingControlerFragment extends Fragment implements View.OnClickL
             calibrateButton.setVisibility(View.VISIBLE);
             startAndPauseButton.setImageResource(R.drawable.ic_rowing);
         }
+        SerialContent.getInstance().addToSerial("Stopped training");
     }
 
 
@@ -112,9 +117,6 @@ public class TrainingControlerFragment extends Fragment implements View.OnClickL
 
     @Override
     public void onMovementChanged(int index, long time) {
-        if(index == Position.STERN){
-            float frequency = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
-            strokeRateView.setText(String.format(Locale.ENGLISH, getString(R.string.strokes_per_min), frequency));
-        }
+        strokeRateView.setText(String.format(Locale.ENGLISH, getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
     }
 }

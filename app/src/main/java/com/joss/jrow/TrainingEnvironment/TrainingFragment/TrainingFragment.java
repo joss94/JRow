@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.joss.jrow.Calibration.CalibrationFragment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
@@ -15,6 +14,7 @@ import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.DataDisplayFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.LoadbarViewFragment;
+import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.RaceViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.SerialViewFragment;
 
 import java.util.ArrayList;
@@ -70,6 +70,11 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
     }
 
+    public void setRaceView() {
+        displayFragment = new RaceViewFragment();
+        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+    }
+
     public void setSerialView(){
         displayFragment = new SerialViewFragment();
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
@@ -115,9 +120,5 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     public void setRowersNames(List<String> rowersNames) {
         this.rowersNames = new ArrayList<>();
         this.rowersNames.addAll(rowersNames);
-    }
-
-    public void calibrate() {
-        getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, new CalibrationFragment()).disallowAddToBackStack().commit();
     }
 }
