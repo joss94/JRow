@@ -112,7 +112,9 @@ public class TrainingControlerFragment extends Fragment implements
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-        timeView.setText(getContext().getString(R.string.time, (float)measure.getTime()/1000));
+        if (isAdded()) {
+            timeView.setText(getContext().getResources().getString(R.string.time, (float)measure.getTime()/1000));
+        }
     }
 
     @Override

@@ -24,12 +24,14 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
 
     private boolean recording = false;
     private boolean paused = false;
+    private boolean ready;
 
     private List<String> rowersNames;
 
     private TrainingTableFragment tableFragment;
     private TrainingControlerFragment controlerFragment;
     private DataDisplayFragment displayFragment;
+    private GraphViewFragment graphFragment;
 
     private FragmentManager fm;
 
@@ -44,6 +46,7 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         super.onCreateView(inflater, parent, savedInstanceState);
+        ready=false;
         View v = inflater.inflate(R.layout.fragment_training, parent, false);
 
         if (fm == null) {
@@ -81,6 +84,12 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     }
 
     @Override
+    public void onResume(){
+        super.onResume();
+        ready=true;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putBoolean("recording", recording);
@@ -91,7 +100,10 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     }
 
     public void setGraphView(){
-        displayFragment = new GraphViewFragment();
+        if(graphFragment == null){
+            graphFragment = new GraphViewFragment();
+        }
+        displayFragment = graphFragment;
         if (fm != null) {
             fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
         }
@@ -118,16 +130,20 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-        tableFragment.onNewMeasureProcessed(measure);
-        displayFragment.onNewMeasureProcessed(measure);
-        controlerFragment.onNewMeasureProcessed(measure);
+        if (ready) {
+            tableFragment.onNewMeasureProcessed(measure);
+            displayFragment.onNewMeasureProcessed(measure);
+            controlerFragment.onNewMeasureProcessed(measure);
+        }
     }
 
     @Override
     public void onMovementChanged(int index, long time){
-        tableFragment.onMovementChanged(index, time);
-        displayFragment.onMovementChanged(index, time);
-        controlerFragment.onMovementChanged(index, time);
+        if (ready) {
+            tableFragment.onMovementChanged(index, time);
+            displayFragment.onMovementChanged(index, time);
+            controlerFragment.onMovementChanged(index, time);
+        }
     }
 
     public void setRecording(boolean recording) {

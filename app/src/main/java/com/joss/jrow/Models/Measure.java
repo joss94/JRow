@@ -26,14 +26,20 @@ public class Measure extends HashMap<String, Long> {
         }
     }
 
-    public Long getRowAngle(int i){
+    public Long getRawAngle(int i){
         if(containsKey("row"+i)){
             return get("row"+i);
         }
         return (long) -1;
     }
 
-    public void setRowAngle(int index, long angle){
+    public void setRawAngle(int index, long angle){
         put("row"+index, angle);
+    }
+
+    public double getAngle(int i){
+        double result = 0;
+        result = ((double)getRawAngle(i)/1000)*220;
+        return result;
     }
 }

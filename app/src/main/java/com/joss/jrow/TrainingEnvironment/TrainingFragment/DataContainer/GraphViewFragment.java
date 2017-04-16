@@ -32,8 +32,8 @@ public class GraphViewFragment extends DataDisplayFragment {
         graph = (GraphView) v.findViewById(R.id.data_container);
 
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-5.0);
-        graph.getViewport().setMaxY(1000.0);
+        graph.getViewport().setMinY(-5.0);  
+        graph.getViewport().setMaxY(180.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
@@ -41,8 +41,6 @@ public class GraphViewFragment extends DataDisplayFragment {
 
         graph.getViewport().setScrollable(true);
         graph.getViewport().setScalable(true);
-        graph.getViewport().setScalableY(true);
-        graph.getViewport().setScrollableY(true);
         initData();
 
         return v;
@@ -71,7 +69,7 @@ public class GraphViewFragment extends DataDisplayFragment {
         for(int i=0; i<8; i++){
             if (SensorManager.getInstance().isSensorActive(i)) {
                 try {
-                    graphData.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, (double)measure.getRowAngle(i)), true, 2000);
+                    graphData.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

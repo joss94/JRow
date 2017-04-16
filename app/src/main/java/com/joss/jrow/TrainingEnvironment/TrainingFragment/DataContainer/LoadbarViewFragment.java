@@ -55,7 +55,7 @@ public class LoadbarViewFragment extends DataDisplayFragment{
                 if (sensorManager.isSensorActive(position)) {
                     int maxMargin = (int) (0.9*((RelativeLayout)barLimit.getParent()).getMeasuredWidth()/2);
                     //*
-                    int margin = (int) (maxMargin*(1-(float)measure.getRowAngle(position)/1000));
+                    int margin = (int) (maxMargin*(1-(float)measure.getRawAngle(position)/1000));
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) barLimit.getLayoutParams();
                     if(position%2 == 0){
                         params.setMarginStart(margin);

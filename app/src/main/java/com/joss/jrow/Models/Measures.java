@@ -62,9 +62,9 @@ public class Measures extends ArrayList<Measure>{
                 Measure lastMeasure = get(size()-1);
                 double alpha = 0.5;
                 for(int i =0; i<8; i++){
-                    long angle = measure.getRowAngle(i);
-                    long lastAngle = lastMeasure.getRowAngle(i);
-                    measure.setRowAngle(i, (long) ((double)angle*(1-alpha)+(double)lastAngle*alpha));
+                    long angle = measure.getRawAngle(i);
+                    long lastAngle = lastMeasure.getRawAngle(i);
+                    measure.setRawAngle(i, (long) ((double)angle*(1-alpha)+(double)lastAngle*alpha));
                 }
             }
             saveDataRow(measure);
@@ -89,12 +89,12 @@ public class Measures extends ArrayList<Measure>{
             if (SensorManager.getInstance().isSensorActive(i)) {
                 Measure max = localData.get(0);
                 for(Measure measure : localData){
-                    if(measure.getRowAngle(i) > max.getRowAngle(i)){
+                    if(measure.getRawAngle(i) > max.getRawAngle(i)){
                         max = measure;
                     }
                 }
-                if(Math.abs(max.getRowAngle(i)-localData.get(0).getRowAngle(i))>50
-                        && Math.abs(max.getRowAngle(i)-localData.get(localData.size()-1).getRowAngle(i))>80
+                if(Math.abs(max.getRawAngle(i)-localData.get(0).getRawAngle(i))>50
+                        && Math.abs(max.getRawAngle(i)-localData.get(localData.size()-1).getRawAngle(i))>80
                         && !maxsTimes.get(i).contains(max.getTime()-startTime)){
                     maxsTimes.get(i).add(max.getTime()-startTime);
                     onMovementChangedDetected(i, max.getTime()-startTime);

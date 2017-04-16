@@ -55,7 +55,7 @@ public class SerialViewFragment extends DataDisplayFragment {
         String result="";
         result += "Time: " + String.valueOf((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
         for(int i=0; i<8; i++){
-            result += i+": " + measure.getRowAngle(i) + "\n";
+            result += i+": " + measure.getRawAngle(i) + "\n";
         }
         currentMeasure.setText(result);
     }
