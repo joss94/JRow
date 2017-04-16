@@ -144,14 +144,20 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     @Override
     protected void onConnectionEstablished() {
-        serialContent.addToSerial("Connection established!");
-        if(calibrating){
-            calibrationFragment = new CalibrationFragment();
-            drawer.displayFragment(calibrationFragment, "CALIBRATION");
-        }
-        else{
-            trainingFragment.setRecording(true);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                serialContent.addToSerial("Connection established!");
+                if(calibrating){
+                    calibrationFragment = new CalibrationFragment();
+                    drawer.displayFragment(calibrationFragment, "CALIBRATION");
+                }
+                else{
+                    trainingFragment.setRecording(true);
+                }
+            }
+        });
+
     }
     //</editor-fold>
 
@@ -203,23 +209,33 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
-        if (!calibrating) {
-            trainingFragment.onNewMeasureProcessed(measure);
-        }
-        else{
-            calibrationFragment.onNewMeasureProcessed(measure);
-        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!calibrating) {
+                    trainingFragment.onNewMeasureProcessed(measure);
+                }
+                else{
+                    calibrationFragment.onNewMeasureProcessed(measure);
+                }
+            }
+        });
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
-        if (!calibrating) {
-            trainingFragment.onMovementChanged(index, time);
-            if(index == Position.STERN && training != null){
-                double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
-                training.getStrokeRates().put(time, frequency);
+    public void onMovementChanged(final int index, final long time) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!calibrating) {
+                    trainingFragment.onMovementChanged(index, time);
+                    if(index == Position.STERN && training != null){
+                        double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
+                        training.getStrokeRates().put(time, frequency);
+                    }
+                }
             }
-        }
+        });
     }
 
     @Override

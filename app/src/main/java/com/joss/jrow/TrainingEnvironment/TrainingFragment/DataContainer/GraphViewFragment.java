@@ -13,6 +13,7 @@ import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.R;
+import com.joss.jrow.SensorManager;
 
 import java.util.ArrayList;
 
@@ -32,7 +33,7 @@ public class GraphViewFragment extends DataDisplayFragment {
 
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(-5.0);
-        graph.getViewport().setMaxY(100.0);
+        graph.getViewport().setMaxY(1000.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
@@ -59,13 +60,18 @@ public class GraphViewFragment extends DataDisplayFragment {
         }
     }
 
+    @Override
+    public void registerForContextMenu(View view) {
+
+    }
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-        for(int i=0; i<1; i++){
-            if (sensorManager.isSensorActive(i)) {
+        super.onNewMeasureProcessed(measure);
+        for(int i=0; i<8; i++){
+            if (SensorManager.getInstance().isSensorActive(i)) {
                 try {
-                    graphData.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, (float)measure.getRowAngle(i)/10), true, 2000);
+                    graphData.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, (double)measure.getRowAngle(i)), true, 2000);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -75,7 +81,8 @@ public class GraphViewFragment extends DataDisplayFragment {
 
     @Override
     public void onMovementChanged(final int index, final long time) {
-        if (index == Position.STERN) {
+        super.onMovementChanged(index,time);
+        if (index == Position.STERN && SensorManager.getInstance().isSensorActive(Position.STERN)) {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             series.appendData(new DataPoint((double) (time)/1000, 10000), true, 200);
             series.appendData(new DataPoint((double) (time)/1000, -10000), true, 200);

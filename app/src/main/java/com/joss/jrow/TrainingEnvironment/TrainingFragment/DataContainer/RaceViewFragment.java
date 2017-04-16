@@ -64,6 +64,7 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
+        super.onNewMeasureProcessed(measure);
         if(startTime == 0 && racing){
             startTime = measure.getTime();
         }
@@ -75,11 +76,6 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
             int minutes = (int)((time/100)%3600);
             timeView.setText(getContext().getResources().getString(R.string.race_time_format, minutes, seconds, millis));
         }
-
-    }
-
-    @Override
-    public void onMovementChanged(int index, long time) {
 
     }
 

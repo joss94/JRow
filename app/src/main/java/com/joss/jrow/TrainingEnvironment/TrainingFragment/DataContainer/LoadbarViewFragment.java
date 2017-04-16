@@ -47,6 +47,7 @@ public class LoadbarViewFragment extends DataDisplayFragment{
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
+        super.onNewMeasureProcessed(measure);
         if (barLimits != null) {
             for(View barLimit : barLimits){
                 int position = barLimits.indexOf(barLimit);
@@ -80,6 +81,7 @@ public class LoadbarViewFragment extends DataDisplayFragment{
 
     @Override
     public void onMovementChanged(int index, long time) {
+        super.onMovementChanged(index, time);
         if(sensorManager.isSensorActive(index)){
             barCatches.get(index).setX(barCatches.get(index).getX());
         }

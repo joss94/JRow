@@ -1,11 +1,14 @@
 package com.joss.jrow.Models;
 
+import com.joss.jrow.SensorManager;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Measures extends ArrayList<Measure>{
 
     private static final long serialVersionUID = -5836923295713874526L;
+    private static final double W_LIMIT = 20;
 
     private final int MAX_SIZE = 500;
     private final int LOCAL_MAX_RANGE = 50;
@@ -50,7 +53,21 @@ public class Measures extends ArrayList<Measure>{
 
     public void processData(){
         if(dataToProcess.size()>0){
-            saveDataRow(dataToProcess.get(0));
+            Measure measure = dataToProcess.get(0);
+            if(measure == null){
+                return;
+            }
+
+            if (size()>0) {
+                Measure lastMeasure = get(size()-1);
+                double alpha = 0.5;
+                for(int i =0; i<8; i++){
+                    long angle = measure.getRowAngle(i);
+                    long lastAngle = lastMeasure.getRowAngle(i);
+                    measure.setRowAngle(i, (long) ((double)angle*(1-alpha)+(double)lastAngle*alpha));
+                }
+            }
+            saveDataRow(measure);
         }
     }
 
@@ -69,17 +86,19 @@ public class Measures extends ArrayList<Measure>{
     private void detectTangents(){
         List<Measure> localData = this.subList(size()-LOCAL_MAX_RANGE, size()-1);
         for (int i=0; i<8; i++) {
-            Measure max = localData.get(0);
-            for(Measure measure : localData){
-                if(measure.getRowAngle(i) > max.getRowAngle(i)){
-                    max = measure;
+            if (SensorManager.getInstance().isSensorActive(i)) {
+                Measure max = localData.get(0);
+                for(Measure measure : localData){
+                    if(measure.getRowAngle(i) > max.getRowAngle(i)){
+                        max = measure;
+                    }
                 }
-            }
-            if(Math.abs(max.getRowAngle(i)-localData.get(0).getRowAngle(i))>50
-                    && Math.abs(max.getRowAngle(i)-localData.get(localData.size()-1).getRowAngle(i))>50
-                    && !maxsTimes.get(i).contains(max.getTime()-startTime)){
-                maxsTimes.get(i).add(max.getTime()-startTime);
-                onMovementChangedDetected(i, max.getTime()-startTime);
+                if(Math.abs(max.getRowAngle(i)-localData.get(0).getRowAngle(i))>50
+                        && Math.abs(max.getRowAngle(i)-localData.get(localData.size()-1).getRowAngle(i))>80
+                        && !maxsTimes.get(i).contains(max.getTime()-startTime)){
+                    maxsTimes.get(i).add(max.getTime()-startTime);
+                    onMovementChangedDetected(i, max.getTime()-startTime);
+                }
             }
         }
     }

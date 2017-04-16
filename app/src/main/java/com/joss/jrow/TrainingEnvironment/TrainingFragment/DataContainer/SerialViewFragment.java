@@ -51,6 +51,7 @@ public class SerialViewFragment extends DataDisplayFragment {
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
+        super.onNewMeasureProcessed(measure);
         String result="";
         result += "Time: " + String.valueOf((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
         for(int i=0; i<8; i++){
@@ -61,6 +62,7 @@ public class SerialViewFragment extends DataDisplayFragment {
 
     @Override
     public void onMovementChanged(int index, long time) {
+        super.onMovementChanged(index, time);
         if (index == Position.STERN) {
             serialContent.addToSerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
         }

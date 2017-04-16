@@ -32,4 +32,8 @@ public class Measure extends HashMap<String, Long> {
         }
         return (long) -1;
     }
+
+    public void setRowAngle(int index, long angle){
+        put("row"+index, angle);
+    }
 }
