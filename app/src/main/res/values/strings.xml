@@ -36,10 +36,14 @@
     <string name="rows_neutral">Rows perpendicuclar...</string>
     <string name="race_time_format" translatable="false">%1$d : %2$d : %3$d</string>
     <string name="rows_back">Rows back...</string>
-    <string name="calibration_wrong_angle_front">The rower $1%d has his row in front of the registered neutral angle</string>
-    <string name="calibration_wrong_angle_behind">The rower $1%d has not his row behind the registered neutral position</string>
+    <string name="calibration_wrong_angle_front">%1$s has his row in front of the registered neutral angle</string>
+    <string name="calibration_wrong_angle_behind">%1$s has not his row behind the registered neutral position</string>
     <string name="select_training_name">Please select a name for your training</string>
     <string name="calibration_done">Calibration done !</string>
     <string name="calibration_failed">Calibration failed...</string>
     <string name="unable_to_connect_arduino">Unable to connect to Arduino</string>
+    <string name="graph">Graph</string>
+    <string name="loadbar">Loadbar</string>
+    <string name="race">Race !</string>
+    <string name="terminal">Terminal</string>
 </resources>

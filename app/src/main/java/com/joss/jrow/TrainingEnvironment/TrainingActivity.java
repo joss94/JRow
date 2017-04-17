@@ -20,7 +20,6 @@ import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
@@ -36,7 +35,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private Training training;
 
-    private List<String> rowersNames;
+    private ArrayList<String> rowersNames;
 
     private DrawerSlidingPane drawer;
 
@@ -64,15 +63,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         rowersNames = new ArrayList<>();
         if(getIntent().hasExtra("rowers")){
             Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
-            rowersNames = (List<String>) rowersNamesSerializable;
+            rowersNames = (ArrayList<String>) rowersNamesSerializable;
             trainingFragment.setRowersNames(rowersNames);
         }
 
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
-        drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Race !", R.drawable.ic_race, R.drawable.ic_race_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.graph), R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.loadbar), R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.race), R.drawable.ic_race, R.drawable.ic_race_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.terminal), R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
         if (!calibrating) {
             drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
@@ -108,8 +107,11 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         super.onSaveInstanceState(outState);
         outState.putInt("drawer_position", drawerPosition);
         outState.putBoolean("calibrating", calibrating);
-        getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
-        getSupportFragmentManager().putFragment(outState, "CALIBRATION_FRAGMENT", calibrationFragment);
+        try {
+            getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
+            getSupportFragmentManager().putFragment(outState, "CALIBRATION_FRAGMENT", calibrationFragment);
+        } catch (Exception ignored) {
+        }
     }
 
     private void askForSaving() {
@@ -190,6 +192,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 serialContent.addToSerial("Connection established!");
                 if(calibrating){
                     calibrationFragment = new CalibrationFragment();
+                    calibrationFragment.setRowersNames(rowersNames);
                     drawer.displayFragment(calibrationFragment, "CALIBRATION");
                 }
                 else{

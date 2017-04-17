@@ -14,6 +14,8 @@ import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 
+import java.util.ArrayList;
+
 public class CalibrationFragment extends Fragment implements Measures.OnNewMeasureProcessedListener, View.OnClickListener {
 
     private View okButton, backButton;
@@ -21,11 +23,13 @@ public class CalibrationFragment extends Fragment implements Measures.OnNewMeasu
 
     private Measure measure;
 
+    private ArrayList<String> rowersNames;
+
     private int step = 0;
 
 
     public CalibrationFragment() {
-        // Required empty public constructor
+        rowersNames = new ArrayList<>();
     }
 
 
@@ -96,7 +100,7 @@ public class CalibrationFragment extends Fragment implements Measures.OnNewMeasu
                             Measures.getMeasures().setBackPosition(measure);
                             for(int i=0; i<8; i++){
                                 if(measure.getRawAngle(i)>=Measures.getMeasures().getNeutralPosition().getRawAngle(i)){
-                                    Toast.makeText(getContext(), getContext().getString(R.string.calibration_wrong_angle_front, i), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), getContext().getString(R.string.calibration_wrong_angle_front, rowersNames.get(i)), Toast.LENGTH_SHORT).show();
                                 }
                             }
                             instructions.setText(R.string.rows_front);
@@ -110,7 +114,7 @@ public class CalibrationFragment extends Fragment implements Measures.OnNewMeasu
                             for(int i=0; i<8; i++){
                                 if(measure.getRawAngle(i)<=Measures.getMeasures().getBackPosition().getRawAngle(i)
                                         || measure.getRawAngle(i) <= Measures.getMeasures().getNeutralPosition().getRawAngle(i)){
-                                    Toast.makeText(getContext(), getContext().getString(R.string.calibration_wrong_angle_behind, i), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), getContext().getString(R.string.calibration_wrong_angle_behind, rowersNames.get(i)), Toast.LENGTH_SHORT).show();
                                 }
                             }
                             ((TrainingActivity)getActivity()).calibrationFinished();
@@ -142,5 +146,9 @@ public class CalibrationFragment extends Fragment implements Measures.OnNewMeasu
                 }
                 break;
         }
+    }
+
+    public void setRowersNames(ArrayList<String> rowersNames) {
+        this.rowersNames = rowersNames;
     }
 }

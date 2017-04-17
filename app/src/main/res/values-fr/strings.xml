@@ -24,8 +24,12 @@
     <string name="save_this_training">Sauvegarder cet entraînement ?</string>
     <string name="calibration_done">Calibration effectuée !</string>
     <string name="calibration_failed">Échec de la calibration</string>
-    <string name="calibration_wrong_angle_behind">Le rameur $1%d a sa rame derrière la position neutre enregistrée</string>
-    <string name="calibration_wrong_angle_front">Le rameur $1%d a sa rame devant la position neutre enregistrée</string>
+    <string name="calibration_wrong_angle_behind">%1$s a sa rame derrière la position neutre enregistrée</string>
+    <string name="calibration_wrong_angle_front">%1$s a sa rame devant la position neutre enregistrée</string>
     <string name="select_training_name">Choisissez un nom pour l\'entraînement</string>
     <string name="unable_to_connect_arduino">Échec de la connexion à l\'Arduino</string>
+    <string name="terminal">Terminal</string>
+    <string name="graph">Courbes</string>
+    <string name="loadbar">Bistogramme</string>
+    <string name="race">Course !</string>
 </resources>
