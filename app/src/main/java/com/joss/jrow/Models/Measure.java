@@ -38,8 +38,15 @@ public class Measure extends HashMap<String, Long> {
     }
 
     public double getAngle(int i){
-        double result = 0;
-        result = ((double)getRawAngle(i)/1000)*220;
+        double result;
+        result = ((double)(getRawAngle(i)-Measures.getMeasures().getNeutralPosition().getRawAngle(i))/1000)*250;
         return result;
+    }
+
+    public double getAnglePercentage(int index){
+        double percentage = (getAngle(index) - Measures.getMeasures().getMinBack())/(Measures.getMeasures().getMaxFront() - Measures.getMeasures().getMinBack());
+        percentage = Math.max(0, percentage);
+        percentage = Math.min(1,percentage);
+        return percentage;
     }
 }

@@ -1,29 +1,24 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.joss.jrow.Models.Measure;
-import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.R;
 import com.joss.jrow.SensorManager;
 
-import java.util.ArrayList;
-
 @SuppressWarnings("deprecation")
 public class GraphViewFragment extends DataDisplayFragment {
 
-    private final int[] colors = {Color.GRAY, Color.rgb(255,102,0), Color.BLUE, Color.MAGENTA, Color.BLACK, Color.rgb(0, 150, 0), Color.rgb(100, 50, 130)};
-
     private GraphView graph;
-    private ArrayList<LineGraphSeries<DataPoint>> graphData;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
@@ -32,29 +27,41 @@ public class GraphViewFragment extends DataDisplayFragment {
         graph = (GraphView) v.findViewById(R.id.data_container);
 
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-5.0);  
-        graph.getViewport().setMaxY(180.0);
+        graph.getViewport().setMinY(-90.0);
+        graph.getViewport().setMaxY(60.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
-        graph.getViewport().setMaxX(10);
+        graph.getViewport().setMaxX(3);
 
         graph.getViewport().setScrollable(true);
         graph.getViewport().setScalable(true);
-        initData();
+
+        graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
+        graph.getGridLabelRenderer().setNumVerticalLabels(10);
 
         return v;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        graph.removeAllSeries();for(LineGraphSeries series : GraphData.getInstance()){
+            graph.addSeries(series);
+        }
+    }
+
 
     private void initData(){
-        graphData = new ArrayList<>();
-        for(int i=0; i<8; i++){
-            LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
-            graphData.add(series);
+        graph.removeAllSeries();
+        GraphData.getInstance().reset();
+        for(LineGraphSeries series : GraphData.getInstance()){
             graph.addSeries(series);
-            graphData.get(i).setColor((i<7)?colors[i]:getResources().getColor(R.color.red));
-            graphData.get(i).setThickness(2);
         }
     }
 
@@ -66,15 +73,6 @@ public class GraphViewFragment extends DataDisplayFragment {
     @Override
     public void onNewMeasureProcessed(Measure measure) {
         super.onNewMeasureProcessed(measure);
-        for(int i=0; i<8; i++){
-            if (SensorManager.getInstance().isSensorActive(i)) {
-                try {
-                    graphData.get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 2000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
     }
 
     @Override
@@ -84,19 +82,29 @@ public class GraphViewFragment extends DataDisplayFragment {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             series.appendData(new DataPoint((double) (time)/1000, 10000), true, 200);
             series.appendData(new DataPoint((double) (time)/1000, -10000), true, 200);
-            series.setColor(getResources().getColor(android.R.color.black));
+            series.setColor(context.getResources().getColor(android.R.color.black));
             series.setThickness(3);
             graph.addSeries(series);
         }
     }
 
     @Override
-    public void onStartTraining() {
+    public void startTraining() {
+        initData();
+    }
+
+    @Override
+    public void stopTraining() {
 
     }
 
     @Override
-    public void onStopTraining() {
+    public void pauseTraining() {
+
+    }
+
+    @Override
+    public void resumeTraining() {
 
     }
 }

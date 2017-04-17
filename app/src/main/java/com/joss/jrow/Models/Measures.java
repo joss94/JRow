@@ -8,15 +8,14 @@ import java.util.List;
 public class Measures extends ArrayList<Measure>{
 
     private static final long serialVersionUID = -5836923295713874526L;
-    private static final double W_LIMIT = 20;
 
-    private final int MAX_SIZE = 500;
-    private final int LOCAL_MAX_RANGE = 50;
+    private final int MAX_SIZE = 100;
+    private final int LOCAL_MAX_RANGE = 30;
 
     private static volatile Measures measures;
 
     private volatile ArrayList<Measure> dataToProcess;
-    private static ArrayList<OnNewMeasureProcessedListener> listeners;
+    private OnNewMeasureProcessedListener listener;
 
     private ArrayList<ArrayList<Long>> maxsTimes;
 
@@ -28,11 +27,13 @@ public class Measures extends ArrayList<Measure>{
     private Measure frontPosition;
     private Measure neutralPosition;
 
+    private double minBack;
+    private double maxFront;
+
     private Measures() {
         super();
         strokeRate = 0;
         dataToProcess = new ArrayList<>();
-        listeners = new ArrayList<>();
         maxsTimes = new ArrayList<>();
         for(int i=0; i<8;i++){
             maxsTimes.add(new ArrayList<Long>());
@@ -55,18 +56,10 @@ public class Measures extends ArrayList<Measure>{
         if(dataToProcess.size()>0){
             Measure measure = dataToProcess.get(0);
             if(measure == null){
+                dataToProcess.remove(0);
                 return;
             }
 
-            if (size()>0) {
-                Measure lastMeasure = get(size()-1);
-                double alpha = 0.5;
-                for(int i =0; i<8; i++){
-                    long angle = measure.getRawAngle(i);
-                    long lastAngle = lastMeasure.getRawAngle(i);
-                    measure.setRawAngle(i, (long) ((double)angle*(1-alpha)+(double)lastAngle*alpha));
-                }
-            }
             saveDataRow(measure);
         }
     }
@@ -86,6 +79,7 @@ public class Measures extends ArrayList<Measure>{
     private void detectTangents(){
         List<Measure> localData = this.subList(size()-LOCAL_MAX_RANGE, size()-1);
         for (int i=0; i<8; i++) {
+            //if(false){
             if (SensorManager.getInstance().isSensorActive(i)) {
                 Measure max = localData.get(0);
                 for(Measure measure : localData){
@@ -93,8 +87,8 @@ public class Measures extends ArrayList<Measure>{
                         max = measure;
                     }
                 }
-                if(Math.abs(max.getRawAngle(i)-localData.get(0).getRawAngle(i))>50
-                        && Math.abs(max.getRawAngle(i)-localData.get(localData.size()-1).getRawAngle(i))>80
+                if(Math.abs(max.getRawAngle(i)-localData.get(0).getRawAngle(i))>20
+                        && Math.abs(max.getRawAngle(i)-localData.get(localData.size()-1).getRawAngle(i))>20
                         && !maxsTimes.get(i).contains(max.getTime()-startTime)){
                     maxsTimes.get(i).add(max.getTime()-startTime);
                     onMovementChangedDetected(i, max.getTime()-startTime);
@@ -109,7 +103,7 @@ public class Measures extends ArrayList<Measure>{
         if(size()>MAX_SIZE){
             remove(0);
         }
-        if(size()==1){
+        if(startTime<=0){
             startTime = measure.getTime();
         }
         return result;
@@ -117,8 +111,9 @@ public class Measures extends ArrayList<Measure>{
 
 
     public synchronized void wipeData(){
-        measures = new Measures();
+        clear();
         dataToProcess = new ArrayList<>();
+        startTime = 0;
     }
 
     public synchronized void addToProcess(Measure measure){
@@ -139,6 +134,11 @@ public class Measures extends ArrayList<Measure>{
 
     public void setBackPosition(Measure backPosition) {
         this.backPosition = backPosition;
+        if (backPosition != null) {
+            for(int i=0; i<8; i++){
+                minBack = Math.min(minBack, backPosition.getAngle(i));
+            }
+        }
     }
 
     public Measure getFrontPosition() {
@@ -147,6 +147,14 @@ public class Measures extends ArrayList<Measure>{
 
     public void setFrontPosition(Measure frontPosition) {
         this.frontPosition = frontPosition;
+        if (frontPosition != null) {
+            for(int i=0; i<8; i++){
+                maxFront = Math.max(maxFront, frontPosition.getAngle(i));
+            }
+        }
+        else{
+            maxFront = 0;
+        }
     }
 
     public Measure getNeutralPosition() {
@@ -165,24 +173,54 @@ public class Measures extends ArrayList<Measure>{
         this.neutralPosition = neutralPosition;
     }
 
+    public double getMinBack() {
+        return minBack;
+    }
+
+    public double getMaxFront() {
+        return maxFront;
+    }
+
+    public void setDefaultCalibration(){
+        Measure back = new Measure();
+        Measure front = new Measure();
+        Measure neutral = new Measure();
+
+        for(int i=0; i<8; i++){
+            back.setRawAngle(i, 225);
+            neutral.setRawAngle(i, 500);
+            front.setRawAngle(i, 675);
+        }
+
+        setNeutralPosition(neutral);
+        setBackPosition(back);
+        setFrontPosition(front);
+    }
+
     private void onNewMeasureProcessed(Measure measure){
-        for(OnNewMeasureProcessedListener listener : listeners){
+        if (listener != null) {
             listener.onNewMeasureProcessed(measure);
         }
     }
 
     private void onMovementChangedDetected(int index, long time){
-        catchTimes[index] = time;
         if(index == Position.STERN){
             strokeRate = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
         }
-        for(OnNewMeasureProcessedListener listener : listeners){
+        catchTimes[index] = time;
+        if (listener != null) {
             listener.onMovementChanged(index, time);
         }
     }
 
-    public void addOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
-        listeners.add(listener);
+    public void setOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+        this.listener = listener;
+    }
+
+    public void resetCalibration() {
+        setBackPosition(null);
+        setFrontPosition(null);
+        setNeutralPosition(null);
     }
 
     public interface OnNewMeasureProcessedListener{

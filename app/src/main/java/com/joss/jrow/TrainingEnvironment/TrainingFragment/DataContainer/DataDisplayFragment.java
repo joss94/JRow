@@ -1,19 +1,21 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.SensorManager;
-import com.joss.jrow.TrainingEnvironment.OnTrainingChangeListener;
+import com.joss.jrow.TrainingEnvironment.TrainingControler;
 
 public abstract class DataDisplayFragment extends Fragment implements
         Measures.OnNewMeasureProcessedListener,
-        OnTrainingChangeListener{
+        TrainingControler{
 
     SensorManager sensorManager;
     private boolean ready;
+    protected Context context;
 
     public DataDisplayFragment() {
         // Required empty public constructor
@@ -27,8 +29,14 @@ public abstract class DataDisplayFragment extends Fragment implements
     }
 
     @Override
-    public void onActivityCreated(Bundle state){
-        super.onActivityCreated(state);
+    public void onAttach(Context context){
+        super.onAttach(context);
+        this.context = context.getApplicationContext();
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
         ready = true;
     }
 

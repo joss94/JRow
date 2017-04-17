@@ -7,11 +7,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.jjoe64.graphview.series.DataPoint;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
+import com.joss.jrow.SensorManager;
+import com.joss.jrow.SerialContent;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
+import com.joss.jrow.TrainingEnvironment.TrainingControler;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.DataDisplayFragment;
+import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphData;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.LoadbarViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.RaceViewFragment;
@@ -20,20 +25,23 @@ import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.SerialVi
 import java.util.ArrayList;
 import java.util.List;
 
-public class TrainingFragment extends Fragment implements Measures.OnNewMeasureProcessedListener{
+public class TrainingFragment extends Fragment implements
+        Measures.OnNewMeasureProcessedListener,
+        TrainingControler{
 
-    private boolean recording = false;
-    private boolean paused = false;
+    private static boolean paused = false;
+    private static boolean recording = false;
     private boolean ready;
 
-    private List<String> rowersNames;
+    private ArrayList<String> rowersNames;
 
     private TrainingTableFragment tableFragment;
     private TrainingControlerFragment controlerFragment;
     private DataDisplayFragment displayFragment;
-    private GraphViewFragment graphFragment;
 
     private FragmentManager fm;
+
+    private int wait = 0;
 
     @Override
     public void onCreate(Bundle args){
@@ -49,38 +57,32 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         ready=false;
         View v = inflater.inflate(R.layout.fragment_training, parent, false);
 
-        if (fm == null) {
-            fm = getActivity().getSupportFragmentManager();
-        }
-
-        if (tableFragment == null) {
-            tableFragment = new TrainingTableFragment();
-            tableFragment.setRowersNames(rowersNames);
-        }
-
-        if (controlerFragment == null) {
-            controlerFragment = new TrainingControlerFragment();
-        }
-
-        if (displayFragment == null) {
-            displayFragment = new GraphViewFragment();
-        }
-
-        fm.beginTransaction().replace(R.id.table_fragment, tableFragment).disallowAddToBackStack().commit();
-        fm.beginTransaction().replace(R.id.controler_fragment, controlerFragment).disallowAddToBackStack().commit();
-        fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
-
         return v;
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
+        if (fm == null) {
+            fm = getActivity().getSupportFragmentManager();
+        }
+        //if(false){
         if(savedInstanceState != null){
+            controlerFragment = (TrainingControlerFragment) getActivity().getSupportFragmentManager().getFragment(savedInstanceState, "CONTROLER_FRAGMENT");
+            displayFragment = (DataDisplayFragment) getActivity().getSupportFragmentManager().getFragment(savedInstanceState, "DISPLAY_FRAGMENT");
+            tableFragment = (TrainingTableFragment) getActivity().getSupportFragmentManager().getFragment(savedInstanceState, "TABLE_FRAGMENT");
         }
         else{
-            ((TrainingActivity)getActivity()).goToGraphView();
+            controlerFragment = new TrainingControlerFragment();
+            tableFragment = new TrainingTableFragment();
+            tableFragment.setRowersNames(rowersNames);
+            displayFragment = new GraphViewFragment();
         }
+        fm.beginTransaction().replace(R.id.table_fragment, tableFragment).disallowAddToBackStack().commit();
+        fm.beginTransaction().replace(R.id.controler_fragment, controlerFragment).disallowAddToBackStack().commit();
+        fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
+
+        //((TrainingActivity)getActivity()).goToGraphView();
     }
 
     @Override
@@ -92,7 +94,6 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        outState.putBoolean("recording", recording);
         outState.putBoolean("paused", paused);
         getActivity().getSupportFragmentManager().putFragment(outState, "CONTROLER_FRAGMENT", controlerFragment);
         getActivity().getSupportFragmentManager().putFragment(outState, "TABLE_FRAGMENT", tableFragment);
@@ -100,29 +101,34 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
     }
 
     public void setGraphView(){
-        if(graphFragment == null){
-            graphFragment = new GraphViewFragment();
+        if(!(displayFragment instanceof GraphViewFragment)){
+            displayFragment = new GraphViewFragment();
         }
-        displayFragment = graphFragment;
         if (fm != null) {
             fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
         }
     }
 
     public void setLoadbarView(){
-        displayFragment = new LoadbarViewFragment();
+        if (!(displayFragment instanceof LoadbarViewFragment)) {
+            displayFragment = new LoadbarViewFragment();
+        }
         if (fm != null) {
             fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
         }
     }
 
     public void setRaceView() {
-        displayFragment = new RaceViewFragment();
+        if (!(displayFragment instanceof RaceViewFragment)) {
+            displayFragment = new RaceViewFragment();
+        }
         getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
     }
 
     public void setSerialView(){
-        displayFragment = new SerialViewFragment();
+        if (!(displayFragment instanceof SerialViewFragment)) {
+            displayFragment = new SerialViewFragment();
+        }
         if (fm != null) {
             fm.beginTransaction().replace(R.id.display_fragment, displayFragment).disallowAddToBackStack().commit();
         }
@@ -134,6 +140,21 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
             tableFragment.onNewMeasureProcessed(measure);
             displayFragment.onNewMeasureProcessed(measure);
             controlerFragment.onNewMeasureProcessed(measure);
+
+            if(wait>=3){
+            //if (wait>= SensorManager.getInstance().numberOfActiveSensors()) {
+                wait=0;
+                for(int i=0; i<8; i++){
+                    if (SensorManager.getInstance().isSensorActive(i)) {
+                        try {
+                            GraphData.getInstance().get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 200);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+            wait++;
         }
     }
 
@@ -146,31 +167,60 @@ public class TrainingFragment extends Fragment implements Measures.OnNewMeasureP
         }
     }
 
-    public void setRecording(boolean recording) {
-        this.recording = recording;
-        if(recording){
-            controlerFragment.onStartTraining();
-            paused = false;
-        }
-        else{
-            controlerFragment.onStopTraining();
-        }
-    }
-
-    public boolean isRecording() {
-        return recording;
-    }
-
-    public boolean isPaused() {
-        return paused;
-    }
-
-    public void setPaused(boolean paused) {
-        this.paused = paused;
-    }
-
     public void setRowersNames(List<String> rowersNames) {
         this.rowersNames = new ArrayList<>();
         this.rowersNames.addAll(rowersNames);
+    }
+
+    @Override
+    public void startTraining() {
+        if(paused){
+            resumeTraining();
+        }
+        else{
+            paused = false;
+            recording = true;
+            SerialContent.getInstance().addToSerial("Training started");
+            Measures.getMeasures().wipeData();
+            Measures.getMeasures().setOnNewMeasureProcessedListener((TrainingActivity)getActivity());
+            ((TrainingActivity)getActivity()).resetTraining();
+            controlerFragment.startTraining();
+            displayFragment.startTraining();
+        }
+    }
+
+    @Override
+    public void stopTraining() {
+        paused = false;
+        recording = false;
+        SerialContent.getInstance().addToSerial("Training stopped");
+        controlerFragment.stopTraining();
+        displayFragment.stopTraining();
+    }
+
+    @Override
+    public void pauseTraining() {
+        paused=true;
+        recording = false;
+        SerialContent.getInstance().addToSerial("Training paused");
+        controlerFragment.pauseTraining();
+        displayFragment.pauseTraining();
+    }
+
+    @Override
+    public void resumeTraining() {
+        paused = false;
+        recording = true;
+        SerialContent.getInstance().addToSerial("Training resumed");
+        controlerFragment.resumeTraining();
+        displayFragment.resumeTraining();
+    }
+
+    public static boolean isPaused() {
+        return paused;
+    }
+
+    public static boolean isRecording() {
+        return recording;
     }
 }

@@ -1,5 +1,6 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -24,10 +25,12 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
     private volatile List<TextView> delays;
     private List<TextView> namesLabels;
 
-    private List<String> rowersNames;
+    private ArrayList<String> rowersNames;
 
     private SensorManager sensorManager;
     private Measures measures;
+
+    private Context context;
 
     public TrainingTableFragment() {
         checkBoxes = new ArrayList<>();
@@ -54,7 +57,8 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
         checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox7));
         checkBoxes.add((CheckBox) v.findViewById(R.id.checkbox8));
 
-        for(final CheckBox checkBox : checkBoxes){
+        for(int i=0; i<8; i++){
+            final CheckBox checkBox = checkBoxes.get(i);
             if(sensorManager.isSensorActive(checkBoxes.indexOf(checkBox))){
                 checkBox.setChecked(true);
             }
@@ -92,19 +96,38 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
         namesLabels.add((TextView)v.findViewById(R.id.name7));
         namesLabels.add((TextView)v.findViewById(R.id.name8));
 
+        return v;
+    }
+
+    @Override
+    public void onAttach(Context context){
+        super.onAttach(context);
+        this.context = context.getApplicationContext();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putSerializable("rowers_names", rowersNames);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        if(savedInstanceState != null && savedInstanceState.containsKey("rowers_names")){
+            rowersNames = (ArrayList<String>) savedInstanceState.getSerializable("rowers_names");
+        }
+
         if (rowersNames.size()>7) {
             for(TextView nameLabel : namesLabels){
                 String name = rowersNames.get(namesLabels.indexOf(nameLabel));
                 nameLabel.setText(name);
             }
         }
-
-        return v;
     }
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-
     }
 
     @Override
@@ -113,20 +136,20 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
             if(index == Position.STERN){
                 delays.get(index).setText(String.valueOf((double)time/1000));
                 for(int i=0; i<8; i++){
-                    if(time - measures.getCatchTimes()[Position.STERN]<1000 && sensorManager.isSensorActive(i)){
-                        delays.get(index).setText(getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
+                    if(time - measures.getCatchTimes()[Position.STERN]<700 && sensorManager.isSensorActive(i)){
+                        delays.get(index).setText(context.getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
                     }
                 }
             }
             else{
-                if(time - measures.getCatchTimes()[Position.STERN]<1000){
-                    delays.get(index).setText( getString(R.string.delay, ((double)(time - measures.getCatchTimes()[Position.STERN]))/1000));
+                if(time - measures.getCatchTimes()[Position.STERN]<700){
+                    delays.get(index).setText(context.getString(R.string.delay, ((double)(time - measures.getCatchTimes()[Position.STERN]))/1000));
                 }
             }
         }
     }
 
-    public void setRowersNames(List<String> rowersNames) {
+    public void setRowersNames(ArrayList<String> rowersNames) {
         this.rowersNames = rowersNames;
     }
 }

@@ -42,12 +42,12 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
         graph = (GraphView) v.findViewById(R.id.data_container);
 
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-5.0);
-        graph.getViewport().setMaxY(100.0);
+        graph.getViewport().setMinY(0.0);
+        graph.getViewport().setMaxY(50.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
-        graph.getViewport().setMaxX(10);
+        graph.getViewport().setMaxX(30);
 
         graph.getViewport().setScrollable(true);
         graph.getViewport().setScalable(true);
@@ -56,7 +56,7 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
 
         series = new LineGraphSeries<>();
         graph.addSeries(series);
-        series.setColor(getResources().getColor(R.color.red));
+        series.setColor(context.getResources().getColor(R.color.red));
         series.setThickness(2);
 
         return v;
@@ -73,8 +73,8 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
             series.appendData(new DataPoint((double) time/1000, Measures.getMeasures().getStrokeRate()), true, 2000);
             int millis = (int) (time % 1000);
             int seconds = (int) ((time/1000) % 60);
-            int minutes = (int)((time/100)%3600);
-            timeView.setText(getContext().getResources().getString(R.string.race_time_format, minutes, seconds, millis));
+            int minutes = (int)(time/60000);
+            timeView.setText(context.getResources().getString(R.string.race_time_format, minutes, seconds, millis));
         }
 
     }
@@ -108,13 +108,24 @@ public class RaceViewFragment extends DataDisplayFragment implements View.OnClic
     }
 
     @Override
-    public void onStartTraining() {
+    public void startTraining() {
         askForConnect.setVisibility(GONE);
     }
 
     @Override
-    public void onStopTraining() {
+    public void stopTraining() {
         askForConnect.setVisibility(View.VISIBLE);
         endRace();
+    }
+
+    @Override
+    public void pauseTraining() {
+        askForConnect.setVisibility(View.VISIBLE);
+        endRace();
+    }
+
+    @Override
+    public void resumeTraining() {
+        askForConnect.setVisibility(GONE);
     }
 }

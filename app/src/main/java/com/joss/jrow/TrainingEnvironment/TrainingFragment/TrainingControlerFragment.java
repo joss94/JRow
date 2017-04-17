@@ -6,14 +6,12 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
-import com.joss.jrow.SerialContent;
-import com.joss.jrow.TrainingEnvironment.OnTrainingChangeListener;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingControler;
 
@@ -22,24 +20,18 @@ import java.util.Locale;
 public class TrainingControlerFragment extends Fragment implements
         View.OnClickListener,
         Measures.OnNewMeasureProcessedListener,
-        OnTrainingChangeListener{
+        TrainingControler{
 
     private volatile TextView strokeRateView;
     private volatile TextView timeView;
-    private ImageView stopButton, startAndPauseButton, calibrateButton;
+    private RelativeLayout stopButton, startButton, pauseButton, calibrateButton;
 
     private TrainingControler listener;
 
-    private Measures measures;
+    private Context context;
 
     public TrainingControlerFragment() {
         // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle args){
-        super.onCreate(args);
-        measures = Measures.getMeasures();
     }
 
 
@@ -51,15 +43,13 @@ public class TrainingControlerFragment extends Fragment implements
 
         strokeRateView = (TextView) v.findViewById(R.id.stroke_rate);
         timeView = (TextView) v.findViewById(R.id.time);
-        startAndPauseButton = (ImageView) v.findViewById(R.id.start_and_pause_button);
-        stopButton = (ImageView) v.findViewById(R.id.stop_button);
-        calibrateButton = (ImageView) v.findViewById(R.id.calibrate_button);
+        startButton = (RelativeLayout) v.findViewById(R.id.start_button);
+        pauseButton = (RelativeLayout) v.findViewById(R.id.pause_button);
+        stopButton = (RelativeLayout) v.findViewById(R.id.stop_button);
+        calibrateButton = (RelativeLayout) v.findViewById(R.id.calibrate_button);
 
-        startAndPauseButton.setImageResource(R.drawable.ic_rowing);
-        calibrateButton.setImageResource(R.drawable.ic_calibrate);
-        stopButton.setImageResource(R.drawable.ic_action_playback_stop);
-
-        startAndPauseButton.setOnClickListener(this);
+        startButton.setOnClickListener(this);
+        pauseButton.setOnClickListener(this);
         stopButton.setOnClickListener(this);
         calibrateButton.setOnClickListener(this);
 
@@ -73,31 +63,19 @@ public class TrainingControlerFragment extends Fragment implements
             throw new Error("TrainingFragment parent ativity must implement TrainingControler");
         }
         listener = (TrainingControler) context;
-    }
-
-    public void onStartTraining(){
-        if (stopButton != null && calibrateButton != null && startAndPauseButton != null) {
-            stopButton.setVisibility(View.VISIBLE);
-            calibrateButton.setVisibility(View.GONE);
-            startAndPauseButton.setImageResource(R.drawable.ic_pause);
-        }
-        SerialContent.getInstance().addToSerial("Started training");
-    }
-
-    public void onStopTraining(){
-        if (stopButton != null && calibrateButton != null && startAndPauseButton != null) {
-            calibrateButton.setVisibility(View.VISIBLE);
-            startAndPauseButton.setImageResource(R.drawable.ic_rowing);
-        }
-        SerialContent.getInstance().addToSerial("Stopped training");
+        this.context = context.getApplicationContext();
     }
 
 
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.start_and_pause_button:
+            case R.id.start_button:
                 listener.startTraining();
+                break;
+
+            case R.id.pause_button:
+                listener.pauseTraining();
                 break;
 
             case R.id.stop_button:
@@ -112,13 +90,43 @@ public class TrainingControlerFragment extends Fragment implements
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-        if (isAdded()) {
-            timeView.setText(getContext().getResources().getString(R.string.time, (float)measure.getTime()/1000));
-        }
+        timeView.setText(context.getString(R.string.time, (float)(measure.getTime()-Measures.getMeasures().getStartTime())/1000));
     }
 
     @Override
     public void onMovementChanged(int index, long time) {
-        strokeRateView.setText(String.format(Locale.ENGLISH, getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
+        strokeRateView.setText(String.format(Locale.ENGLISH, context.getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
+    }
+
+    @Override
+    public void startTraining() {
+        stopButton.setVisibility(View.VISIBLE);
+        pauseButton.setVisibility(View.VISIBLE);
+        startButton.setVisibility(View.GONE);
+        calibrateButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void stopTraining() {
+        calibrateButton.setVisibility(View.VISIBLE);
+        stopButton.setVisibility(View.GONE);
+        startButton.setVisibility(View.VISIBLE);
+        pauseButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void pauseTraining() {
+        calibrateButton.setVisibility(View.GONE);
+        stopButton.setVisibility(View.VISIBLE);
+        startButton.setVisibility(View.VISIBLE);
+        pauseButton.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void resumeTraining() {
+        calibrateButton.setVisibility(View.GONE);
+        stopButton.setVisibility(View.VISIBLE);
+        startButton.setVisibility(View.GONE);
+        pauseButton.setVisibility(View.VISIBLE);
     }
 }

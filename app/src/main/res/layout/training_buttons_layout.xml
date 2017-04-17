@@ -4,29 +4,66 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
+    <RelativeLayout
         android:id="@+id/calibrate_button"
-        android:layout_width="@dimen/training_button_size"
-        android:layout_height="@dimen/training_button_size"
-        android:src="@drawable/ic_calibrate"
-        android:layout_marginEnd="@dimen/margin_normal"
-        android:scaleType="fitXY"
-        android:contentDescription="@string/calibrate" />
+        android:layout_width="48dp"
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/start_and_pause_button"
-        android:layout_width="@dimen/training_button_size"
-        android:layout_height="@dimen/training_button_size"
-        android:src="@drawable/ic_rowing"
-        android:layout_marginEnd="@dimen/margin_normal"
-        android:scaleType="fitXY"
-        android:contentDescription="@string/start_pause" />
+        <ImageView
+            android:layout_width="@dimen/training_button_size"
+            android:layout_height="@dimen/training_button_size"
+            android:src="@drawable/ic_calibrate"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/calibrate" />
 
-    <ImageView
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/start_button"
+        android:layout_width="48dp"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="@dimen/training_button_size"
+            android:layout_height="@dimen/training_button_size"
+            android:src="@drawable/ic_rowing"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY"
+            android:contentDescription="@string/start_pause" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/pause_button"
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="@dimen/training_button_size"
+            android:layout_height="@dimen/training_button_size"
+            android:src="@drawable/ic_pause"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
         android:id="@+id/stop_button"
-        android:layout_width="@dimen/training_button_size"
-        android:layout_height="@dimen/training_button_size"
-        android:src="@drawable/ic_action_playback_stop"
-        android:scaleType="fitXY" />
+        android:layout_width="48dp"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="@dimen/training_button_size"
+            android:layout_height="@dimen/training_button_size"
+            android:src="@drawable/ic_action_playback_stop"
+            android:layout_centerInParent="true"
+            android:scaleType="fitXY" />
+
+    </RelativeLayout>
+
 
 </LinearLayout>
