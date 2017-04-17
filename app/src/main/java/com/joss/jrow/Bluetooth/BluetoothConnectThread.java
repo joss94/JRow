@@ -48,6 +48,7 @@ public class BluetoothConnectThread extends Thread {
     public void cancel() {
         try {
             mmSocket.close();
+            JRowSocket.getInstance().setSocket(null);
             listener.onConnectionClosed(true, "Socket closed");
         } catch (IOException e) {
             listener.onConnectionClosed(false, "Could not close the client socket");

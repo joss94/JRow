@@ -10,28 +10,21 @@
         android:layout_height="wrap_content"
         tools:layout="@layout/fragment_training_controler"/>
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/table_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_training_table"
+        android:layout_below="@+id/controler_fragment"
+        android:layout_toEndOf="@+id/border"/>
+
+    <RelativeLayout
+        android:id="@+id/display_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
+        tools:layout="@layout/activity_main"
         android:layout_below="@+id/controler_fragment"
-        android:layout_toEndOf="@+id/border">
-
-        <RelativeLayout
-            android:id="@+id/table_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:layout="@layout/fragment_training_table" />
-
-        <RelativeLayout
-            android:id="@+id/display_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            tools:layout="@layout/activity_main" />
-    </LinearLayout>
-
+        android:layout_toEndOf="@+id/table_fragment"/>
 
     <View
         android:id="@+id/border"

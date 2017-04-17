@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.joss.jrow.Models.Measure;
@@ -17,6 +18,7 @@ public class SerialViewFragment extends DataDisplayFragment {
 
     private static final int SERIAL_DISPLAY_DELAY = 0;
     private volatile TextView serial, currentMeasure;
+    private ScrollView scrollView;
     private SerialContent serialContent;
 
     private Handler serialDisplayHandler;
@@ -24,7 +26,10 @@ public class SerialViewFragment extends DataDisplayFragment {
     private Runnable displaySerial = new Runnable() {
         @Override
         public void run() {
-            serial.setText(serialContent.getSerial());
+            if(!serialContent.getSerial().equals(serial.getText().toString())){
+                serial.setText(serialContent.getSerial());
+                scrollView.fullScroll(View.FOCUS_DOWN);
+            }
             serialDisplayHandler.postDelayed(displaySerial, SERIAL_DISPLAY_DELAY);
         }
     };
@@ -41,6 +46,7 @@ public class SerialViewFragment extends DataDisplayFragment {
 
         serial = (TextView) v.findViewById(R.id.serial);
         currentMeasure = (TextView) v.findViewById(R.id.current_measure);
+        scrollView = (ScrollView) v.findViewById(R.id.scrollview);
         serial.setText(serialContent.getSerial());
 
         serialDisplayHandler = new Handler();
@@ -51,27 +57,40 @@ public class SerialViewFragment extends DataDisplayFragment {
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
+        super.onNewMeasureProcessed(measure);
         String result="";
         result += "Time: " + String.valueOf((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
         for(int i=0; i<8; i++){
-            result += i+": " + measure.getRowAngle(i) + "\n";
+            result += i+": " + measure.getRawAngle(i) + "\n";
         }
         currentMeasure.setText(result);
     }
 
     @Override
     public void onMovementChanged(int index, long time) {
+        super.onMovementChanged(index, time);
         if (index == Position.STERN) {
             serialContent.addToSerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
         }
     }
 
     @Override
-    public void onStartTraining() {
+    public void startTraining() {
+
     }
 
     @Override
-    public void onStopTraining() {
+    public void stopTraining() {
+
+    }
+
+    @Override
+    public void pauseTraining() {
+
+    }
+
+    @Override
+    public void resumeTraining() {
 
     }
 }
