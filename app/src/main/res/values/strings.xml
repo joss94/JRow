@@ -8,7 +8,7 @@
     <string name="calibrate">calibrate</string>
     <string name="jrow" translatable="false">JRow</string>
     <string name="strokes_per_min">%1$.2f str / min</string>
-    <string name="delay" translatable="false">%1$.2f s</string>
+    <string name="delay" translatable="false">%1$.3f s</string>
     <string name="time_default" translatable="false">0.00 s</string>
     <string name="cox">Coxswain</string>
     <string name="cox_9">(Cox) 9.</string>
@@ -31,4 +31,19 @@
     <string name="crew">Crew</string>
     <string name="start_ntraining">Start\ntraining</string>
     <string name="time" translatable="false">%1$.2f s</string>
+    <string name="save_this_training">Save this training ?</string>
+    <string name="rows_front">Rows front...</string>
+    <string name="rows_neutral">Rows perpendicuclar...</string>
+    <string name="race_time_format" translatable="false">%1$d : %2$d : %3$d</string>
+    <string name="rows_back">Rows back...</string>
+    <string name="calibration_wrong_angle_front">%1$s has his row in front of the registered neutral angle</string>
+    <string name="calibration_wrong_angle_behind">%1$s has not his row behind the registered neutral position</string>
+    <string name="select_training_name">Please select a name for your training</string>
+    <string name="calibration_done">Calibration done !</string>
+    <string name="calibration_failed">Calibration failed...</string>
+    <string name="unable_to_connect_arduino">Unable to connect to Arduino</string>
+    <string name="graph">Graph</string>
+    <string name="loadbar">Loadbar</string>
+    <string name="race">Race !</string>
+    <string name="terminal">Terminal</string>
 </resources>

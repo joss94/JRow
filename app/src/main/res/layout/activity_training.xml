@@ -17,6 +17,7 @@
         app:open_selected_color="@color/white"
         app:text_color="@color/white"
         app:text_selected_color="@color/colorPrimary"
+        app:size_closed="0dp"
         app:paddingEnd="@dimen/margin_normal"
         app:paddingStart="@dimen/margin_normal"
         app:item_height="100dp"

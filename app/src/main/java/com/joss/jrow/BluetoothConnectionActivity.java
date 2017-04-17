@@ -1,5 +1,6 @@
 package com.joss.jrow;
 
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -12,19 +13,21 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.joss.jrow.Bluetooth.BluetoothConnectThread;
 import com.joss.jrow.Bluetooth.BluetoothListenThread;
+import com.joss.jrow.Bluetooth.JRowSocket;
 
-import java.io.IOException;
 import java.util.Set;
 
-public abstract class BluetoothConnectionActivity extends AppCompatActivity implements BluetoothConnectThread.onConnectionResponseListener {
+public abstract class BluetoothConnectionActivity extends AppCompatActivity implements
+        BluetoothConnectThread.onConnectionResponseListener {
 
     private final int REQUEST_ENABLE_BT = 12;
     private final String MAC_ADDRESS = "20:16:11:21:11:43";
     private BluetoothAdapter adapter;
-    private BluetoothSocket socket;
 
     private BluetoothConnectThread connectThread;
     private BluetoothListenThread listenThread;
+
+    ProgressDialog progress;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -42,29 +45,17 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         super.onCreate(savedInstanceState);
         IntentFilter filter  = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
+
+        progress = new ProgressDialog(this);
+        progress.setTitle("Connecting");
+        progress.setMessage("Wait while connecting to the Arduino..");
+        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
     }
 
     @Override
-    public void onResume(){
-        super.onResume();
-        if(socket!=null){
-            try {
-                socket.close();
-            } catch (IOException ignored) {
-            }
-        }
-    }
-
-    @Override
-    protected void onDestroy(){
+    public void onDestroy(){
         super.onDestroy();
         unregisterReceiver(mReceiver);
-        if(socket!=null){
-            try {
-                socket.close();
-            } catch (IOException ignored) {
-            }
-        }
     }
 
     private void setUpBluetooth() {
@@ -101,6 +92,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
+        progress.show();
         connectThread = new BluetoothConnectThread(device, adapter, this);
         connectThread.start();
     }
@@ -121,9 +113,10 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
 
     @Override
     public void onConnectionResponse(final boolean result, final String message, final BluetoothSocket socket) {
+        progress.dismiss();
         if(result){
             onConnectionEstablished();
-            this.socket = socket;
+            JRowSocket.getInstance().setSocket(socket);
             listenThread = new BluetoothListenThread(socket);
             listenThread.start();
         }else{
@@ -133,7 +126,12 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     protected void connect(){
-        setUpBluetooth();
+        if(JRowSocket.getInstance().getSocket() != null){
+            onConnectionResponse(true, "success", JRowSocket.getInstance().getSocket());
+        }else{
+            setUpBluetooth();
+        }
+
     }
 
     protected void disconnect(){

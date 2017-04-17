@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <RelativeLayout
+        android:id="@+id/controler_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout="@layout/fragment_training_controler"/>
+
+    <RelativeLayout
+        android:id="@+id/table_fragment"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        tools:layout="@layout/fragment_training_table"
+        android:layout_below="@+id/controler_fragment"
+        android:layout_toEndOf="@+id/border"/>
+
+    <RelativeLayout
+        android:id="@+id/display_fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/activity_main"
+        android:layout_below="@+id/controler_fragment"
+        android:layout_toEndOf="@+id/table_fragment"/>
+
+    <View
+        android:id="@+id/border"
+        android:layout_width="@dimen/drawer_border_size"
+        android:layout_height="match_parent"
+        android:background="@color/colorAccent"
+        android:layout_alignParentStart="true"/>
+
+</RelativeLayout>
