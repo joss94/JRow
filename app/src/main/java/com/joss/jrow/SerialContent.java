@@ -10,6 +10,7 @@ public class SerialContent {
     private volatile String serial;
 
     private SerialContent() {
+        serial = "";
     }
 
     public void addToSerial(String message){
