@@ -9,6 +9,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/stroke_rate"
+        android:layout_alignBottom="@+id/time"
+        android:gravity="center_vertical"
         android:layout_marginStart="@dimen/margin_normal">
 
         <include
@@ -36,16 +38,15 @@
         android:textColor="@color/black"
         android:textSize="@dimen/text_very_big"
         android:text="@string/time_default"
-        android:layout_toStartOf="@+id/stroke_rate"
-        android:layout_toEndOf="@+id/controllers"
+        android:layout_below="@+id/stroke_rate"
+        android:layout_alignEnd="@+id/stroke_rate"
         android:textAlignment="textEnd"
-        android:layout_alignTop="@id/stroke_rate"
-        android:layout_marginEnd="@dimen/margin_big"/>
+        android:layout_marginBottom="@dimen/margin_small"/>
 
     <View
         android:layout_width="match_parent"
         android:layout_height="@dimen/fragment_separator_thickness"
         android:background="@color/colorPrimary"
-        android:layout_below="@id/stroke_rate"/>
+        android:layout_below="@id/time"/>
 
 </RelativeLayout>

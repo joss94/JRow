@@ -31,7 +31,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
     public boolean callback() {
         String fileName = trainingName.getText().toString();
         if(fileName.isEmpty()){
-            Toast.makeText(getContext(), "Please select a name for your training", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.select_training_name, Toast.LENGTH_SHORT).show();
             return false ;
         }
         listener.onFragmentInteraction(AppCompatActivity.RESULT_OK, getRequestCode(), fileName);

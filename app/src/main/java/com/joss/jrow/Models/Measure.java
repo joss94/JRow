@@ -26,10 +26,27 @@ public class Measure extends HashMap<String, Long> {
         }
     }
 
-    public Long getRowAngle(int i){
+    public Long getRawAngle(int i){
         if(containsKey("row"+i)){
             return get("row"+i);
         }
         return (long) -1;
+    }
+
+    public void setRawAngle(int index, long angle){
+        put("row"+index, angle);
+    }
+
+    public double getAngle(int i){
+        double result;
+        result = ((double)(getRawAngle(i)-Measures.getMeasures().getNeutralPosition().getRawAngle(i))/1000)*250;
+        return result;
+    }
+
+    public double getAnglePercentage(int index){
+        double percentage = (getAngle(index) - Measures.getMeasures().getMinBack())/(Measures.getMeasures().getMaxFront() - Measures.getMeasures().getMinBack());
+        percentage = Math.max(0, percentage);
+        percentage = Math.min(1,percentage);
+        return percentage;
     }
 }

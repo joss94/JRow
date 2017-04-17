@@ -14,9 +14,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".CalibrationActivity" />
         <activity
-            android:name=".TrainingEnvironment.TrainingActivity"
-            android:configChanges="orientation|screenSize"
-            android:screenOrientation="landscape">
+            android:name=".TrainingEnvironment.TrainingActivity">
         </activity>
         <activity
             android:name=".PrepareTraining.PrepareTrainingActivity"

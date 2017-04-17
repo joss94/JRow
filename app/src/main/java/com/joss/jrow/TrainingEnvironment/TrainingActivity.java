@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.joss.jrow.BluetoothConnectionActivity;
+import com.joss.jrow.Calibration.CalibrationFragment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
@@ -19,7 +20,6 @@ import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
@@ -27,15 +27,21 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         TrainingControler, OnDialogFragmentInteractionListener {
 
     private static final int SAVE_REQUEST_CODE = 6854;
+    private static final int CALIBRATION_REQUEST_CODE = 21356;
     private TrainingFragment trainingFragment;
+    private CalibrationFragment calibrationFragment;
 
     private SerialContent serialContent;
 
     private Training training;
 
-    private List<String> rowersNames;
+    private ArrayList<String> rowersNames;
 
     private DrawerSlidingPane drawer;
+
+    private boolean calibrating;
+
+    private int drawerPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,22 +50,68 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         serialContent = SerialContent.getInstance();
 
-        trainingFragment = new TrainingFragment();
+        if (savedInstanceState != null) {
+            trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
+            calibrationFragment = (CalibrationFragment) getSupportFragmentManager().getFragment(savedInstanceState, "CALIBRATION_FRAGMENT");
+            calibrating = savedInstanceState.getBoolean("calibrating");
+        }
+        else{
+            trainingFragment = new TrainingFragment();
+            calibrationFragment = new CalibrationFragment();
+            calibrating = false;
+        }
         rowersNames = new ArrayList<>();
         if(getIntent().hasExtra("rowers")){
             Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
-            rowersNames = (List<String>) rowersNamesSerializable;
+            rowersNames = (ArrayList<String>) rowersNamesSerializable;
             trainingFragment.setRowersNames(rowersNames);
         }
 
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
-        drawer.addDrawerItem(new DrawerMenuItem("Graph view", R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Loadbar view", R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
-        drawer.addDrawerItem(new DrawerMenuItem("Serial graphData", R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.graph), R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.loadbar), R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.race), R.drawable.ic_race, R.drawable.ic_race_on));
+        drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.terminal), R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
-        drawer.displayFragment(trainingFragment, "TRAINING_FRAGMENT");
+        if (!calibrating) {
+            drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
+        } else{
+            drawer.replaceFragment(calibrationFragment, calibrationFragment.getTag());
+        }
 
-        Measures.getMeasures().addOnNewMeasureProcessedListener(this);
+        if (savedInstanceState!=null) {
+            if(savedInstanceState.containsKey("drawer_position")){
+                drawer.goTo(savedInstanceState.getInt("drawer_position"));
+            }
+        }
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        if (TrainingFragment.isPaused()) {
+            resumeTraining();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if (TrainingFragment.isRecording()) {
+            pauseTraining();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putInt("drawer_position", drawerPosition);
+        outState.putBoolean("calibrating", calibrating);
+        try {
+            getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
+            getSupportFragmentManager().putFragment(outState, "CALIBRATION_FRAGMENT", calibrationFragment);
+        } catch (Exception ignored) {
+        }
     }
 
     private void askForSaving() {
@@ -68,6 +120,15 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         d.setTraining(training);
         d.setRequestCode(SAVE_REQUEST_CODE);
         d.setOnFragmentInteractionListener(this);
+        d.show(getSupportFragmentManager(), "save_dialog");
+    }
+
+    private void askForCalibration(){
+        RequestCalibrationDialog d = new RequestCalibrationDialog();
+        d.setTitle("Calibration");
+        d.setRequestCode(CALIBRATION_REQUEST_CODE);
+        d.setOnFragmentInteractionListener(this);
+        d.show(getSupportFragmentManager(), "calibration_dialog");
     }
 
     //<editor-fold desc="DRAWER INTERFACE">
@@ -83,9 +144,14 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 break;
 
             case 2:
+                trainingFragment.setRaceView();
+                break;
+
+            case 3:
                 trainingFragment.setSerialView();
                 break;
         }
+        drawerPosition = i;
     }
     //</editor-fold>
 
@@ -101,7 +167,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             @Override
             public void run() {
                 serialContent.addToSerial(error);
-                Toast.makeText(getApplicationContext(), "Unable to connect to Arduino", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), R.string.unable_to_connect_arduino, Toast.LENGTH_SHORT).show();
                 stopTraining();
             }
         });
@@ -113,76 +179,103 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     @Override
+    public void onConnectionClosed(boolean result, String message) {
+        serialContent.addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
+    }
+
+    @Override
     protected void onConnectionEstablished() {
-        serialContent.addToSerial("Connection established!");
-        trainingFragment.setRecording(true);
+        Measures.getMeasures().setOnNewMeasureProcessedListener(this);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                serialContent.addToSerial("Connection established!");
+                if(calibrating){
+                    calibrationFragment = new CalibrationFragment();
+                    calibrationFragment.setRowersNames(rowersNames);
+                    drawer.displayFragment(calibrationFragment, "CALIBRATION");
+                }
+                else{
+                    trainingFragment.startTraining();
+                }
+            }
+        });
+
     }
     //</editor-fold>
 
     //<editor-fold desc="TRAINING FRAGMENT CONTROLER INTERFACE">
     @Override
     public void startTraining() {
-        training = new Training();
-        training.setRowers(rowersNames);
-        if (!trainingFragment.isRecording() && !trainingFragment.isPaused()) {
-            Measures.getMeasures().wipeData();
-            Measures.getMeasures().addOnNewMeasureProcessedListener(this);
-
-            connect();
+        if(!Measures.getMeasures().isCalibrated()){
+            askForCalibration();
         }
-        else if(!trainingFragment.isRecording() && trainingFragment.isPaused()){
-            resumeTraining();
+        else{
+            Measures.getMeasures().setOnNewMeasureProcessedListener(this);
+            connect();
         }
     }
 
     @Override
     public void stopTraining() {
-        if (trainingFragment.isRecording()) {
-            disconnect();
-            trainingFragment.setRecording(false);
-            trainingFragment.setPaused(false);
+        disconnect();
+        trainingFragment.stopTraining();
+        if (training!= null) {
             askForSaving();
         }
     }
 
     @Override
     public void pauseTraining() {
-        if (trainingFragment.isRecording()) {
-            disconnect();
-            trainingFragment.setRecording(false);
-            trainingFragment.setPaused(true);
-        }
+        disconnect();
+        trainingFragment.pauseTraining();
     }
 
     @Override
     public void resumeTraining() {
         connect();
     }
-    //</editor-fold>
 
-    public void goToGraphView(){
-        drawer.goTo(0);
-    };
+    //</editor-fold>
 
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
-        trainingFragment.onNewMeasureProcessed(measure);
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!calibrating) {
+                    if (trainingFragment!=null) {
+                        trainingFragment.onNewMeasureProcessed(measure);
+                    }
+                }
+                else{
+                    if (calibrationFragment!=null) {
+                        calibrationFragment.onNewMeasureProcessed(measure);
+                    }
+                }
+            }
+        });
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
-        trainingFragment.onMovementChanged(index, time);
-        if(index == Position.STERN && training != null){
-            double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
-            training.getStrokeRates().put(time, frequency);
-        }
+    public void onMovementChanged(final int index, final long time) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (!calibrating && trainingFragment != null) {
+                    trainingFragment.onMovementChanged(index, time);
+                    if(index == Position.STERN && training != null){
+                        double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
+                        training.getStrokeRates().put(time, frequency);
+                    }
+                }
+            }
+        });
     }
 
-    @Override
-    public void onConnectionClosed(boolean result, String message) {
-        serialContent.addToSerial((result?"Socket closed successfully":"Socket not closing...: "+message));
-    }
+    //</editor-fold>
+
 
     @Override
     public void onFragmentInteraction(int requestCode, int resultCode, Object... objects) {
@@ -195,6 +288,12 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                     training = null;
                 }
                 break;
+
+            case CALIBRATION_REQUEST_CODE:
+                if(resultCode == RESULT_OK){
+                    Measures.getMeasures().setDefaultCalibration();
+                    startTraining();
+                }
         }
     }
 
@@ -204,7 +303,37 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     public void calibrate() {
-        trainingFragment.calibrate();
+        calibrating = true;
+        Measures.getMeasures().resetCalibration();
+        connect();
     }
-    //</editor-fold>
+
+    public void calibrationFinished() {
+        calibrating = false;
+        disconnect();
+        drawer.popFragment();
+        if(Measures.getMeasures().isCalibrated()){
+            Toast.makeText(this, R.string.calibration_done, Toast.LENGTH_SHORT).show();
+        }
+        else{
+            Measures.getMeasures().resetCalibration();
+            Toast.makeText(this, R.string.calibration_failed, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    public void resetTraining() {
+        training = new Training();
+        training.setRowers(rowersNames);
+    }
+
+    @Override
+    public void onBackPressed(){
+        if(calibrating){
+            calibrationFinished();
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
 }
