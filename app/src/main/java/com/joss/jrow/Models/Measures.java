@@ -27,8 +27,8 @@ public class Measures extends ArrayList<Measure>{
     private Measure frontPosition;
     private Measure neutralPosition;
 
-    private double minBack;
-    private double maxFront;
+    private double maxBack;
+    private double minFront;
 
     private Measures() {
         super();
@@ -133,10 +133,16 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public void setBackPosition(Measure backPosition) {
-        this.backPosition = backPosition;
+        this.backPosition = new Measure();
         if (backPosition != null) {
             for(int i=0; i<8; i++){
-                minBack = Math.min(minBack, backPosition.getAngle(i));
+                if(SensorManager.getInstance().isSensorActive(i)){
+                    this.backPosition.setRawAngle(i, backPosition.getRawAngle(i));
+                    maxBack = Math.max(maxBack, backPosition.getAngle(i));
+                }
+                else{
+                    this.backPosition.setRawAngle(i, 675);
+                }
             }
         }
     }
@@ -146,14 +152,20 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public void setFrontPosition(Measure frontPosition) {
-        this.frontPosition = frontPosition;
+        this.frontPosition = new Measure();
         if (frontPosition != null) {
             for(int i=0; i<8; i++){
-                maxFront = Math.max(maxFront, frontPosition.getAngle(i));
+                if(SensorManager.getInstance().isSensorActive(i)){
+                    this.frontPosition.setRawAngle(i, frontPosition.getRawAngle(i));
+                    minFront = Math.min(minFront, frontPosition.getAngle(i));
+                }
+                else{
+                    this.frontPosition.setRawAngle(i, 225);
+                }
             }
         }
         else{
-            maxFront = 0;
+            minFront = 0;
         }
     }
 
@@ -170,15 +182,25 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public void setNeutralPosition(Measure neutralPosition) {
-        this.neutralPosition = neutralPosition;
+        this.neutralPosition = new Measure();
+        if(neutralPosition != null){
+            for(int i=0; i<8; i++){
+                if(SensorManager.getInstance().isSensorActive(i)){
+                    this.neutralPosition.setRawAngle(i, neutralPosition.getRawAngle(i));
+                }
+                else{
+                    this.neutralPosition.setRawAngle(i, 500);
+                }
+            }
+        }
     }
 
-    public double getMinBack() {
-        return minBack;
+    public double getMaxBack() {
+        return maxBack;
     }
 
-    public double getMaxFront() {
-        return maxFront;
+    public double getMinFront() {
+        return minFront;
     }
 
     public void setDefaultCalibration(){
@@ -187,9 +209,9 @@ public class Measures extends ArrayList<Measure>{
         Measure neutral = new Measure();
 
         for(int i=0; i<8; i++){
-            back.setRawAngle(i, 225);
+            back.setRawAngle(i, 675);
             neutral.setRawAngle(i, 500);
-            front.setRawAngle(i, 675);
+            front.setRawAngle(i, 225);
         }
 
         setNeutralPosition(neutral);

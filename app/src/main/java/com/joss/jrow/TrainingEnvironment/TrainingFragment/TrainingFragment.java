@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.jjoe64.graphview.series.DataPoint;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
+import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
 import com.joss.jrow.SensorManager;
 import com.joss.jrow.SerialContent;
@@ -22,9 +23,6 @@ import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.LoadbarV
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.RaceViewFragment;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.SerialViewFragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrainingFragment extends Fragment implements
         Measures.OnNewMeasureProcessedListener,
         TrainingControler{
@@ -32,8 +30,6 @@ public class TrainingFragment extends Fragment implements
     private static boolean paused = false;
     private static boolean recording = false;
     private boolean ready;
-
-    private ArrayList<String> rowersNames;
 
     private TrainingTableFragment tableFragment;
     private TrainingControlerFragment controlerFragment;
@@ -44,20 +40,11 @@ public class TrainingFragment extends Fragment implements
     private int wait = 0;
 
     @Override
-    public void onCreate(Bundle args){
-        super.onCreate(args);
-        if (rowersNames == null) {
-            rowersNames = new ArrayList<>();
-        }
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
         super.onCreateView(inflater, parent, savedInstanceState);
         ready=false;
-        View v = inflater.inflate(R.layout.fragment_training, parent, false);
 
-        return v;
+        return inflater.inflate(R.layout.fragment_training, parent, false);
     }
 
     @Override
@@ -75,7 +62,6 @@ public class TrainingFragment extends Fragment implements
         else{
             controlerFragment = new TrainingControlerFragment();
             tableFragment = new TrainingTableFragment();
-            tableFragment.setRowersNames(rowersNames);
             displayFragment = new GraphViewFragment();
         }
         fm.beginTransaction().replace(R.id.table_fragment, tableFragment).disallowAddToBackStack().commit();
@@ -142,7 +128,6 @@ public class TrainingFragment extends Fragment implements
             controlerFragment.onNewMeasureProcessed(measure);
 
             if(wait>=3){
-            //if (wait>= SensorManager.getInstance().numberOfActiveSensors()) {
                 wait=0;
                 for(int i=0; i<8; i++){
                     if (SensorManager.getInstance().isSensorActive(i)) {
@@ -167,11 +152,6 @@ public class TrainingFragment extends Fragment implements
         }
     }
 
-    public void setRowersNames(List<String> rowersNames) {
-        this.rowersNames = new ArrayList<>();
-        this.rowersNames.addAll(rowersNames);
-    }
-
     @Override
     public void startTraining() {
         if(paused){
@@ -183,7 +163,7 @@ public class TrainingFragment extends Fragment implements
             SerialContent.getInstance().addToSerial("Training started");
             Measures.getMeasures().wipeData();
             Measures.getMeasures().setOnNewMeasureProcessedListener((TrainingActivity)getActivity());
-            ((TrainingActivity)getActivity()).resetTraining();
+            Training.resetTraining();
             controlerFragment.startTraining();
             displayFragment.startTraining();
         }

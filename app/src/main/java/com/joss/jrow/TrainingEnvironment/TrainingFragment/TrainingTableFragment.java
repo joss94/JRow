@@ -13,8 +13,11 @@ import android.widget.TextView;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
+import com.joss.jrow.Models.ReportLine;
+import com.joss.jrow.Models.Session;
 import com.joss.jrow.R;
 import com.joss.jrow.SensorManager;
+import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +28,7 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
     private volatile List<TextView> delays;
     private List<TextView> namesLabels;
 
-    private ArrayList<String> rowersNames;
+    private ReportLine reportLine;
 
     private SensorManager sensorManager;
     private Measures measures;
@@ -36,10 +39,11 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
         checkBoxes = new ArrayList<>();
         delays = new ArrayList<>();
         namesLabels = new ArrayList<>();
-        rowersNames = new ArrayList<>();
 
         sensorManager = SensorManager.getInstance();
         measures = Measures.getMeasures();
+
+        reportLine = new ReportLine();
     }
 
     @Override
@@ -96,6 +100,11 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
         namesLabels.add((TextView)v.findViewById(R.id.name7));
         namesLabels.add((TextView)v.findViewById(R.id.name8));
 
+        for(int i =0; i<7; i++){
+            namesLabels.get(i).setTextColor(GraphData.colors[i]);
+            namesLabels.get(i).setText(Session.getSession().getRowers().get(i));
+        }
+
         return v;
     }
 
@@ -106,50 +115,27 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-        outState.putSerializable("rowers_names", rowersNames);
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState){
-        super.onActivityCreated(savedInstanceState);
-        if(savedInstanceState != null && savedInstanceState.containsKey("rowers_names")){
-            rowersNames = (ArrayList<String>) savedInstanceState.getSerializable("rowers_names");
-        }
-
-        if (rowersNames.size()>7) {
-            for(TextView nameLabel : namesLabels){
-                String name = rowersNames.get(namesLabels.indexOf(nameLabel));
-                nameLabel.setText(name);
-            }
-        }
-    }
-
-    @Override
     public void onNewMeasureProcessed(Measure measure) {
     }
 
     @Override
     public void onMovementChanged(int index, long time) {
-        if (sensorManager.isSensorActive(index)) {
+        if (sensorManager.isSensorActive(index) || index == Position.STERN) {
             if(index == Position.STERN){
-                delays.get(index).setText(String.valueOf((double)time/1000));
                 for(int i=0; i<8; i++){
                     if(time - measures.getCatchTimes()[Position.STERN]<700 && sensorManager.isSensorActive(i)){
                         delays.get(index).setText(context.getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
+                        reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
+                        reportLine.setStrokeRate((float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN]))));
                     }
                 }
             }
             else{
                 if(time - measures.getCatchTimes()[Position.STERN]<700){
                     delays.get(index).setText(context.getString(R.string.delay, ((double)(time - measures.getCatchTimes()[Position.STERN]))/1000));
+                    reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
                 }
             }
         }
-    }
-
-    public void setRowersNames(ArrayList<String> rowersNames) {
-        this.rowersNames = rowersNames;
     }
 }

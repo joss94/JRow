@@ -18,9 +18,6 @@ import com.joss.utils.SlidingDrawer.DrawerMenuItem;
 import com.joss.utils.SlidingDrawer.DrawerSlidingPane;
 import com.joss.utils.SlidingDrawer.OnDrawerItemClickListener;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-
 public class TrainingActivity extends BluetoothConnectionActivity implements
         OnDrawerItemClickListener,
         Measures.OnNewMeasureProcessedListener,
@@ -32,10 +29,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     private CalibrationFragment calibrationFragment;
 
     private SerialContent serialContent;
-
-    private Training training;
-
-    private ArrayList<String> rowersNames;
 
     private DrawerSlidingPane drawer;
 
@@ -59,12 +52,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             trainingFragment = new TrainingFragment();
             calibrationFragment = new CalibrationFragment();
             calibrating = false;
-        }
-        rowersNames = new ArrayList<>();
-        if(getIntent().hasExtra("rowers")){
-            Serializable rowersNamesSerializable = getIntent().getSerializableExtra("rowers");
-            rowersNames = (ArrayList<String>) rowersNamesSerializable;
-            trainingFragment.setRowersNames(rowersNames);
         }
 
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
@@ -117,7 +104,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     private void askForSaving() {
         SaveTrainingDialog d = new SaveTrainingDialog();
         d.setTitle("Save");
-        d.setTraining(training);
         d.setRequestCode(SAVE_REQUEST_CODE);
         d.setOnFragmentInteractionListener(this);
         d.show(getSupportFragmentManager(), "save_dialog");
@@ -192,7 +178,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                 serialContent.addToSerial("Connection established!");
                 if(calibrating){
                     calibrationFragment = new CalibrationFragment();
-                    calibrationFragment.setRowersNames(rowersNames);
                     drawer.displayFragment(calibrationFragment, "CALIBRATION");
                 }
                 else{
@@ -220,9 +205,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void stopTraining() {
         disconnect();
         trainingFragment.stopTraining();
-        if (training!= null) {
-            askForSaving();
-        }
+        askForSaving();
     }
 
     @Override
@@ -265,9 +248,9 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             public void run() {
                 if (!calibrating && trainingFragment != null) {
                     trainingFragment.onMovementChanged(index, time);
-                    if(index == Position.STERN && training != null){
+                    if(index == Position.STERN && Training.getTraining() != null){
                         double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
-                        training.getStrokeRates().put(time, frequency);
+                        Training.getTraining().getStrokeRates().put(time, frequency);
                     }
                 }
             }
@@ -282,10 +265,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         switch(requestCode){
             case SAVE_REQUEST_CODE:
                 if(resultCode == RESULT_OK){
-                    saveTraining();
-                }
-                else{
-                    training = null;
+                    Training.getTraining().save((String)objects[0]);
                 }
                 break;
 
@@ -295,11 +275,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                     startTraining();
                 }
         }
-    }
-
-    private void saveTraining() {
-        //TODO implement method
-        training = null;
     }
 
     public void calibrate() {
@@ -319,12 +294,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             Measures.getMeasures().resetCalibration();
             Toast.makeText(this, R.string.calibration_failed, Toast.LENGTH_SHORT).show();
         }
-    }
-
-
-    public void resetTraining() {
-        training = new Training();
-        training.setRowers(rowersNames);
     }
 
     @Override

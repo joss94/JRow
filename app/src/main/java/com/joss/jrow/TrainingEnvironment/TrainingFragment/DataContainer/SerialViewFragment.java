@@ -63,7 +63,9 @@ public class SerialViewFragment extends DataDisplayFragment {
         for(int i=0; i<8; i++){
             result += i+": " + measure.getRawAngle(i) + "\n";
         }
-        currentMeasure.setText(result);
+        if (currentMeasure != null) {
+            currentMeasure.setText(result);
+        }
     }
 
     @Override

@@ -8,10 +8,12 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.joss.jrow.Models.Session;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class PrepareTrainingActivity extends AppCompatActivity{
@@ -38,10 +40,11 @@ public class PrepareTrainingActivity extends AppCompatActivity{
         names.add((EditText)findViewById(R.id.name8));
         names.add((EditText)findViewById(R.id.name_timo));
 
-        /*
-        for(EditText name : names){
-            name.getBackground().setColorFilter(getResources().getColor(R.color.colorAccent), PorterDuff.Mode.SRC_IN);
-        }/**/
+        if(Session.getSession().getRowers() != null && Session.getSession().getRowers().size()>8){
+            for(int i =0; i<9; i++){
+                names.get(i).setText(Session.getSession().getRowers().get(i));
+            }
+        }
 
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,9 +58,10 @@ public class PrepareTrainingActivity extends AppCompatActivity{
                         rowers.add(name.getHint().toString());
                     }
                 }
+                Session.getSession().setRowers(rowers);
+                Session.getSession().setDate(Calendar.getInstance().getTime());
 
                 Intent intent = new Intent(getApplicationContext(), TrainingActivity.class);
-                intent.putExtra("rowers", rowers);
                 startActivity(intent);
             }
         });
