@@ -32,8 +32,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private DrawerSlidingPane drawer;
 
-    private boolean calibrating;
-
     private int drawerPosition;
 
     @Override
@@ -46,13 +44,9 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         if (savedInstanceState != null &&
                 getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT") != null) {
             trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
-            calibrationFragment = (CalibrationFragment) getSupportFragmentManager().getFragment(savedInstanceState, "CALIBRATION_FRAGMENT");
-            calibrating = savedInstanceState.getBoolean("calibrating");
         }
         else{
             trainingFragment = new TrainingFragment();
-            calibrationFragment = new CalibrationFragment();
-            calibrating = false;
         }
 
         drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
@@ -61,11 +55,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.race), R.drawable.ic_race, R.drawable.ic_race_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.terminal), R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
-        if (!calibrating) {
-            drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
-        } else{
-            drawer.replaceFragment(calibrationFragment, calibrationFragment.getTag());
-        }
+        drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
 
         if (savedInstanceState!=null) {
             if(savedInstanceState.containsKey("drawer_position")){
@@ -94,10 +84,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putInt("drawer_position", drawerPosition);
-        outState.putBoolean("calibrating", calibrating);
         try {
             getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
-            getSupportFragmentManager().putFragment(outState, "CALIBRATION_FRAGMENT", calibrationFragment);
         } catch (Exception ignored) {
         }
     }
@@ -177,13 +165,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             @Override
             public void run() {
                 serialContent.addToSerial("Connection established!");
-                if(calibrating){
-                    calibrationFragment = new CalibrationFragment();
-                    drawer.displayFragment(calibrationFragment, "CALIBRATION");
-                }
-                else{
-                    trainingFragment.startTraining();
-                }
+                trainingFragment.startTraining();
             }
         });
 
@@ -230,15 +212,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!calibrating) {
-                    if (trainingFragment!=null) {
-                        trainingFragment.onNewMeasureProcessed(measure);
-                    }
-                }
-                else{
-                    if (calibrationFragment!=null) {
-                        calibrationFragment.onNewMeasureProcessed(measure);
-                    }
+                if (trainingFragment!=null) {
+                    trainingFragment.onNewMeasureProcessed(measure);
                 }
             }
         });
