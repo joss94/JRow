@@ -9,8 +9,6 @@ public class DataReadThread extends Thread {
     private static volatile String data;
     private Measures measures;
 
-    private volatile boolean running = true;
-
     private SerialContent serialContent;
 
     public DataReadThread(){
@@ -21,17 +19,12 @@ public class DataReadThread extends Thread {
 
     @Override
     public void run(){
-        running = true;
-        while (running) {
+        while (!isInterrupted()) {
             if(data.contains("&")){
                 decode(data.substring(0, data.indexOf("&")+1));
                 data = data.substring(data.indexOf('&')+1);
             }
         }
-    }
-
-    public void cancel(){
-        running = false;
     }
 
     public synchronized void addData(String additional){

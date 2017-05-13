@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.joss.jrow.DataProcessingThreads.DataProcessThread;
 import com.joss.jrow.DataProcessingThreads.DataReadThread;
-import com.joss.jrow.SerialContent;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +17,9 @@ public class BluetoothListenThread extends Thread {
     private final DataProcessThread dataProcessThread;
     private final DataReadThread dataReadThread;
 
-    private volatile boolean running = true;
-
-    public BluetoothListenThread(BluetoothSocket socket){
+    public BluetoothListenThread(){
         Looper.prepare();
-
-        this.socket = socket;
+        socket = JRowSocket.getInstance().getSocket();
         try {
             is = socket.getInputStream();
         } catch (IOException e) {
@@ -39,14 +35,9 @@ public class BluetoothListenThread extends Thread {
 
     @Override
     public void run(){
-
-        running=true;
         byte[] buffer = new byte[90];
-        if(!running){
-            SerialContent.getInstance().addToSerial("thread stopped listening");
-        }
 
-        while(running){
+        while(!isInterrupted()){
             try {
                 int numBytes = is.read(buffer);
                 dataReadThread.addData(new String(buffer, 0, numBytes));
@@ -55,17 +46,17 @@ public class BluetoothListenThread extends Thread {
         }
     }
 
-    public void cancel(){
-        running = false;
-        if (socket != null) {
+    @Override
+    public void interrupt(){
+        super.interrupt();
+        if (socket != null && socket.isConnected()) {
             try {
                 socket.close();
             } catch (IOException e) {
                 Log.e(this.getName(), "Could not close the connect socket", e);
             }
         }
-        dataReadThread.cancel();
-        dataProcessThread.cancel();
-        interrupt();
+        dataReadThread.interrupt();
+        dataProcessThread.interrupt();
     }
 }

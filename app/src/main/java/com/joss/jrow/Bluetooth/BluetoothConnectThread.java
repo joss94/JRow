@@ -9,9 +9,9 @@ import java.lang.reflect.InvocationTargetException;
 
 public class BluetoothConnectThread extends Thread {
 
-    private final BluetoothSocket mmSocket;
+    private final BluetoothSocket socket;
     private final BluetoothAdapter adapter;
-    private final onConnectionResponseListener listener;
+    private onConnectionResponseListener listener;
 
     public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, onConnectionResponseListener listener) {
         this.listener = listener;
@@ -23,7 +23,7 @@ public class BluetoothConnectThread extends Thread {
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
-        mmSocket = tmp;
+        socket = tmp;
     }
 
     public void run() {
@@ -31,27 +31,35 @@ public class BluetoothConnectThread extends Thread {
         adapter.cancelDiscovery();
 
         try {
-            mmSocket.connect();
-        } catch (IOException connectException) {
-            try {
+            socket.connect();
+            } catch (IOException connectException) {
+            if (listener != null) {
                 listener.onConnectionResponse(false, connectException.getMessage(), null);
-                mmSocket.close();
-            } catch (IOException closeException) {
-                listener.onConnectionResponse(false, "Could not close the client socket", null);
             }
             return;
         }
 
-        listener.onConnectionResponse(true, "success", mmSocket);
+        if (listener != null) {
+            listener.onConnectionResponse(true, "success", socket);
+        }
     }
 
-    public void cancel() {
+    @Override
+    public void interrupt() {
+        super.interrupt();
         try {
-            mmSocket.close();
+            if (socket != null && socket.isConnected()) {
+                socket.close();
+            }
             JRowSocket.getInstance().setSocket(null);
-            listener.onConnectionClosed(true, "Socket closed");
+            if (listener != null) {
+                listener.onConnectionClosed(true, "Socket closed");
+                listener = null;
+            }
         } catch (IOException e) {
-            listener.onConnectionClosed(false, "Could not close the client socket");
+            if (listener != null) {
+                listener.onConnectionClosed(false, "Could not close the client socket");
+            }
         }
     }
 
