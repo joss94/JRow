@@ -9,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.joss.jrow.Bluetooth.BluetoothConnectThread;
@@ -96,14 +95,16 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     private void connectToDevice(BluetoothDevice device){
         progress.show();
         connectThread = new BluetoothConnectThread(device, adapter, this);
+
         connectThread.start();
-        (new Handler()).postDelayed(new Runnable() {
+        /*(new Handler()).postDelayed(new Runnable() {
             @Override
             public void run() {
                 connectThread.cancel();
                 progress.dismiss();
             }
         }, CONNECTION_DELAY);
+        */
     }
 
     @Override

@@ -11,6 +11,7 @@ import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
+import com.joss.jrow.SensorManager;
 import com.joss.jrow.SerialContent;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.TrainingFragment;
 import com.joss.utils.AbstractDialog.OnDialogFragmentInteractionListener;
@@ -246,11 +247,11 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!calibrating && trainingFragment != null) {
+                if (!calibrating && trainingFragment != null && SensorManager.getInstance().isSensorActive(index)) {
                     trainingFragment.onMovementChanged(index, time);
                     if(index == Position.STERN && Training.getTraining() != null){
                         double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
-                        Training.getTraining().getStrokeRates().put(time, frequency);
+                        //Training.getTraining().getStrokeRates().put(time, frequency);
                     }
                 }
             }
@@ -274,6 +275,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
                     Measures.getMeasures().setDefaultCalibration();
                     startTraining();
                 }
+                break;
         }
     }
 

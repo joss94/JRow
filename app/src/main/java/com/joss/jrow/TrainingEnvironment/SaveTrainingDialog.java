@@ -38,7 +38,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
             Toast.makeText(getContext(), "Invalid file name", Toast.LENGTH_SHORT).show();
             return false ;
         }
-        listener.onFragmentInteraction(AppCompatActivity.RESULT_OK, getRequestCode(), fileName);
+        listener.onFragmentInteraction(getRequestCode(), AppCompatActivity.RESULT_OK, fileName);
         return true;
     }
 
@@ -49,7 +49,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
 
     @Override
     public void setViews() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_hh_mm", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm", Locale.FRANCE);
         trainingName.setText(sdf.format(training.getDate()));
     }
 }
