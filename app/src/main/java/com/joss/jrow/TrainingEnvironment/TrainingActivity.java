@@ -44,7 +44,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         serialContent = SerialContent.getInstance();
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null &&
+                getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT") != null) {
             trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
             calibrationFragment = (CalibrationFragment) getSupportFragmentManager().getFragment(savedInstanceState, "CALIBRATION_FRAGMENT");
             calibrating = savedInstanceState.getBoolean("calibrating");

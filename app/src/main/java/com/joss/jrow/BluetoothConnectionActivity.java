@@ -29,7 +29,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     private BluetoothAdapter adapter;
 
     private BluetoothConnectThread connectThread;
-    private ProgressDialog progress;
+    private ProgressDialogFragment progress;
     private Handler connectionOvertimeHandler;
     private Runnable cancelConnect;
 
@@ -62,7 +62,17 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
                 onConnectionError("Connect time expired");
             }
         };
-        progress = new ProgressDialogFragment();
+        if (getFragmentManager().findFragmentByTag("PROGRESS") != null) {
+            progress = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("PROGRESS");
+        }
+        else{
+            progress = new ProgressDialogFragment();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState){
+        getFragmentManager().putFragment(savedInstanceState, "PROGRESS", progress);
     }
 
     @Override
@@ -106,7 +116,11 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
-        progress.show(getFragmentManager(), "PROGRESS");
+        runOnUiThread(new Runnable() {
+            public void run() {
+                progress.show(getFragmentManager(), "PROGRESS");
+            }
+        });
         connectThread = new BluetoothConnectThread(device, adapter, this);
         connectThread.start();
         connectionOvertimeHandler.postDelayed(cancelConnect, CONNECTION_DELAY);
@@ -152,7 +166,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     public static class ProgressDialogFragment extends DialogFragment {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
-            ProgressDialog progress = new ProgressDialog(getActivity().getApplicationContext());
+            final ProgressDialog progress = new ProgressDialog(getActivity());
             progress.setTitle("Connecting");
             progress.setMessage("Wait while connecting to the Arduino..");
             progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
