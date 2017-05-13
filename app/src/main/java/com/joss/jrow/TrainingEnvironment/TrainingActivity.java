@@ -1,11 +1,11 @@
 package com.joss.jrow.TrainingEnvironment;
 
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.joss.jrow.BluetoothConnectionActivity;
-import com.joss.jrow.Calibration.CalibrationFragment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
@@ -26,46 +26,37 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private static final int SAVE_REQUEST_CODE = 6854;
     private static final int CALIBRATION_REQUEST_CODE = 21356;
+    public static final int CALIBRATION_DONE_REQUEST_CODE = 6132;
     private TrainingFragment trainingFragment;
-    private CalibrationFragment calibrationFragment;
 
     private SerialContent serialContent;
 
-    private DrawerSlidingPane drawer;
-
-    private boolean calibrating;
-
     private int drawerPosition;
+
+    private Measures measures;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
 
+        measures = Measures.getMeasures();
         serialContent = SerialContent.getInstance();
 
         if (savedInstanceState != null) {
             trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
-            calibrationFragment = (CalibrationFragment) getSupportFragmentManager().getFragment(savedInstanceState, "CALIBRATION_FRAGMENT");
-            calibrating = savedInstanceState.getBoolean("calibrating");
         }
         else{
             trainingFragment = new TrainingFragment();
-            calibrationFragment = new CalibrationFragment();
-            calibrating = false;
         }
 
-        drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
+        DrawerSlidingPane drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.graph), R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.loadbar), R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.race), R.drawable.ic_race, R.drawable.ic_race_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.terminal), R.drawable.ic_menu_serial, R.drawable.ic_menu_serial_on));
         drawer.setOnDrawerItemClickListener(this);
-        if (!calibrating) {
-            drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
-        } else{
-            drawer.replaceFragment(calibrationFragment, calibrationFragment.getTag());
-        }
+        drawer.replaceFragment(trainingFragment, trainingFragment.getTag());
 
         if (savedInstanceState!=null) {
             if(savedInstanceState.containsKey("drawer_position")){
@@ -94,10 +85,8 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         outState.putInt("drawer_position", drawerPosition);
-        outState.putBoolean("calibrating", calibrating);
         try {
             getSupportFragmentManager().putFragment(outState, "TRAINING_FRAGMENT", trainingFragment);
-            getSupportFragmentManager().putFragment(outState, "CALIBRATION_FRAGMENT", calibrationFragment);
         } catch (Exception ignored) {
         }
     }
@@ -177,13 +166,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             @Override
             public void run() {
                 serialContent.addToSerial("Connection established!");
-                if(calibrating){
-                    calibrationFragment = new CalibrationFragment();
-                    drawer.displayFragment(calibrationFragment, "CALIBRATION");
-                }
-                else{
-                    trainingFragment.startTraining();
-                }
+                trainingFragment.startTraining();
             }
         });
 
@@ -227,18 +210,18 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
+        for(int i=0; i<8; i++){
+            if(measures.getBackPosition().getRawAngle(i) < measure.getRawAngle(i)){
+                measures.getBackPosition().setRawAngle(i, measure.getRawAngle(i));
+            }else if (measures.getFrontPosition().getRawAngle(i) > measure.getRawAngle(i)){
+                measures.getFrontPosition().setRawAngle(i, measure.getRawAngle(i));
+            }
+        }
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!calibrating) {
-                    if (trainingFragment!=null) {
-                        trainingFragment.onNewMeasureProcessed(measure);
-                    }
-                }
-                else{
-                    if (calibrationFragment!=null) {
-                        calibrationFragment.onNewMeasureProcessed(measure);
-                    }
+                if (trainingFragment!=null) {
+                    trainingFragment.onNewMeasureProcessed(measure);
                 }
             }
         });
@@ -249,7 +232,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (!calibrating && trainingFragment != null && SensorManager.getInstance().isSensorActive(index)) {
+                if (trainingFragment != null && SensorManager.getInstance().isSensorActive(index)) {
                     trainingFragment.onMovementChanged(index, time);
                     if(index == Position.STERN && Training.getTraining() != null){
                         double frequency = (float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN])));
@@ -281,32 +264,14 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         }
     }
 
-    public void calibrate() {
-        calibrating = true;
-        Measures.getMeasures().resetCalibration();
-        connect();
-    }
-
-    public void calibrationFinished() {
-        calibrating = false;
-        disconnect();
-        drawer.popFragment();
-        if(Measures.getMeasures().isCalibrated()){
-            Toast.makeText(this, R.string.calibration_done, Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Measures.getMeasures().resetCalibration();
-            Toast.makeText(this, R.string.calibration_failed, Toast.LENGTH_SHORT).show();
-        }
-    }
-
     @Override
-    public void onBackPressed(){
-        if(calibrating){
-            calibrationFinished();
-        }
-        else{
-            super.onBackPressed();
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        if(requestCode == CALIBRATION_DONE_REQUEST_CODE){
+            if(resultCode == RESULT_OK){
+                if(Measures.getMeasures().isCalibrated()){
+                    Toast.makeText(this, R.string.calibration_done, Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 }

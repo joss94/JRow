@@ -27,9 +27,6 @@ public class Measures extends ArrayList<Measure>{
     private Measure frontPosition;
     private Measure neutralPosition;
 
-    private double maxBack;
-    private double minFront;
-
     private Measures() {
         super();
         strokeRate = 0;
@@ -138,7 +135,6 @@ public class Measures extends ArrayList<Measure>{
             for(int i=0; i<8; i++){
                 if(SensorManager.getInstance().isSensorActive(i)){
                     this.backPosition.setRawAngle(i, backPosition.getRawAngle(i));
-                    maxBack = Math.max(maxBack, backPosition.getAngle(i));
                 }
                 else{
                     this.backPosition.setRawAngle(i, 675);
@@ -157,15 +153,11 @@ public class Measures extends ArrayList<Measure>{
             for(int i=0; i<8; i++){
                 if(SensorManager.getInstance().isSensorActive(i)){
                     this.frontPosition.setRawAngle(i, frontPosition.getRawAngle(i));
-                    minFront = Math.min(minFront, frontPosition.getAngle(i));
                 }
                 else{
                     this.frontPosition.setRawAngle(i, 225);
                 }
             }
-        }
-        else{
-            minFront = 0;
         }
     }
 
@@ -196,11 +188,11 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public double getMaxBack() {
-        return maxBack;
+        return getBackPosition().getMaxAngle();
     }
 
     public double getMinFront() {
-        return minFront;
+        return getFrontPosition().getMinAngle();
     }
 
     public void setDefaultCalibration(){
