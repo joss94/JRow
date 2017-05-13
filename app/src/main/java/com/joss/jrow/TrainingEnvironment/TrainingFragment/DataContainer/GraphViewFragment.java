@@ -27,15 +27,15 @@ public class GraphViewFragment extends DataDisplayFragment {
         graph = (GraphView) v.findViewById(R.id.data_container);
 
         graph.getViewport().setYAxisBoundsManual(true);
-        graph.getViewport().setMinY(-90.0);
-        graph.getViewport().setMaxY(60.0);
+        graph.getViewport().setMinY(-70.0);
+        graph.getViewport().setMaxY(70.0);
 
         graph.getViewport().setXAxisBoundsManual(true);
         graph.getViewport().setMinX(0.0);
-        graph.getViewport().setMaxX(3);
+        graph.getViewport().setMaxX(2);
 
         graph.getViewport().setScrollable(true);
-        graph.getViewport().setScalable(true);
+        graph.getViewport().setScalableY(true);
 
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);

@@ -198,16 +198,14 @@
                 android:text="@string/dummy_rower"
                 android:maxLength="6"
                 android:layout_marginEnd="@dimen/margin_small"
-                android:textSize="@dimen/text_small"
-                android:textColor="@color/red"/>
+                android:textSize="@dimen/text_small" />
 
             <TextView
                 android:id="@+id/angle8"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/dummy_delay"
-                android:textSize="@dimen/text_small"
-                android:textColor="@color/red"/>
+                android:textSize="@dimen/text_small" />
 
         </TableRow>
 

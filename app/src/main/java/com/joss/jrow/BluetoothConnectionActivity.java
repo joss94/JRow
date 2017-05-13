@@ -1,5 +1,7 @@
 package com.joss.jrow;
 
+import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -28,7 +30,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     private BluetoothConnectThread connectThread;
     private BluetoothListenThread listenThread;
 
-    ProgressDialog progress;
+    private ProgressDialogFragment progress;
 
     private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
         @Override
@@ -47,10 +49,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         IntentFilter filter  = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);
 
-        progress = new ProgressDialog(this);
-        progress.setTitle("Connecting");
-        progress.setMessage("Wait while connecting to the Arduino..");
-        progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+        progress = new ProgressDialogFragment();
     }
 
     @Override
@@ -93,7 +92,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
-        progress.show();
+        progress.show(getFragmentManager(), "PROGRESS");
         connectThread = new BluetoothConnectThread(device, adapter, this);
 
         connectThread.start();
@@ -149,6 +148,17 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         }
         if(listenThread != null){
             listenThread.cancel();
+        }
+    }
+
+    public static class ProgressDialogFragment extends DialogFragment {
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            ProgressDialog progress = new ProgressDialog(getActivity().getApplicationContext());
+            progress.setTitle("Connecting");
+            progress.setMessage("Wait while connecting to the Arduino..");
+            progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
+            return progress;
         }
     }
 

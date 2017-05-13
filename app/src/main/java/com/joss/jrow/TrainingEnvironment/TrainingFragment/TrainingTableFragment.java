@@ -100,7 +100,7 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
         namesLabels.add((TextView)v.findViewById(R.id.name7));
         namesLabels.add((TextView)v.findViewById(R.id.name8));
 
-        for(int i =0; i<7; i++){
+        for(int i=0; i<8; i++){
             namesLabels.get(i).setTextColor(GraphData.colors[i]);
             namesLabels.get(i).setText(Session.getSession().getRowers().get(i));
         }
