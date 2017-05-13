@@ -44,7 +44,9 @@ public class BluetoothConnectThread extends Thread {
         }
     }
 
-    public void cancel() {
+    @Override
+    public void interrupt() {
+        super.interrupt();
         try {
             if (socket != null && socket.isConnected()) {
                 socket.close();

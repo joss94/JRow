@@ -137,7 +137,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             JRowSocket.getInstance().setSocket(socket);
             sendBroadcast(new Intent(BluetoothListenReceiver.START_LISTEN_BLUETOOTH));
         }else{
-            connectThread.cancel();
+            connectThread.interrupt();
             onConnectionError(message);
         }
     }
@@ -147,10 +147,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     protected void disconnect(){
-        if(connectThread!=null){
-            connectThread.cancel();
-            connectThread = null;
-        }
+        connectThread.interrupt();
         sendBroadcast(new Intent(BluetoothListenReceiver.STOP_LISTEN_BLUETOOTH));
     }
 

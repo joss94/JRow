@@ -46,7 +46,9 @@ public class BluetoothListenThread extends Thread {
         }
     }
 
-    public void cancel(){
+    @Override
+    public void interrupt(){
+        super.interrupt();
         if (socket != null && socket.isConnected()) {
             try {
                 socket.close();
@@ -56,6 +58,5 @@ public class BluetoothListenThread extends Thread {
         }
         dataReadThread.interrupt();
         dataProcessThread.interrupt();
-        interrupt();
     }
 }
