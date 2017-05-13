@@ -54,8 +54,8 @@ public class BluetoothListenThread extends Thread {
                 Log.e(this.getName(), "Could not close the connect socket", e);
             }
         }
-        dataReadThread.cancel();
-        dataProcessThread.cancel();
+        dataReadThread.interrupt();
+        dataProcessThread.interrupt();
         interrupt();
     }
 }

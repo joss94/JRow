@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.WakefulBroadcastReceiver;
 
-public class ListenReceiver extends WakefulBroadcastReceiver {
+public class BluetoothListenReceiver extends WakefulBroadcastReceiver {
 
     public static final String START_LISTEN_BLUETOOTH = "start_listen_bluetooth_jrow";
     public static final String STOP_LISTEN_BLUETOOTH = "stop_listen_bluetooth_jrow";

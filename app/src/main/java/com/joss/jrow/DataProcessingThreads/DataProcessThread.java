@@ -6,24 +6,16 @@ public class DataProcessThread extends Thread {
 
     private Measures measures;
 
-    private volatile boolean running = true;
-
     public DataProcessThread(){
         measures = Measures.getMeasures();
     }
 
     @Override
     public void run(){
-        running = true;
-        while (running) {
+        while (isInterrupted()) {
             if(!measures.getDataToProcess().isEmpty()){
                 measures.processData();
             }
         }
     }
-
-    public void cancel(){
-        running = false;
-    }
-
 }

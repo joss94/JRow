@@ -14,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.joss.jrow.Bluetooth.BluetoothConnectThread;
 import com.joss.jrow.Bluetooth.JRowSocket;
-import com.joss.jrow.Bluetooth.ListenReceiver;
+import com.joss.jrow.Bluetooth.BluetoothListenReceiver;
 
 import java.util.Set;
 
@@ -41,14 +41,14 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             }
         }
     };
-    private ListenReceiver listenReceiver;
+    private BluetoothListenReceiver bluetoothListenReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerReceiver(connectReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-        listenReceiver = new ListenReceiver();
-        registerReceiver(listenReceiver, new IntentFilter(ListenReceiver.START_LISTEN_BLUETOOTH));
+        bluetoothListenReceiver = new BluetoothListenReceiver();
+        registerReceiver(bluetoothListenReceiver, new IntentFilter(BluetoothListenReceiver.START_LISTEN_BLUETOOTH));
 
         connectionOvertimeHandler = new Handler();
 
@@ -71,7 +71,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     public void onDestroy(){
         super.onDestroy();
         unregisterReceiver(connectReceiver);
-        unregisterReceiver(listenReceiver);
+        unregisterReceiver(bluetoothListenReceiver);
     }
 
     private void setUpBluetooth() {
@@ -135,7 +135,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         if(result){
             onConnectionEstablished();
             JRowSocket.getInstance().setSocket(socket);
-            sendBroadcast(new Intent(ListenReceiver.START_LISTEN_BLUETOOTH));
+            sendBroadcast(new Intent(BluetoothListenReceiver.START_LISTEN_BLUETOOTH));
         }else{
             connectThread.cancel();
             onConnectionError(message);
@@ -151,7 +151,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             connectThread.cancel();
             connectThread = null;
         }
-        sendBroadcast(new Intent(ListenReceiver.STOP_LISTEN_BLUETOOTH));
+        sendBroadcast(new Intent(BluetoothListenReceiver.STOP_LISTEN_BLUETOOTH));
     }
 
 
