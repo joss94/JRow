@@ -47,20 +47,4 @@ public class Measure extends HashMap<String, Long> {
         double percentage = (getAngle(index) - Measures.getMeasures().getMinFront())/(Measures.getMeasures().getMaxBack() - Measures.getMeasures().getMinFront());
         return Math.max(Math.min(1,percentage), percentage);
     }
-
-    public double getMaxAngle(){
-        double max = 0;
-        for(int i=0; i<8; i++){
-            max = Math.max(max, getAngle(i));
-        }
-        return max;
-    }
-
-    public double getMinAngle(){
-        double min = 0;
-        for(int i=0; i<8; i++){
-            min = Math.min(min, getAngle(i));
-        }
-        return min;
-    }
 }
