@@ -206,7 +206,9 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     public void stopTraining() {
         disconnect();
         trainingFragment.stopTraining();
-        askForSaving();
+        if (Training.getTraining().getDuration() >0) {
+            askForSaving();
+        }
     }
 
     @Override

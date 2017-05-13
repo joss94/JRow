@@ -48,10 +48,6 @@ public class Training implements Serializable {
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy-HH:mm", Locale.FRANCE);
 
         int numberOfStrokes = report.size();
-        double time = 0;
-        if (report.size()>0) {
-            time = (float)(report.get(report.size()-1).getTime()- Measures.getMeasures().getStartTime())/1000;
-        }
         double averageStroke =0.0;
         /*for(int i=0; i<getStrokeRates().size(); i++){
             averageStroke += getStrokeRates().valueAt(i);
@@ -71,7 +67,7 @@ public class Training implements Serializable {
                     os.write(((i==8)?i+": ":"Timo: " + Session.getSession().getRowers().get(i) + '\n').getBytes());
                 }
                 os.write('\n');
-                os.write(("DURATION OF TRAINING: " + time + " seconds"+ '\n').getBytes());
+                os.write(("DURATION OF TRAINING: " + getDuration() + " seconds"+ '\n').getBytes());
                 os.write(("NUMBER OF STROKES: " + numberOfStrokes + '\n').getBytes());
                 os.write(("AVERAGE STROKE: " + averageStroke + '\n').getBytes());
                 os.write('\n');
@@ -100,5 +96,13 @@ public class Training implements Serializable {
     private boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
         return Environment.MEDIA_MOUNTED.equals(state);
+    }
+
+    public double getDuration(){
+        double time = 0;
+        if (report.size()>0) {
+            time = (float)(report.get(report.size()-1).getTime()- Measures.getMeasures().getStartTime())/1000;
+        }
+        return time;
     }
 }
