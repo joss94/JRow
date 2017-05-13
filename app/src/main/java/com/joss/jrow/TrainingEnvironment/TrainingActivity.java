@@ -27,8 +27,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     private static final int SAVE_REQUEST_CODE = 6854;
     private static final int CALIBRATION_REQUEST_CODE = 21356;
     private TrainingFragment trainingFragment;
-    private CalibrationFragment calibrationFragment;
-
+    //test
     private SerialContent serialContent;
 
     private DrawerSlidingPane drawer;
