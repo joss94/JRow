@@ -20,6 +20,7 @@ import java.util.Set;
 public abstract class BluetoothConnectionActivity extends AppCompatActivity implements
         BluetoothConnectThread.onConnectionResponseListener {
 
+    private static final long CONNECTION_DELAY = 10000;
     private final int REQUEST_ENABLE_BT = 12;
     private final String MAC_ADDRESS = "20:16:11:21:11:43";
     private BluetoothAdapter adapter;
@@ -94,7 +95,16 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     private void connectToDevice(BluetoothDevice device){
         progress.show();
         connectThread = new BluetoothConnectThread(device, adapter, this);
+
         connectThread.start();
+        /*(new Handler()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                connectThread.cancel();
+                progress.dismiss();
+            }
+        }, CONNECTION_DELAY);
+        */
     }
 
     @Override
@@ -131,7 +141,6 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         }else{
             setUpBluetooth();
         }
-
     }
 
     protected void disconnect(){

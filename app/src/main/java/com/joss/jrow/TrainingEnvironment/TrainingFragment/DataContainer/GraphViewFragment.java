@@ -80,8 +80,8 @@ public class GraphViewFragment extends DataDisplayFragment {
         super.onMovementChanged(index,time);
         if (index == Position.STERN && SensorManager.getInstance().isSensorActive(Position.STERN)) {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
-            series.appendData(new DataPoint((double) (time)/1000, 10000), true, 200);
-            series.appendData(new DataPoint((double) (time)/1000, -10000), true, 200);
+            series.appendData(new DataPoint((double) (time)/1000, 500), true, 200);
+            series.appendData(new DataPoint((double) (time)/1000, -500), true, 200);
             series.setColor(context.getResources().getColor(android.R.color.black));
             series.setThickness(3);
             graph.addSeries(series);

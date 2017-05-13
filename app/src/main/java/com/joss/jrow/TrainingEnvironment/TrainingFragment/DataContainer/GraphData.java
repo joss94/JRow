@@ -11,7 +11,7 @@ import java.util.ArrayList;
 public class GraphData extends ArrayList<LineGraphSeries<DataPoint>> {
 
     private static final long serialVersionUID = -3630374071534032353L;
-    private final int[] colors = {Color.GRAY, Color.rgb(255,102,0), Color.BLUE, Color.MAGENTA, Color.BLACK, Color.rgb(0, 150, 0), Color.rgb(100, 50, 130)};
+    public static final int[] colors = {Color.GRAY, Color.rgb(255,102,0), Color.BLUE, Color.MAGENTA, Color.BLACK, Color.rgb(0, 150, 0), Color.rgb(100, 50, 130)};
 
     private static GraphData ourInstance = new GraphData();
 

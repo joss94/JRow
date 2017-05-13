@@ -39,6 +39,7 @@ public class BluetoothListenThread extends Thread {
 
     @Override
     public void run(){
+
         running=true;
         byte[] buffer = new byte[90];
         if(!running){

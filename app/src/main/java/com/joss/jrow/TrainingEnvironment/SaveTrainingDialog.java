@@ -19,7 +19,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
     private Training training;
 
     public SaveTrainingDialog() {
-
+        training = Training.getTraining();
     }
 
     @Override
@@ -34,7 +34,11 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
             Toast.makeText(getContext(), R.string.select_training_name, Toast.LENGTH_SHORT).show();
             return false ;
         }
-        listener.onFragmentInteraction(AppCompatActivity.RESULT_OK, getRequestCode(), fileName);
+        if(fileName.contains("\\")){
+            Toast.makeText(getContext(), "Invalid file name", Toast.LENGTH_SHORT).show();
+            return false ;
+        }
+        listener.onFragmentInteraction(getRequestCode(), AppCompatActivity.RESULT_OK, fileName);
         return true;
     }
 
@@ -45,11 +49,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
 
     @Override
     public void setViews() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-hh:mm", Locale.ENGLISH);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy_MM_dd_HH_mm", Locale.FRANCE);
         trainingName.setText(sdf.format(training.getDate()));
-    }
-
-    public void setTraining(Training training) {
-        this.training = training;
     }
 }
