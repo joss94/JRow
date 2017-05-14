@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">JRow</string>
     <string name="bow_1">(Proue) 1.</string>
-    <string name="calibrate">Calibrer</string>
+    <string name="calibrate">Étalonner</string>
     <string name="cox">Barreur</string>
     <string name="cox_9">(Barreur) 9.</string>
     <string name="crew">Rameurs</string>
@@ -18,12 +18,12 @@
     <string name="stern_8">(Pointe) 8.</string>
     <string name="strokes_per_min">%1$.2f coups / min</string>
     <string name="strokerate_default">0 coups / min</string>
-    <string name="rows_back">Rames en arrière...</string>
-    <string name="rows_front">Rames en avant...</string>
-    <string name="rows_neutral">Rames perpendiculaires</string>
+    <string name="rows_back">Rames en arrière…</string>
+    <string name="rows_front">Rames en avant…</string>
+    <string name="rows_neutral">Rames perpendiculaires…</string>
     <string name="save_this_training">Sauvegarder cet entraînement ?</string>
-    <string name="calibration_done">Calibration effectuée !</string>
-    <string name="calibration_failed">Échec de la calibration</string>
+    <string name="calibration_done">Étalonnage effectuée !</string>
+    <string name="calibration_failed">Échec de l\'étalonnage</string>
     <string name="calibration_wrong_angle_behind">%1$s a sa rame derrière la position neutre enregistrée</string>
     <string name="calibration_wrong_angle_front">%1$s a sa rame devant la position neutre enregistrée</string>
     <string name="select_training_name">Choisissez un nom pour l\'entraînement</string>
@@ -32,4 +32,7 @@
     <string name="graph">Courbes</string>
     <string name="loadbar">Bistogramme</string>
     <string name="race">Course !</string>
+    <string name="calibration">Étalonnage…</string>
+    <string name="wait_message">Patientez, connexion à l\'Arduino en cours...</string>
+    <string name="connecting">Connexion</string>
 </resources>

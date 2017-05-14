@@ -171,8 +171,8 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
 
         ConnectProgressDialog(Context context) {
             super(context);
-            setTitle("Connecting");
-            setMessage("Wait while connecting to the Arduino..");
+            setTitle(getString(R.string.connecting));
+            setMessage(getString(R.string.wait_message));
             setCancelable(false);
             if (BluetoothConnectThread.getInstance()!=null) {
                 BluetoothConnectThread.getInstance().addListener(this);

@@ -18,18 +18,21 @@
     <string name="stern_8">(Voga) 8.</string>
     <string name="strokes_per_min">%1$.2f rem / min</string>
     <string name="strokerate_default">0 rem / min</string>
-    <string name="rows_back">Na pegada...</string>
-    <string name="rows_front">Remos a ré...</string>
-    <string name="rows_neutral">Remos perpendiculares</string>
+    <string name="rows_back">Na pegada…</string>
+    <string name="rows_front">Remos a ré…</string>
+    <string name="rows_neutral">Remos perpendiculares…</string>
     <string name="save_this_training">Salvar este treino?</string>
     <string name="calibration_done">Calibração feita!</string>
     <string name="calibration_failed">A calibração falhou</string>
     <string name="calibration_wrong_angle_behind">%1$s está com o remo atrás da posição neutra registrada</string>
     <string name="calibration_wrong_angle_front">%1$s está com o remo na frente da posição neutra registrada</string>
     <string name="select_training_name">Escolha o nome do treino</string>
-    <string name="unable_to_connect_arduino">Falha ao se connectar ao Araduino</string>
+    <string name="unable_to_connect_arduino">Falha ao se connectar ao Arduino</string>
     <string name="terminal">Terminal</string>
     <string name="graph">Gráfico</string>
     <string name="loadbar">Barras</string>
     <string name="race">Tiro !</string>
+    <string name="calibration">Calibração…</string>
+    <string name="wait_message">Conectando com o chip...</string>
+    <string name="connecting">Conectando</string>
 </resources>
