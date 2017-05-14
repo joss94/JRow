@@ -35,4 +35,5 @@
     <string name="calibration">Calibração…</string>
     <string name="wait_message">Conectando com o chip...</string>
     <string name="connecting">Conectando</string>
+    <string name="rower">"Rem. "</string>
 </resources>

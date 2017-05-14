@@ -40,10 +40,9 @@ public class PrepareTrainingActivity extends AppCompatActivity{
         names.add((EditText)findViewById(R.id.name8));
         names.add((EditText)findViewById(R.id.name_timo));
 
-        if(Session.getSession().getRowers() != null && Session.getSession().getRowers().size()>8){
-            for(int i =0; i<9; i++){
-                names.get(i).setText(Session.getSession().getRowers().get(i));
-            }
+        Session.initializeSession(this);
+        for(int i =0; i<9; i++){
+            names.get(i).setText(Session.getSession().getRowers().get(i));
         }
 
         findViewById(R.id.next).setOnClickListener(new View.OnClickListener() {
@@ -58,8 +57,10 @@ public class PrepareTrainingActivity extends AppCompatActivity{
                         rowers.add(name.getHint().toString());
                     }
                 }
+
                 Session.getSession().setRowers(rowers);
                 Session.getSession().setDate(Calendar.getInstance().getTime());
+                Session.save(getApplicationContext());
 
                 Intent intent = new Intent(getApplicationContext(), TrainingActivity.class);
                 startActivity(intent);
