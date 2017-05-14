@@ -1,7 +1,5 @@
 package com.joss.jrow;
 
-import android.app.Dialog;
-import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,21 +13,20 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 
 import com.joss.jrow.Bluetooth.BluetoothConnectThread;
-import com.joss.jrow.Bluetooth.JRowSocket;
 import com.joss.jrow.Bluetooth.BluetoothListenReceiver;
+import com.joss.jrow.Bluetooth.JRowSocket;
 
 import java.util.Set;
 
 public abstract class BluetoothConnectionActivity extends AppCompatActivity implements
-        BluetoothConnectThread.onConnectionResponseListener {
+        BluetoothConnectThread.OnConnectionResponseListener {
 
     private static final long CONNECTION_DELAY = 10000;
     private final int REQUEST_ENABLE_BT = 12;
     private final String MAC_ADDRESS = "20:16:11:21:11:43";
     private BluetoothAdapter adapter;
 
-    private BluetoothConnectThread connectThread;
-    private ProgressDialogFragment progress;
+    private ConnectProgressDialog progress;
     private Handler connectionOvertimeHandler;
     private Runnable cancelConnect;
 
@@ -58,21 +55,23 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             @Override
             public void run() {
                 disconnect();
-                progress.dismiss();
                 onConnectionError("Connect time expired");
             }
         };
-        if (getFragmentManager().findFragmentByTag("PROGRESS") != null) {
-            progress = (ProgressDialogFragment) getFragmentManager().findFragmentByTag("PROGRESS");
-        }
-        else{
-            progress = new ProgressDialogFragment();
+
+        progress = new ConnectProgressDialog(this);
+
+        if(savedInstanceState != null){
+            if(savedInstanceState.getBoolean("IS_CONNECTING")){
+                progress.show();
+            }
         }
     }
 
     @Override
-    public void onSaveInstanceState(Bundle savedInstanceState){
-        getFragmentManager().putFragment(savedInstanceState, "PROGRESS", progress);
+    public void onSaveInstanceState(Bundle outState){
+        super.onSaveInstanceState(outState);
+        outState.putBoolean("IS_CONNECTING", progress.isShowing());
     }
 
     @Override
@@ -80,6 +79,9 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         super.onDestroy();
         unregisterReceiver(connectReceiver);
         unregisterReceiver(bluetoothListenReceiver);
+        if (progress != null && progress.isShowing()) {
+            progress.dismiss();
+        }
     }
 
     private void setUpBluetooth() {
@@ -116,13 +118,11 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     private void connectToDevice(BluetoothDevice device){
-        runOnUiThread(new Runnable() {
-            public void run() {
-                progress.show(getFragmentManager(), "PROGRESS");
-            }
-        });
-        connectThread = new BluetoothConnectThread(device, adapter, this);
-        connectThread.start();
+        progress.show();
+        BluetoothConnectThread.set(device, adapter);
+        BluetoothConnectThread.getInstance().addListener(this);
+        BluetoothConnectThread.getInstance().addListener(progress);
+        BluetoothConnectThread.getInstance().start();
         connectionOvertimeHandler.postDelayed(cancelConnect, CONNECTION_DELAY);
     }
 
@@ -142,14 +142,13 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
 
     @Override
     public void onConnectionResponse(final boolean result, final String message, final BluetoothSocket socket) {
-        progress.dismiss();
         connectionOvertimeHandler.removeCallbacks(cancelConnect);
         if(result){
             onConnectionEstablished();
             JRowSocket.getInstance().setSocket(socket);
             sendBroadcast(new Intent(BluetoothListenReceiver.START_LISTEN_BLUETOOTH));
         }else{
-            connectThread.interrupt();
+            BluetoothConnectThread.getInstance().interrupt();
             onConnectionError(message);
         }
     }
@@ -159,24 +158,41 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     protected void disconnect(){
-        connectThread.interrupt();
+        BluetoothConnectThread.getInstance().interrupt();
         sendBroadcast(new Intent(BluetoothListenReceiver.STOP_LISTEN_BLUETOOTH));
     }
-
-    public static class ProgressDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            final ProgressDialog progress = new ProgressDialog(getActivity());
-            progress.setTitle("Connecting");
-            progress.setMessage("Wait while connecting to the Arduino..");
-            progress.setCancelable(false); // disable dismiss by tapping outside of the dialog
-            return progress;
-        }
-    }
-
 
     protected abstract void onDeviceFound(BluetoothDevice device);
     protected abstract void onConnectionError(String error);
     protected abstract void onDevicePaired(BluetoothDevice device);
     protected abstract void onConnectionEstablished();
+
+    private class ConnectProgressDialog extends ProgressDialog implements BluetoothConnectThread.OnConnectionResponseListener{
+
+        ConnectProgressDialog(Context context) {
+            super(context);
+            setTitle("Connecting");
+            setMessage("Wait while connecting to the Arduino..");
+            setCancelable(false);
+            if (BluetoothConnectThread.getInstance()!=null) {
+                BluetoothConnectThread.getInstance().addListener(this);
+            }
+        }
+
+        @Override
+        public void onDetachedFromWindow(){
+            super.onDetachedFromWindow();
+            //connectThread.removeListener(this);
+        }
+
+        @Override
+        public void onConnectionResponse(boolean result, String message, BluetoothSocket socket) {
+            dismiss();
+        }
+
+        @Override
+        public void onConnectionClosed(boolean result, String message) {
+
+        }
+    }
 }

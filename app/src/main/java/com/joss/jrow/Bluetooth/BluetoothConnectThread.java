@@ -5,17 +5,31 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class BluetoothConnectThread extends Thread {
+public class BluetoothConnectThread extends Thread implements Serializable {
 
-    private final BluetoothSocket socket;
-    private final BluetoothAdapter adapter;
-    private onConnectionResponseListener listener;
+    private BluetoothSocket socket;
+    private BluetoothAdapter adapter;
+    private List<OnConnectionResponseListener> listeners;
 
-    public BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter, onConnectionResponseListener listener) {
-        this.listener = listener;
+    private static BluetoothConnectThread instance;
+
+    public static BluetoothConnectThread getInstance(){
+        return instance;
+    }
+
+    public static BluetoothConnectThread set(BluetoothDevice device, BluetoothAdapter adapter){
+        instance = new BluetoothConnectThread(device, adapter);
+        return instance;
+    }
+
+    private BluetoothConnectThread(BluetoothDevice device, BluetoothAdapter adapter) {
         BluetoothSocket tmp = null;
+        listeners = new ArrayList<>();
         this.adapter = adapter;
 
         try {
@@ -33,13 +47,13 @@ public class BluetoothConnectThread extends Thread {
         try {
             socket.connect();
             } catch (IOException connectException) {
-            if (listener != null) {
+            for (OnConnectionResponseListener listener:listeners) {
                 listener.onConnectionResponse(false, connectException.getMessage(), null);
             }
             return;
         }
 
-        if (listener != null) {
+        for (OnConnectionResponseListener listener:listeners) {
             listener.onConnectionResponse(true, "success", socket);
         }
     }
@@ -52,18 +66,25 @@ public class BluetoothConnectThread extends Thread {
                 socket.close();
             }
             JRowSocket.getInstance().setSocket(null);
-            if (listener != null) {
+            for (OnConnectionResponseListener listener:listeners) {
                 listener.onConnectionClosed(true, "Socket closed");
-                listener = null;
             }
         } catch (IOException e) {
-            if (listener != null) {
+            for (OnConnectionResponseListener listener:listeners) {
                 listener.onConnectionClosed(false, "Could not close the client socket");
             }
         }
     }
 
-    public interface onConnectionResponseListener{
+    public void addListener(OnConnectionResponseListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(OnConnectionResponseListener listener){
+        listeners.remove(listener);
+    }
+
+    public interface OnConnectionResponseListener {
         void onConnectionResponse(boolean result, String message, BluetoothSocket socket);
         void onConnectionClosed(boolean result, String message);
     }

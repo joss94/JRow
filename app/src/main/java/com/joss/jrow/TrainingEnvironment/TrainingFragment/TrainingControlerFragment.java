@@ -1,6 +1,7 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.joss.jrow.CalibrationActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.R;
@@ -83,7 +85,8 @@ public class TrainingControlerFragment extends Fragment implements
                 break;
 
             case R.id.calibrate_button:
-                ((TrainingActivity)getActivity()).calibrate();
+                Intent intent = new Intent(getActivity(), CalibrationActivity.class);
+                startActivityForResult(intent, TrainingActivity.CALIBRATION_DONE_REQUEST_CODE);
                 break;
         }
     }

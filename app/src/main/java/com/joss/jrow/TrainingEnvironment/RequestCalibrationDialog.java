@@ -6,10 +6,6 @@ import android.view.View;
 import com.joss.jrow.R;
 import com.joss.utils.AbstractDialog.AbstractDialogFragment;
 
-/**
- * Created by joss on 17/04/17.
- */
-
 public class RequestCalibrationDialog extends AbstractDialogFragment {
     @Override
     public int getLayoutId() {
