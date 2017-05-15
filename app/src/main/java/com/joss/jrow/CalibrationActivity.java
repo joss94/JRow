@@ -79,7 +79,7 @@ public class CalibrationActivity extends BluetoothConnectionActivity implements 
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
+    public void onMovementChanged(int index, long time, double angle) {
 
     }
 }

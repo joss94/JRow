@@ -76,8 +76,8 @@ public class GraphViewFragment extends DataDisplayFragment {
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time) {
-        super.onMovementChanged(index,time);
+    public void onMovementChanged(final int index, final long time, double angle) {
+        super.onMovementChanged(index,time, angle);
         if (index == Position.STERN && SensorManager.getInstance().isSensorActive(Position.STERN)) {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             series.appendData(new DataPoint((double) (time)/1000, 500), true, 200);

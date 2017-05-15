@@ -30,9 +30,9 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     //test
     private SerialContent serialContent;
 
-    private DrawerSlidingPane drawer;
-
     private int drawerPosition;
+
+    private int saveTry = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             trainingFragment = new TrainingFragment();
         }
 
-        drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
+        DrawerSlidingPane drawer = (DrawerSlidingPane) findViewById(R.id.drawer);
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.graph), R.drawable.ic_menu_graph, R.drawable.ic_menu_graph_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.loadbar), R.drawable.ic_menu_loadbar, R.drawable.ic_menu_loadbar_on));
         drawer.addDrawerItem(new DrawerMenuItem(getString(R.string.race), R.drawable.ic_race, R.drawable.ic_race_on));
@@ -90,7 +90,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
     private void askForSaving() {
         SaveTrainingDialog d = new SaveTrainingDialog();
-        d.setTitle("Save");
+        d.setTitle(saveTry == 0 ? "Save" : "Save ("+saveTry+")");
         d.setRequestCode(SAVE_REQUEST_CODE);
         d.setOnFragmentInteractionListener(this);
         d.show(getSupportFragmentManager(), "save_dialog");
@@ -164,6 +164,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             public void run() {
                 serialContent.addToSerial("Connection established!");
                 trainingFragment.startTraining();
+                saveTry = 0;
             }
         });
 
@@ -218,12 +219,12 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time) {
+    public void onMovementChanged(final int index, final long time, final double angle) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (trainingFragment != null && SensorManager.getInstance().isSensorActive(index)) {
-                    trainingFragment.onMovementChanged(index, time);
+                    trainingFragment.onMovementChanged(index, time, angle);
                 }
             }
         });
@@ -237,7 +238,13 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         switch(requestCode){
             case SAVE_REQUEST_CODE:
                 if(resultCode == RESULT_OK){
-                    Training.getTraining().save((String)objects[0]);
+                    if (!Training.getTraining().save((String)objects[0]) && saveTry <3) {
+                        saveTry++;
+                        askForSaving();
+                    }
+                    else{
+                        saveTry = 0;
+                    }
                 }
                 break;
 

@@ -4,6 +4,8 @@ import java.util.HashMap;
 
 public class Measure extends HashMap<String, Long> {
 
+    private static final long serialVersionUID = 5047427052116388068L;
+
     public Measure() {
         put("time", (long) 0);
 
@@ -33,7 +35,7 @@ public class Measure extends HashMap<String, Long> {
         return (long) -1;
     }
 
-    public void setRawAngle(int index, long angle){
+    void setRawAngle(int index, long angle){
         put("row"+index, angle);
     }
 

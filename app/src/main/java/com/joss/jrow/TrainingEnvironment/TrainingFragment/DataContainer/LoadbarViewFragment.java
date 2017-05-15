@@ -81,8 +81,8 @@ public class LoadbarViewFragment extends DataDisplayFragment{
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
-        super.onMovementChanged(index, time);
+    public void onMovementChanged(int index, long time, double angle) {
+        super.onMovementChanged(index, time, angle);
         if(sensorManager.isSensorActive(index)){
             barCatches.get(index).setX(barLimits.get(index).getX());
             barCatches.get(index).invalidate();

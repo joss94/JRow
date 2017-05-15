@@ -123,11 +123,10 @@ public class TrainingFragment extends Fragment implements
     @Override
     public void onNewMeasureProcessed(Measure measure) {
         if (ready) {
-            tableFragment.onNewMeasureProcessed(measure);
             displayFragment.onNewMeasureProcessed(measure);
             controlerFragment.onNewMeasureProcessed(measure);
 
-            if(wait>=3){
+            if(wait>=SensorManager.getInstance().numberOfActiveSensors()){
                 wait=0;
                 for(int i=0; i<8; i++){
                     if (SensorManager.getInstance().isSensorActive(i)) {
@@ -144,11 +143,11 @@ public class TrainingFragment extends Fragment implements
     }
 
     @Override
-    public void onMovementChanged(int index, long time){
+    public void onMovementChanged(int index, long time, double angle){
         if (ready) {
-            tableFragment.onMovementChanged(index, time);
-            displayFragment.onMovementChanged(index, time);
-            controlerFragment.onMovementChanged(index, time);
+            tableFragment.onMovementChanged(index, time, angle);
+            displayFragment.onMovementChanged(index, time, angle);
+            controlerFragment.onMovementChanged(index, time, angle);
         }
     }
 

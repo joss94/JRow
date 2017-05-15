@@ -97,7 +97,7 @@ public class TrainingControlerFragment extends Fragment implements
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
+    public void onMovementChanged(int index, long time, double angle) {
         strokeRateView.setText(String.format(Locale.ENGLISH, context.getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
     }
 
