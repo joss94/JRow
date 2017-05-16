@@ -14,7 +14,7 @@ public class Measures extends ArrayList<Measure>{
     private static volatile Measures measures;
 
     private volatile ArrayList<Measure> dataToProcess;
-    private OnNewMeasureProcessedListener listener;
+    private List<OnNewMeasureProcessedListener> listeners;
 
     private ArrayList<ArrayList<Long>> maxsTimes;
 
@@ -36,6 +36,7 @@ public class Measures extends ArrayList<Measure>{
             maxsTimes.add(new ArrayList<Long>());
         }
         catchTimes = new long[] {0,0,0,0,0,0,0,0};
+        listeners = new ArrayList<>();
     }
 
     public static synchronized Measures getMeasures(){
@@ -202,8 +203,10 @@ public class Measures extends ArrayList<Measure>{
     }
 
     private void onNewMeasureProcessed(Measure measure){
-        if (listener != null) {
-            listener.onNewMeasureProcessed(measure);
+        for (OnNewMeasureProcessedListener listener : listeners) {
+            if (listener != null) {
+                listener.onNewMeasureProcessed(measure);
+            }
         }
     }
 
@@ -212,13 +215,21 @@ public class Measures extends ArrayList<Measure>{
             strokeRate = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
         }
         catchTimes[index] = time;
-        if (listener != null) {
-            listener.onMovementChanged(index, time, angle);
+        for (OnNewMeasureProcessedListener listener : listeners) {
+            if (listener != null) {
+                listener.onMovementChanged(index, time, angle);
+            }
         }
     }
 
-    public void setOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
-        this.listener = listener;
+    public void addOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+        listeners.remove(listener);
     }
 
     public void resetCalibration() {

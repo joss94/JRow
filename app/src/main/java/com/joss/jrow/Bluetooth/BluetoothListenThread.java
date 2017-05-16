@@ -1,7 +1,6 @@
 package com.joss.jrow.Bluetooth;
 
 import android.bluetooth.BluetoothSocket;
-import android.os.Looper;
 import android.util.Log;
 
 import com.joss.jrow.DataProcessingThreads.DataProcessThread;
@@ -18,7 +17,6 @@ public class BluetoothListenThread extends Thread {
     private final DataReadThread dataReadThread;
 
     public BluetoothListenThread(){
-        Looper.prepare();
         socket = JRowSocket.getInstance().getSocket();
         try {
             is = socket.getInputStream();
@@ -42,6 +40,7 @@ public class BluetoothListenThread extends Thread {
                 int numBytes = is.read(buffer);
                 dataReadThread.addData(new String(buffer, 0, numBytes));
             } catch (IOException ignored) {
+                continue;
             }
         }
     }

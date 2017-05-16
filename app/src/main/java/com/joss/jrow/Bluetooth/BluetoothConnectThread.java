@@ -54,7 +54,9 @@ public class BluetoothConnectThread extends Thread implements Serializable {
         }
 
         for (OnConnectionResponseListener listener:listeners) {
-            listener.onConnectionResponse(true, "success", socket);
+            if (listener != null) {
+                listener.onConnectionResponse(true, "success", socket);
+            }
         }
     }
 

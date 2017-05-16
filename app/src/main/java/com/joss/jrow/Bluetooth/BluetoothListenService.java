@@ -23,6 +23,7 @@ public class BluetoothListenService extends Service {
 
     @Override
     public void onDestroy(){
+        super.onDestroy();
         listenThread.interrupt();
     }
 

@@ -23,6 +23,8 @@ public class Training implements Serializable {
 
     private static Training training = new Training();
 
+    private boolean paused = false, recording = false;
+
     public static Training getTraining(){
         return training;
     }
@@ -61,7 +63,7 @@ public class Training implements Serializable {
                 os.write('\n');
                 os.write(("ROWERS:" + '\n').getBytes());
                 for(int i=0; i<9; i++){
-                    os.write(((i==8)?i+": ":"Timo: " + Session.getSession().getRowers().get(i) + '\n').getBytes());
+                    os.write(((i<8)?i+": ":"Timo: " + Session.getSession().getRowers().get(i) + '\n').getBytes());
                 }
                 os.write('\n');
                 os.write(("DURATION OF TRAINING: " + getDuration() + " seconds"+ '\n').getBytes());
@@ -113,7 +115,7 @@ public class Training implements Serializable {
     public double getDuration(){
         double time = 0;
         if (report.size()>0) {
-            time = (float)(report.get(report.size()-1).getTime()- Measures.getMeasures().getStartTime())/1000;
+            time = (float)report.get(report.size()-1).getTime()/1000;
         }
         return time;
     }
@@ -140,7 +142,7 @@ public class Training implements Serializable {
                 counter += 1;
             }
         }
-        return result/counter;
+        return counter == 0 ? -1.0:result/counter;
     }
 
     private double getAverageDelayOf(int index){
@@ -155,7 +157,22 @@ public class Training implements Serializable {
                 counter += 1;
             }
         }
-        return result/counter;
+        return counter == 0 ? -1.0:result/counter;
     }
 
+    public boolean isPaused() {
+        return paused;
+    }
+
+    public boolean isRecording() {
+        return recording;
+    }
+
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
+    public void setRecording(boolean recording) {
+        this.recording = recording;
+    }
 }

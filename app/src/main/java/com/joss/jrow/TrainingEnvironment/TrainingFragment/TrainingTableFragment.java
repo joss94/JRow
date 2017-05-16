@@ -130,7 +130,7 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
                     if(time - measures.getCatchTimes()[Position.STERN]<700 && sensorManager.isSensorActive(i)){
                         delays.get(index).setText(context.getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
                         reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
-                        reportLine.setStrokeRate((float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN]))));
+                        reportLine.setStrokeRate(Measures.getMeasures().getStrokeRate());
                     }
                 }
             }

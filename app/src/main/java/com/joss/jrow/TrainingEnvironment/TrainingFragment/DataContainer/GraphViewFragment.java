@@ -22,8 +22,13 @@ public class GraphViewFragment extends DataDisplayFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState){
-        View v = inflater.inflate(R.layout.fragment_graph_view, parent, false);
+        return inflater.inflate(R.layout.fragment_graph_view, parent, false);
+    }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        View v=getView();
         graph = (GraphView) v.findViewById(R.id.data_container);
 
         graph.getViewport().setYAxisBoundsManual(true);
@@ -40,7 +45,9 @@ public class GraphViewFragment extends DataDisplayFragment {
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);
 
-        return v;
+        graph.removeAllSeries();for(LineGraphSeries series : GraphData.getInstance()){
+            graph.addSeries(series);
+        }
     }
 
     @Override
@@ -51,9 +58,6 @@ public class GraphViewFragment extends DataDisplayFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState){
         super.onActivityCreated(savedInstanceState);
-        graph.removeAllSeries();for(LineGraphSeries series : GraphData.getInstance()){
-            graph.addSeries(series);
-        }
     }
 
 
