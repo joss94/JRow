@@ -248,7 +248,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
             case CALIBRATION_REQUEST_CODE:
                 if(resultCode == RESULT_OK){
-                    Measures.getMeasures().setDefaultCalibration();
+                    Measures.getMeasures().setDefaultCalibration(this);
                     startTraining();
                 }
                 break;

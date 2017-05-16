@@ -1,5 +1,6 @@
 package com.joss.jrow;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -34,6 +35,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             case R.id.OK_button:
                 if (measure != null) {
                     Measures.getMeasures().setNeutralPosition(measure);
+                    SharedPreferences sharedPrefs = getSharedPreferences("JROW_CALIB", MODE_PRIVATE);
+                    for(int i=0; i<8; i++){
+                        sharedPrefs.edit().putLong("calib"+i, measure.getRawAngle(i)).apply();
+                    }
                 }
                 setResult(RESULT_OK);
                 finish();

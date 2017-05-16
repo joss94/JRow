@@ -1,5 +1,7 @@
 package com.joss.jrow.Models;
 
+import android.content.Context;
+
 import com.joss.jrow.SensorManager;
 
 import java.util.ArrayList;
@@ -126,32 +128,6 @@ public class Measures extends ArrayList<Measure>{
         return catchTimes;
     }
 
-    private void setBackPosition(Measure backPosition) {
-        if (backPosition != null) {
-            for(int i=0; i<8; i++){
-                if(SensorManager.getInstance().isSensorActive(i)){
-                    maxBack = Math.max(maxBack, backPosition.getAngle(i));
-                }
-                else{
-                    maxBack = 675;
-                }
-            }
-        }
-    }
-
-    private void setFrontPosition(Measure frontPosition) {
-        if (frontPosition != null) {
-            for(int i=0; i<8; i++){
-                if(SensorManager.getInstance().isSensorActive(i)){
-                    minFront = Math.min(minFront, frontPosition.getAngle(i));
-                }
-                else{
-                    minFront = 225;
-                }
-            }
-        }
-    }
-
     Measure getNeutralPosition() {
         return neutralPosition;
     }
@@ -186,20 +162,12 @@ public class Measures extends ArrayList<Measure>{
         return minFront;
     }
 
-    public void setDefaultCalibration(){
-        Measure back = new Measure();
-        Measure front = new Measure();
+    public void setDefaultCalibration(Context context){
         Measure neutral = new Measure();
-
         for(int i=0; i<8; i++){
-            back.setRawAngle(i, 675);
-            neutral.setRawAngle(i, 500);
-            front.setRawAngle(i, 225);
+            neutral.setRawAngle(i, context.getSharedPreferences("JROW_CALIB", Context.MODE_PRIVATE).getLong("calib"+i, 500));
         }
-
         setNeutralPosition(neutral);
-        setBackPosition(back);
-        setFrontPosition(front);
     }
 
     private void onNewMeasureProcessed(Measure measure){
@@ -233,9 +201,9 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public void resetCalibration() {
-        setBackPosition(null);
-        setFrontPosition(null);
         setNeutralPosition(null);
+        minFront = 0;
+        maxBack = 0;
     }
 
     public interface OnNewMeasureProcessedListener{
