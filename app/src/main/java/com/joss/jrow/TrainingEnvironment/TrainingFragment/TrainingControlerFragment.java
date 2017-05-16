@@ -1,7 +1,6 @@
 package com.joss.jrow.TrainingEnvironment.TrainingFragment;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,9 +9,9 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.joss.jrow.CalibrationActivity;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
+import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
 import com.joss.jrow.TrainingEnvironment.TrainingControler;
@@ -55,6 +54,11 @@ public class TrainingControlerFragment extends Fragment implements
         stopButton.setOnClickListener(this);
         calibrateButton.setOnClickListener(this);
 
+
+        if(!Training.getTraining().isPaused() && Training.getTraining().isRecording()){
+            startTraining();
+        }
+
         return v;
     }
 
@@ -85,8 +89,7 @@ public class TrainingControlerFragment extends Fragment implements
                 break;
 
             case R.id.calibrate_button:
-                Intent intent = new Intent(getActivity(), CalibrationActivity.class);
-                startActivityForResult(intent, TrainingActivity.CALIBRATION_DONE_REQUEST_CODE);
+                ((TrainingActivity)getActivity()).calibrate();
                 break;
         }
     }
@@ -97,7 +100,7 @@ public class TrainingControlerFragment extends Fragment implements
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
+    public void onMovementChanged(int index, long time, double angle) {
         strokeRateView.setText(String.format(Locale.ENGLISH, context.getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
     }
 
@@ -127,9 +130,6 @@ public class TrainingControlerFragment extends Fragment implements
 
     @Override
     public void resumeTraining() {
-        calibrateButton.setVisibility(View.GONE);
-        stopButton.setVisibility(View.VISIBLE);
-        startButton.setVisibility(View.GONE);
-        pauseButton.setVisibility(View.VISIBLE);
+        startTraining();
     }
 }

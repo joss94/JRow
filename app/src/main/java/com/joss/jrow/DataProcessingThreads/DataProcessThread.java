@@ -12,7 +12,7 @@ public class DataProcessThread extends Thread {
 
     @Override
     public void run(){
-        while (isInterrupted()) {
+        while (!isInterrupted()) {
             if(!measures.getDataToProcess().isEmpty()){
                 measures.processData();
             }

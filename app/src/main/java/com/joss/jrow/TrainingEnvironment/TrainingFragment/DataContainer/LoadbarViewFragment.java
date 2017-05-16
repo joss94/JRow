@@ -58,7 +58,7 @@ public class LoadbarViewFragment extends DataDisplayFragment{
                     int margin = (int) (maxMargin*(1.0-measure.getAnglePercentage(position)));
                     margin = Math.max(20, margin);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) barLimit.getLayoutParams();
-                    if(position%2 == 0){
+                    if(position%2 == 1){
                         params.setMarginStart(margin);
                         barLimit.setLayoutParams(params);
                         barLimit.invalidate();
@@ -81,8 +81,8 @@ public class LoadbarViewFragment extends DataDisplayFragment{
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
-        super.onMovementChanged(index, time);
+    public void onMovementChanged(int index, long time, double angle) {
+        super.onMovementChanged(index, time, angle);
         if(sensorManager.isSensorActive(index)){
             barCatches.get(index).setX(barLimits.get(index).getX());
             barCatches.get(index).invalidate();

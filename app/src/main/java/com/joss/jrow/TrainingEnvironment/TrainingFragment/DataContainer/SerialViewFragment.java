@@ -69,8 +69,8 @@ public class SerialViewFragment extends DataDisplayFragment {
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
-        super.onMovementChanged(index, time);
+    public void onMovementChanged(int index, long time, double angle) {
+        super.onMovementChanged(index,time, angle);
         if (index == Position.STERN) {
             serialContent.addToSerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
         }

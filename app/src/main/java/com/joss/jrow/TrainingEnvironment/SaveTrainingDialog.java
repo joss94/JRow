@@ -20,6 +20,7 @@ public class SaveTrainingDialog extends AbstractDialogFragment {
 
     public SaveTrainingDialog() {
         training = Training.getTraining();
+        setCancelable(false);
     }
 
     @Override

@@ -35,4 +35,5 @@
     <string name="calibration">Étalonnage…</string>
     <string name="wait_message">Patientez, connexion à l\'Arduino en cours...</string>
     <string name="connecting">Connexion</string>
+    <string name="rower">Rameur</string>
 </resources>

@@ -43,13 +43,15 @@ public abstract class DataDisplayFragment extends Fragment implements
     @Override
     public void onNewMeasureProcessed(Measure measure) {
         if(!ready){
+            //noinspection UnnecessaryReturnStatement
             return;
         }
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time) {
+    public void onMovementChanged(final int index, final long time, double angle) {
         if (!ready) {
+            //noinspection UnnecessaryReturnStatement
             return;
         }
     }

@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.joss.jrow.Bluetooth.BluetoothConnectThread;
 import com.joss.jrow.Bluetooth.BluetoothListenReceiver;
 import com.joss.jrow.Bluetooth.JRowSocket;
+import com.joss.jrow.Models.Training;
 
 import java.util.Set;
 
@@ -46,8 +47,9 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         registerReceiver(connectReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-        bluetoothListenReceiver = new BluetoothListenReceiver();
+        bluetoothListenReceiver = BluetoothListenReceiver.getInstance();
         registerReceiver(bluetoothListenReceiver, new IntentFilter(BluetoothListenReceiver.START_LISTEN_BLUETOOTH));
+        registerReceiver(bluetoothListenReceiver, new IntentFilter(BluetoothListenReceiver.STOP_LISTEN_BLUETOOTH));
 
         connectionOvertimeHandler = new Handler();
 
@@ -56,6 +58,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             public void run() {
                 disconnect();
                 onConnectionError("Connect time expired");
+                progress.dismiss();
             }
         };
 
@@ -82,6 +85,13 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         if (progress != null && progress.isShowing()) {
             progress.dismiss();
         }
+    }
+
+    @Override
+    public void onBackPressed(){
+        super.onBackPressed();
+        Training.resetTraining();
+        disconnect();
     }
 
     private void setUpBluetooth() {
@@ -123,6 +133,7 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
         BluetoothConnectThread.getInstance().addListener(this);
         BluetoothConnectThread.getInstance().addListener(progress);
         BluetoothConnectThread.getInstance().start();
+        BluetoothConnectThread.getInstance().addListener(progress);
         connectionOvertimeHandler.postDelayed(cancelConnect, CONNECTION_DELAY);
     }
 
@@ -177,12 +188,6 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
             if (BluetoothConnectThread.getInstance()!=null) {
                 BluetoothConnectThread.getInstance().addListener(this);
             }
-        }
-
-        @Override
-        public void onDetachedFromWindow(){
-            super.onDetachedFromWindow();
-            //connectThread.removeListener(this);
         }
 
         @Override

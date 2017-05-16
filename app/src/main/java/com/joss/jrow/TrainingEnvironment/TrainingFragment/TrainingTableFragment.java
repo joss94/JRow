@@ -15,6 +15,7 @@ import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.Models.ReportLine;
 import com.joss.jrow.Models.Session;
+import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
 import com.joss.jrow.SensorManager;
 import com.joss.jrow.TrainingEnvironment.TrainingFragment.DataContainer.GraphData;
@@ -119,14 +120,17 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
     }
 
     @Override
-    public void onMovementChanged(int index, long time) {
+    public void onMovementChanged(int index, long time, double angle) {
         if (sensorManager.isSensorActive(index) || index == Position.STERN) {
             if(index == Position.STERN){
+                Training.getTraining().addToReport(reportLine);
+                reportLine = new ReportLine();
+                reportLine.setTime(time);
                 for(int i=0; i<8; i++){
                     if(time - measures.getCatchTimes()[Position.STERN]<700 && sensorManager.isSensorActive(i)){
                         delays.get(index).setText(context.getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
                         reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
-                        reportLine.setStrokeRate((float)60000/(((float)(time-Measures.getMeasures().getCatchTimes()[Position.STERN]))));
+                        reportLine.setStrokeRate(Measures.getMeasures().getStrokeRate());
                     }
                 }
             }

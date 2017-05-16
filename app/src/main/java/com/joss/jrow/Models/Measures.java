@@ -10,12 +10,11 @@ public class Measures extends ArrayList<Measure>{
     private static final long serialVersionUID = -5836923295713874526L;
 
     private final int MAX_SIZE = 100;
-    private final int LOCAL_MAX_RANGE = 30;
 
     private static volatile Measures measures;
 
     private volatile ArrayList<Measure> dataToProcess;
-    private OnNewMeasureProcessedListener listener;
+    private List<OnNewMeasureProcessedListener> listeners;
 
     private ArrayList<ArrayList<Long>> maxsTimes;
 
@@ -23,8 +22,6 @@ public class Measures extends ArrayList<Measure>{
     private volatile long[] catchTimes;
     private volatile float strokeRate;
 
-    private Measure backPosition;
-    private Measure frontPosition;
     private Measure neutralPosition;
 
     private double maxBack;
@@ -39,6 +36,7 @@ public class Measures extends ArrayList<Measure>{
             maxsTimes.add(new ArrayList<Long>());
         }
         catchTimes = new long[] {0,0,0,0,0,0,0,0};
+        listeners = new ArrayList<>();
     }
 
     public static synchronized Measures getMeasures(){
@@ -77,9 +75,9 @@ public class Measures extends ArrayList<Measure>{
     }
 
     private void detectTangents(){
-        List<Measure> localData = this.subList(size()-LOCAL_MAX_RANGE, size()-1);
+        int LOCAL_MAX_RANGE = 30;
+        List<Measure> localData = this.subList(size()- LOCAL_MAX_RANGE, size()-1);
         for (int i=0; i<8; i++) {
-            //if(false){
             if (SensorManager.getInstance().isSensorActive(i)) {
                 Measure max = localData.get(0);
                 for(Measure measure : localData){
@@ -91,7 +89,7 @@ public class Measures extends ArrayList<Measure>{
                         && Math.abs(max.getRawAngle(i)-localData.get(localData.size()-1).getRawAngle(i))>20
                         && !maxsTimes.get(i).contains(max.getTime()-startTime)){
                     maxsTimes.get(i).add(max.getTime()-startTime);
-                    onMovementChangedDetected(i, max.getTime()-startTime);
+                    onMovementChangedDetected(i, max.getTime()-startTime, max.getAngle(i));
                 }
             }
         }
@@ -128,48 +126,33 @@ public class Measures extends ArrayList<Measure>{
         return catchTimes;
     }
 
-    public Measure getBackPosition() {
-        return backPosition;
-    }
-
-    public void setBackPosition(Measure backPosition) {
-        this.backPosition = new Measure();
+    private void setBackPosition(Measure backPosition) {
         if (backPosition != null) {
             for(int i=0; i<8; i++){
                 if(SensorManager.getInstance().isSensorActive(i)){
-                    this.backPosition.setRawAngle(i, backPosition.getRawAngle(i));
                     maxBack = Math.max(maxBack, backPosition.getAngle(i));
                 }
                 else{
-                    this.backPosition.setRawAngle(i, 675);
+                    maxBack = 675;
                 }
             }
         }
     }
 
-    public Measure getFrontPosition() {
-        return frontPosition;
-    }
-
-    public void setFrontPosition(Measure frontPosition) {
-        this.frontPosition = new Measure();
+    private void setFrontPosition(Measure frontPosition) {
         if (frontPosition != null) {
             for(int i=0; i<8; i++){
                 if(SensorManager.getInstance().isSensorActive(i)){
-                    this.frontPosition.setRawAngle(i, frontPosition.getRawAngle(i));
                     minFront = Math.min(minFront, frontPosition.getAngle(i));
                 }
                 else{
-                    this.frontPosition.setRawAngle(i, 225);
+                    minFront = 225;
                 }
             }
         }
-        else{
-            minFront = 0;
-        }
     }
 
-    public Measure getNeutralPosition() {
+    Measure getNeutralPosition() {
         return neutralPosition;
     }
 
@@ -178,7 +161,7 @@ public class Measures extends ArrayList<Measure>{
     }
 
     public boolean isCalibrated(){
-        return(getBackPosition() != null && getFrontPosition() != null && getNeutralPosition() != null);
+        return getNeutralPosition() != null;
     }
 
     public void setNeutralPosition(Measure neutralPosition) {
@@ -195,11 +178,11 @@ public class Measures extends ArrayList<Measure>{
         }
     }
 
-    public double getMaxBack() {
+    double getMaxBack() {
         return maxBack;
     }
 
-    public double getMinFront() {
+    double getMinFront() {
         return minFront;
     }
 
@@ -220,23 +203,33 @@ public class Measures extends ArrayList<Measure>{
     }
 
     private void onNewMeasureProcessed(Measure measure){
-        if (listener != null) {
-            listener.onNewMeasureProcessed(measure);
+        for (OnNewMeasureProcessedListener listener : listeners) {
+            if (listener != null) {
+                listener.onNewMeasureProcessed(measure);
+            }
         }
     }
 
-    private void onMovementChangedDetected(int index, long time){
+    private void onMovementChangedDetected(int index, long time, double angle){
         if(index == Position.STERN){
             strokeRate = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
         }
         catchTimes[index] = time;
-        if (listener != null) {
-            listener.onMovementChanged(index, time);
+        for (OnNewMeasureProcessedListener listener : listeners) {
+            if (listener != null) {
+                listener.onMovementChanged(index, time, angle);
+            }
         }
     }
 
-    public void setOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
-        this.listener = listener;
+    public void addOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public void removeOnNewMeasureProcessedListener(OnNewMeasureProcessedListener listener){
+        listeners.remove(listener);
     }
 
     public void resetCalibration() {
@@ -247,6 +240,6 @@ public class Measures extends ArrayList<Measure>{
 
     public interface OnNewMeasureProcessedListener{
         void onNewMeasureProcessed(Measure measure);
-        void onMovementChanged(int index, long time);
+        void onMovementChanged(int index, long time, double angle);
     }
 }

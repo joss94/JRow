@@ -27,8 +27,6 @@ public class TrainingFragment extends Fragment implements
         Measures.OnNewMeasureProcessedListener,
         TrainingControler{
 
-    private static boolean paused = false;
-    private static boolean recording = false;
     private boolean ready;
 
     private TrainingTableFragment tableFragment;
@@ -80,7 +78,6 @@ public class TrainingFragment extends Fragment implements
     @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
-        outState.putBoolean("paused", paused);
         getActivity().getSupportFragmentManager().putFragment(outState, "CONTROLER_FRAGMENT", controlerFragment);
         getActivity().getSupportFragmentManager().putFragment(outState, "TABLE_FRAGMENT", tableFragment);
         getActivity().getSupportFragmentManager().putFragment(outState, "DISPLAY_FRAGMENT", displayFragment);
@@ -123,47 +120,48 @@ public class TrainingFragment extends Fragment implements
     @Override
     public void onNewMeasureProcessed(Measure measure) {
         if (ready) {
-            tableFragment.onNewMeasureProcessed(measure);
-            displayFragment.onNewMeasureProcessed(measure);
             controlerFragment.onNewMeasureProcessed(measure);
 
-            if(wait>=3){
-                wait=0;
-                for(int i=0; i<8; i++){
-                    if (SensorManager.getInstance().isSensorActive(i)) {
-                        try {
-                            GraphData.getInstance().get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 200);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+            if(isResumed()){
+                displayFragment.onNewMeasureProcessed(measure);
+                if(wait>= SensorManager.getInstance().numberOfActiveSensors()){
+                    wait=0;
+                    for(int i=0; i<8; i++){
+                        if (SensorManager.getInstance().isSensorActive(i)) {
+                            try {
+                                GraphData.getInstance().get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 500);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
+                wait++;
             }
-            wait++;
         }
     }
 
     @Override
-    public void onMovementChanged(int index, long time){
+    public void onMovementChanged(int index, long time, double angle){
         if (ready) {
-            tableFragment.onMovementChanged(index, time);
-            displayFragment.onMovementChanged(index, time);
-            controlerFragment.onMovementChanged(index, time);
+            tableFragment.onMovementChanged(index, time, angle);
+            displayFragment.onMovementChanged(index, time, angle);
+            controlerFragment.onMovementChanged(index, time, angle);
         }
     }
 
     @Override
     public void startTraining() {
-        if(paused){
+        if(Training.getTraining().isPaused()){
             resumeTraining();
         }
         else{
-            paused = false;
-            recording = true;
             SerialContent.getInstance().addToSerial("Training started");
             Measures.getMeasures().wipeData();
-            Measures.getMeasures().setOnNewMeasureProcessedListener((TrainingActivity)getActivity());
+            Measures.getMeasures().addOnNewMeasureProcessedListener((TrainingActivity)getActivity());
             Training.resetTraining();
+            Training.getTraining().setPaused(false);
+            Training.getTraining().setRecording(true);
             controlerFragment.startTraining();
             displayFragment.startTraining();
         }
@@ -171,8 +169,8 @@ public class TrainingFragment extends Fragment implements
 
     @Override
     public void stopTraining() {
-        paused = false;
-        recording = false;
+        Training.getTraining().setPaused(false);
+        Training.getTraining().setRecording(false);
         SerialContent.getInstance().addToSerial("Training stopped");
         controlerFragment.stopTraining();
         displayFragment.stopTraining();
@@ -180,8 +178,8 @@ public class TrainingFragment extends Fragment implements
 
     @Override
     public void pauseTraining() {
-        paused=true;
-        recording = false;
+        Training.getTraining().setPaused(true);
+        Training.getTraining().setRecording(false);
         SerialContent.getInstance().addToSerial("Training paused");
         controlerFragment.pauseTraining();
         displayFragment.pauseTraining();
@@ -189,18 +187,10 @@ public class TrainingFragment extends Fragment implements
 
     @Override
     public void resumeTraining() {
-        paused = false;
-        recording = true;
+        Training.getTraining().setPaused(false);
+        Training.getTraining().setRecording(true);
         SerialContent.getInstance().addToSerial("Training resumed");
         controlerFragment.resumeTraining();
         displayFragment.resumeTraining();
-    }
-
-    public static boolean isPaused() {
-        return paused;
-    }
-
-    public static boolean isRecording() {
-        return recording;
     }
 }
