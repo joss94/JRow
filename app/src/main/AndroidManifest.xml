@@ -18,9 +18,11 @@
 
         <activity
             android:name=".CalibrationActivity"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:label="@string/app_name"/>
         <activity
-            android:name=".TrainingEnvironment.TrainingActivity">
+            android:name=".TrainingEnvironment.TrainingActivity"
+            android:label="@string/app_name">
         </activity>
         <activity
             android:name=".PrepareTraining.PrepareTrainingActivity"

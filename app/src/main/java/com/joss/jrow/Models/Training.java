@@ -73,13 +73,25 @@ public class Training implements Serializable {
                 os.write(("AVERAGE STERN DELAYS:" + '\n').getBytes());
                 for(int i=0; i<8; i++){
                     os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getAverageSternDelayOf(i)) + '\n').getBytes());
+                            String.valueOf(getAverageAbsoluteSternDelayOf(i)) + '\n').getBytes());
                 }
                 os.write('\n');
                 os.write(("AVERAGE DELAYS:" + '\n').getBytes());
                 for(int i=0; i<8; i++){
                     os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getAverageDelayOf(i)) + '\n').getBytes());
+                            String.valueOf(getAverageAbsoluteDelayOf(i)) + '\n').getBytes());
+                }
+                os.write('\n');
+                os.write(("AVERAGE STERN DEVIATION:" + '\n').getBytes());
+                for(int i=0; i<8; i++){
+                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                            String.valueOf(getStandardSternDeviationOf(i)) + '\n').getBytes());
+                }
+                os.write('\n');
+                os.write(("AVERAGE DEVIATION:" + '\n').getBytes());
+                for(int i=0; i<8; i++){
+                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                            String.valueOf(getStandardDeviationOf(i)) + '\n').getBytes());
                 }
                 os.write('\n');
                 for(ReportLine line : report){
@@ -133,6 +145,18 @@ public class Training implements Serializable {
         return averageStroke;
     }
 
+    private double getAverageAbsoluteSternDelayOf(int index){
+        double result = 0.0;
+        int counter = 0;
+        for(ReportLine line : report){
+            if (line.getCatchDelays().get(index) != null) {
+                result += Math.abs(line.getCatchDelays().get(index));
+                counter += 1;
+            }
+        }
+        return counter == 0 ? -1.0:result/counter;
+    }
+
     private double getAverageSternDelayOf(int index){
         double result = 0.0;
         int counter = 0;
@@ -145,7 +169,20 @@ public class Training implements Serializable {
         return counter == 0 ? -1.0:result/counter;
     }
 
-    private double getAverageDelayOf(int index){
+    private double getStandardSternDeviationOf(int index){
+        double result = 0.0;
+        int counter = 0;
+        double average = getAverageSternDelayOf(index);
+        for(ReportLine line : report){
+            if (line.getCatchDelays().get(index) != null) {
+                result += Math.pow(line.getCatchDelays().get(index)-average, 2);
+                counter += 1;
+            }
+        }
+        return counter == 0 ? -1.0:Math.sqrt(result/counter);
+    }
+
+    private double getAverageAbsoluteDelayOf(int index){
         double result = 0.0;
         int counter = 0;
         for(ReportLine line : report){
@@ -153,11 +190,36 @@ public class Training implements Serializable {
                     && line.getCatchDelays().get(index) != null
                     && line.getCatchDelays().get(index+1) != null) {
 
-                result += (line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1));
+                result += Math.abs(line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1));
                 counter += 1;
             }
         }
         return counter == 0 ? -1.0:result/counter;
+    }
+
+    private double getAverageDelayOf(int index){
+        double result = 0.0;
+        int counter = 0;
+        for(ReportLine line : report){
+            if (line.getCatchDelays().get(index) != null) {
+                result += line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1);
+                counter += 1;
+            }
+        }
+        return counter == 0 ? -1.0:result/counter;
+    }
+
+    private double getStandardDeviationOf(int index){
+        double result = 0.0;
+        int counter = 0;
+        double average = getAverageDelayOf(index);
+        for(ReportLine line : report){
+            if (line.getCatchDelays().get(index) != null) {
+                result += Math.pow(line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1)-average, 2);
+                counter += 1;
+            }
+        }
+        return counter == 0 ? -1.0:Math.sqrt(result/counter);
     }
 
     public boolean isPaused() {

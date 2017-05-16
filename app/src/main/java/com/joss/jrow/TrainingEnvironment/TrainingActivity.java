@@ -44,7 +44,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
 
         serialContent = SerialContent.getInstance();
         Measures.getMeasures().addOnNewMeasureProcessedListener(this);
-
         try {
             trainingFragment = (TrainingFragment) getSupportFragmentManager().getFragment(savedInstanceState, "TRAINING_FRAGMENT");
         } catch (Exception e) {
