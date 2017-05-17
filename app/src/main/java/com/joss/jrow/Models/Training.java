@@ -63,7 +63,7 @@ public class Training implements Serializable {
                 os.write('\n');
                 os.write(("ROWERS:" + '\n').getBytes());
                 for(int i=0; i<9; i++){
-                    os.write(((i<8)?i+": ":"Timo: " + Session.getSession().getRowers().get(i) + '\n').getBytes());
+                    os.write((((i<8)?i+": ":"Timo: ") + Session.getSession().getRowers().get(i) + '\n').getBytes());
                 }
                 os.write('\n');
                 os.write(("DURATION OF TRAINING: " + getDuration() + " seconds"+ '\n').getBytes());
@@ -201,7 +201,7 @@ public class Training implements Serializable {
         double result = 0.0;
         int counter = 0;
         for(ReportLine line : report){
-            if (line.getCatchDelays().get(index) != null) {
+            if (line.getCatchDelays().get(index) != null && line.getCatchDelays().get(index+1) != null) {
                 result += line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1);
                 counter += 1;
             }
@@ -214,7 +214,7 @@ public class Training implements Serializable {
         int counter = 0;
         double average = getAverageDelayOf(index);
         for(ReportLine line : report){
-            if (line.getCatchDelays().get(index) != null) {
+            if (line.getCatchDelays().get(index) != null && line.getCatchDelays().get(index+1) != null) {
                 result += Math.pow(line.getCatchDelays().get(index) - line.getCatchDelays().get(index+1)-average, 2);
                 counter += 1;
             }

@@ -165,6 +165,7 @@ public class Measures extends ArrayList<Measure>{
     public void setDefaultCalibration(Context context){
         Measure neutral = new Measure();
         for(int i=0; i<8; i++){
+            //neutral.setRawAngle(i, 500c1);
             neutral.setRawAngle(i, context.getSharedPreferences("JROW_CALIB", Context.MODE_PRIVATE).getLong("calib"+i, 500));
         }
         setNeutralPosition(neutral);
