@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
+import com.joss.jrow.Models.Position;
 import com.joss.jrow.Models.Training;
 import com.joss.jrow.R;
 import com.joss.jrow.TrainingEnvironment.TrainingActivity;
@@ -96,12 +97,14 @@ public class TrainingControlerFragment extends Fragment implements
 
     @Override
     public void onNewMeasureProcessed(Measure measure) {
-        timeView.setText(context.getString(R.string.time, (float)(measure.getTime()-Measures.getMeasures().getStartTime())/1000));
+        timeView.setText(context.getString(R.string.time, (double)(measure.getTime())/1000));
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle) {
-        strokeRateView.setText(String.format(Locale.ENGLISH, context.getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
+    public void onMovementChanged(int index) {
+        if (index == Position.STERN) {
+            strokeRateView.setText(String.format(Locale.ENGLISH, context.getString(R.string.strokes_per_min), Measures.getMeasures().getStrokeRate()));
+        }
     }
 
     @Override

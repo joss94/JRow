@@ -20,6 +20,8 @@ public class GraphData extends ArrayList<LineGraphSeries<DataPoint>> {
     }
 
     private GraphData() {
+        super();
+        clear();
         for(int i=0; i<8; i++){
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
             series.appendData(new DataPoint(0,0), true, 5000);

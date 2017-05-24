@@ -10,6 +10,7 @@ import com.jjoe64.graphview.GridLabelRenderer;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.joss.jrow.Models.Measure;
+import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Position;
 import com.joss.jrow.R;
 import com.joss.jrow.SensorManager;
@@ -45,7 +46,8 @@ public class GraphViewFragment extends DataDisplayFragment {
         graph.getGridLabelRenderer().setGridStyle(GridLabelRenderer.GridStyle.HORIZONTAL);
         graph.getGridLabelRenderer().setNumVerticalLabels(10);
 
-        graph.removeAllSeries();for(LineGraphSeries series : GraphData.getInstance()){
+        graph.removeAllSeries();
+        for(LineGraphSeries series : GraphData.getInstance()){
             graph.addSeries(series);
         }
     }
@@ -80,12 +82,13 @@ public class GraphViewFragment extends DataDisplayFragment {
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time, double angle) {
-        super.onMovementChanged(index,time, angle);
+    public void onMovementChanged(final int index) {
+        super.onMovementChanged(index);
+        double time = Measures.getMeasures().getCatchTimes()[index];
         if (index == Position.STERN && SensorManager.getInstance().isSensorActive(Position.STERN)) {
             LineGraphSeries<DataPoint> series = new LineGraphSeries<>();
-            series.appendData(new DataPoint((double) (time)/1000, 500), true, 200);
-            series.appendData(new DataPoint((double) (time)/1000, -500), true, 200);
+            series.appendData(new DataPoint(time/1000, 500), true, 200);
+            series.appendData(new DataPoint(time/1000, -500), true, 200);
             series.setColor(context.getResources().getColor(android.R.color.black));
             series.setThickness(3);
             graph.addSeries(series);

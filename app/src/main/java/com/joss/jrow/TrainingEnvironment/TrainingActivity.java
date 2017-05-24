@@ -158,7 +158,6 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-
                     trainingFragment.startTraining();
                     saveTry = 0;
                 }
@@ -183,10 +182,10 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     @Override
     public void stopTraining() {
         disconnect();
-        trainingFragment.stopTraining();
         if (Training.getTraining().getDuration() >0) {
             askForSaving();
         }
+        trainingFragment.stopTraining();
     }
 
     @Override
@@ -205,6 +204,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     //<editor-fold desc="ON NEW MEASURE PROCESSED LISTENER INTERFACE">
     @Override
     public void onNewMeasureProcessed(final Measure measure) {
+        //Training.getTraining().onNewMeasureProcessed(measure);
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -216,12 +216,12 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time, final double angle) {
+    public void onMovementChanged(final int index) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (trainingFragment != null && SensorManager.getInstance().isSensorActive(index)) {
-                    trainingFragment.onMovementChanged(index, time, angle);
+                    trainingFragment.onMovementChanged(index);
                 }
             }
         });

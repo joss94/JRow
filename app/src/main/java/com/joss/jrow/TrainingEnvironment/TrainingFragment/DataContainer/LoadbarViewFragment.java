@@ -49,16 +49,16 @@ public class LoadbarViewFragment extends DataDisplayFragment{
     public void onNewMeasureProcessed(Measure measure) {
         super.onNewMeasureProcessed(measure);
         if (barLimits != null) {
-            for(View barLimit : barLimits){
-                int position = barLimits.indexOf(barLimit);
-                View barCatch = barCatches.get(position);
-                if (sensorManager.isSensorActive(position)) {
+            for(int i = 0; i<8; i++){
+                View barLimit = barLimits.get(i);
+                View barCatch = barCatches.get(i);
+                if (sensorManager.isSensorActive(i)) {
                     int maxMargin = (int) (0.8*((RelativeLayout)barLimit.getParent()).getMeasuredWidth()/2);
                     //*
-                    int margin = (int) (maxMargin*(1.0-measure.getAnglePercentage(position)));
+                    int margin = (int) (maxMargin*(1.0-measure.getAnglePercentage(i)));
                     margin = Math.max(20, margin);
                     RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) barLimit.getLayoutParams();
-                    if(position%2 == 1){
+                    if(i%2 == 1){
                         params.setMarginStart(margin);
                         barLimit.setLayoutParams(params);
                         barLimit.invalidate();
@@ -81,8 +81,8 @@ public class LoadbarViewFragment extends DataDisplayFragment{
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle) {
-        super.onMovementChanged(index, time, angle);
+    public void onMovementChanged(int index) {
+        super.onMovementChanged(index);
         if(sensorManager.isSensorActive(index)){
             barCatches.get(index).setX(barLimits.get(index).getX());
             barCatches.get(index).invalidate();

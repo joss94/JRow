@@ -11,17 +11,19 @@ public class Measures extends ArrayList<Measure>{
 
     private static final long serialVersionUID = -5836923295713874526L;
 
-    private final int MAX_SIZE = 100;
+    private final int LOCAL_SIZE = 100;
 
-    private static volatile Measures measures;
+    private static volatile Measures measures = new Measures();
 
     private volatile ArrayList<Measure> dataToProcess;
     private List<OnNewMeasureProcessedListener> listeners;
 
-    private ArrayList<ArrayList<Long>> maxsTimes;
-
     private long startTime = 0;
     private volatile long[] catchTimes;
+    private volatile double[] catchAngles;
+    private volatile long[] localCatchTimes;
+    private volatile double[] localCatchAngles;
+    private volatile int[] localIndexes;
     private volatile float strokeRate;
 
     private Measure neutralPosition;
@@ -31,20 +33,11 @@ public class Measures extends ArrayList<Measure>{
 
     private Measures() {
         super();
-        strokeRate = 0;
-        dataToProcess = new ArrayList<>();
-        maxsTimes = new ArrayList<>();
-        for(int i=0; i<8;i++){
-            maxsTimes.add(new ArrayList<Long>());
-        }
-        catchTimes = new long[] {0,0,0,0,0,0,0,0};
         listeners = new ArrayList<>();
+        wipeData();
     }
 
     public static synchronized Measures getMeasures(){
-        if(measures == null){
-            measures = new Measures();
-        }
         return measures;
     }
 
@@ -59,7 +52,6 @@ public class Measures extends ArrayList<Measure>{
                 dataToProcess.remove(0);
                 return;
             }
-
             saveDataRow(measure);
         }
     }
@@ -67,31 +59,39 @@ public class Measures extends ArrayList<Measure>{
     private void saveDataRow(Measure dataRow){
         add(dataRow);
         dataToProcess.remove(dataRow);
+        for(int i=0; i<8; i++){
+            maxBack = Math.max(maxBack, dataRow.getAngle(i));
+            minFront = Math.min(minFront, dataRow.getAngle(i));
+        }
         //*
         if (size()>2) {
             onNewMeasureProcessed(get(size()-2));
         }
-        if (measures.size() >= MAX_SIZE) {
-            detectTangents();
-        }/**/
+        if (measures.size() >= LOCAL_SIZE) {
+            detectTangents(dataRow);
+        }
     }
 
-    private void detectTangents(){
-        int LOCAL_MAX_RANGE = 30;
-        List<Measure> localData = this.subList(size()- LOCAL_MAX_RANGE, size()-1);
+    private void detectTangents(Measure measure){
         for (int i=0; i<8; i++) {
             if (SensorManager.getInstance().isSensorActive(i)) {
-                Measure max = localData.get(0);
-                for(Measure measure : localData){
-                    if(measure.getRawAngle(i) > max.getRawAngle(i)){
-                        max = measure;
+                if(measure.getRawAngle(i) > localCatchAngles[i]){
+                    localCatchAngles[i] = measure.getRawAngle(i);
+                    localCatchTimes[i] = measure.getTime();
+                    localIndexes[i]=0;
+                }
+                else{
+                    localIndexes[i] = Math.min(100, localIndexes[i]++);
+                    if(localIndexes[i] == 100){
+                        localCatchTimes[i] = get(0).getTime();
+                        localCatchAngles[i] = get(0).getRawAngle(i);
                     }
                 }
-                if(Math.abs(max.getRawAngle(i)-localData.get(0).getRawAngle(i))>20
-                        && Math.abs(max.getRawAngle(i)-localData.get(localData.size()-1).getRawAngle(i))>20
-                        && !maxsTimes.get(i).contains(max.getTime()-startTime)){
-                    maxsTimes.get(i).add(max.getTime()-startTime);
-                    onMovementChangedDetected(i, max.getTime()-startTime, max.getAngle(i));
+
+                if(localIndexes[i] == 50){
+                    catchTimes[i] = localCatchTimes[i];
+                    catchAngles[i] = localCatchAngles[i];
+                    onMovementChangedDetected(i, catchTimes[i], catchAngles[i]);
                 }
             }
         }
@@ -100,7 +100,7 @@ public class Measures extends ArrayList<Measure>{
     @Override
     public synchronized boolean add(Measure measure){
         boolean result = super.add(measure);
-        if(size()>MAX_SIZE){
+        if(size()>LOCAL_SIZE){
             remove(0);
         }
         if(startTime<=0){
@@ -112,8 +112,14 @@ public class Measures extends ArrayList<Measure>{
 
     public synchronized void wipeData(){
         clear();
-        dataToProcess = new ArrayList<>();
+        strokeRate = 0;
         startTime = 0;
+        dataToProcess = new ArrayList<>();
+        catchTimes = new long[] {0,0,0,0,0,0,0,0};
+        catchAngles = new double[] {0,0,0,0,0,0,0,0};
+        localCatchTimes = new long[] {0,0,0,0,0,0,0,0};
+        localCatchAngles = new double[] {0,0,0,0,0,0,0,0};
+        localIndexes = new int[] {0,0,0,0,0,0,0,0};
     }
 
     public synchronized void addToProcess(Measure measure){
@@ -126,6 +132,10 @@ public class Measures extends ArrayList<Measure>{
 
     public long[] getCatchTimes() {
         return catchTimes;
+    }
+
+    public double[] getCatchAngles() {
+        return catchAngles;
     }
 
     Measure getNeutralPosition() {
@@ -181,12 +191,12 @@ public class Measures extends ArrayList<Measure>{
 
     private void onMovementChangedDetected(int index, long time, double angle){
         if(index == Position.STERN){
-            strokeRate = (float)60000/(((float)(time-measures.getCatchTimes()[Position.STERN])));
+            strokeRate = (float)60000/(((float)(time-catchTimes[Position.STERN])));
         }
         catchTimes[index] = time;
         for (OnNewMeasureProcessedListener listener : listeners) {
             if (listener != null) {
-                listener.onMovementChanged(index, time, angle);
+                listener.onMovementChanged(index);
             }
         }
     }
@@ -209,6 +219,6 @@ public class Measures extends ArrayList<Measure>{
 
     public interface OnNewMeasureProcessedListener{
         void onNewMeasureProcessed(Measure measure);
-        void onMovementChanged(int index, long time, double angle);
+        void onMovementChanged(int index);
     }
 }
