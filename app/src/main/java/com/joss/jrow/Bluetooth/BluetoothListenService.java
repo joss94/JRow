@@ -19,11 +19,11 @@ public class BluetoothListenService extends Service {
 
         listenThread = new BluetoothListenThread();
         listenThread.start();
+
         DataWriteThread.reset();
         DataWriteThread.getInstance().start();
         Measures.getMeasures().addOnNewMeasureProcessedListener(DataWriteThread.getInstance());
 
-        // If we get killed, after returning from here, restart
         return START_STICKY;
     }
 

@@ -5,7 +5,6 @@ import android.os.Environment;
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
 import com.joss.jrow.Models.Session;
-import com.joss.jrow.Models.Training;
 import com.joss.jrow.SensorManager;
 import com.joss.jrow.SerialContent;
 
@@ -57,9 +56,6 @@ public class DataWriteThread extends Thread implements Measures.OnNewMeasureProc
                         e.printStackTrace();
                     }
                 }
-                if(data.isEmpty() && !Training.getTraining().isRecording()){
-                    //stopWriting();
-                }
             }
         }
     }
@@ -85,7 +81,11 @@ public class DataWriteThread extends Thread implements Measures.OnNewMeasureProc
         }
     }
 
-    public static void stopWriting(){
+    public void stopWriting(){
+
+    }
+
+    public static void reset(){
         try{
             data = new ArrayList<>();
             if (os != null) {
@@ -94,12 +94,7 @@ public class DataWriteThread extends Thread implements Measures.OnNewMeasureProc
             os = null;
         }
         catch (IOException ignored){
-
         }
-    }
-
-    public static void reset(){
-        stopWriting();
         instance = new DataWriteThread();
     }
 
@@ -115,6 +110,14 @@ public class DataWriteThread extends Thread implements Measures.OnNewMeasureProc
         }
         value += ("\n");
         data.add(value);
+    }
+
+    public void write(String line){
+        data.add(line);
+    }
+
+    public void newLine(){
+        data.add("\n");
     }
 
     @Override

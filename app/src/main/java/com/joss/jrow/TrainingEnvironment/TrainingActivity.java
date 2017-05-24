@@ -235,13 +235,7 @@ public class TrainingActivity extends BluetoothConnectionActivity implements
         switch(requestCode){
             case SAVE_REQUEST_CODE:
                 if(resultCode == RESULT_OK){
-                    if (!Training.getTraining().save((String)objects[0]) && saveTry <3) {
-                        saveTry++;
-                        askForSaving();
-                    }
-                    else{
-                        saveTry = 0;
-                    }
+                    Training.getTraining().save();
                 }
                 break;
 

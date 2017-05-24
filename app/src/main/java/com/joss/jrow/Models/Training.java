@@ -2,6 +2,7 @@ package com.joss.jrow.Models;
 
 import android.os.Environment;
 
+import com.joss.jrow.DataProcessingThreads.DataWriteThread;
 import com.joss.jrow.SensorManager;
 
 import java.io.File;
@@ -87,44 +88,36 @@ public class Training implements Serializable, Measures.OnNewMeasureProcessedLis
         }/**/
     }
 
-    public boolean save(String name) {
-        try {
-            os = new FileOutputStream(file);
-            if (os != null) {
-                os.write(("DURATION OF TRAINING: " + getDuration() + " seconds"+ '\n').getBytes());
-                os.write(("NUMBER OF STROKES: " + getNumberOfStrokes() + '\n').getBytes());
-                os.write(("AVERAGE STROKE: " + getAverageStrokeRate() + '\n').getBytes());
-                os.write('\n');
-                os.write(("AVERAGE STERN DELAYS:" + '\n').getBytes());
-                for(int i=0; i<8; i++){
-                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getAverageAbsoluteSternDelayOf(i)) + '\n').getBytes());
-                }
-                os.write('\n');
-                os.write(("AVERAGE DELAYS:" + '\n').getBytes());
-                for(int i=0; i<8; i++){
-                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getAverageAbsoluteDelayOf(i)) + '\n').getBytes());
-                }
-                os.write('\n');
-                os.write(("AVERAGE STERN DEVIATION:" + '\n').getBytes());
-                for(int i=0; i<8; i++){
-                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getStandardSternDeviationOf(i)) + '\n').getBytes());
-                }
-                os.write('\n');
-                os.write(("AVERAGE DEVIATION:" + '\n').getBytes());
-                for(int i=0; i<8; i++){
-                    os.write((i+" (" + Session.getSession().getRowers().get(i)+") : "+
-                            String.valueOf(getStandardDeviationOf(i)) + '\n').getBytes());
-                }
-                os.write('\n');
-                os.close();
-            }
-        } catch (IOException e) {
-            return false;
+    public void save() {
+        DataWriteThread t = DataWriteThread.getInstance();
+        t.write("DURATION OF TRAINING: " + getDuration() + " seconds"+ '\n');
+        t.write("NUMBER OF STROKES: " + getNumberOfStrokes() + '\n');
+        t.write("AVERAGE STROKE: " + getAverageStrokeRate() + '\n');
+        t.newLine();
+        t.write("AVERAGE STERN DELAYS:" + '\n');
+        for(int i=0; i<8; i++){
+            t.write(i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                    String.valueOf(getAverageAbsoluteSternDelayOf(i)) + '\n');
         }
-        return true;
+        t.newLine();
+        t.write("AVERAGE DELAYS:" + '\n');
+        for(int i=0; i<8; i++){
+            t.write(i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                    String.valueOf(getAverageAbsoluteDelayOf(i)) + '\n');
+        }
+        t.newLine();
+        t.write("AVERAGE STERN DEVIATION:" + '\n');
+        for(int i=0; i<8; i++){
+            t.write(i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                    String.valueOf(getStandardSternDeviationOf(i)) + '\n');
+        }
+        t.newLine();
+        t.write("AVERAGE DEVIATION:" + '\n');
+        for(int i=0; i<8; i++){
+            t.write(i+" (" + Session.getSession().getRowers().get(i)+") : "+
+                    String.valueOf(getStandardDeviationOf(i)));
+        }
+        t.newLine();
     }
 
     /* Checks if external storage is available for read and write */
@@ -134,12 +127,7 @@ public class Training implements Serializable, Measures.OnNewMeasureProcessedLis
     }
 
     public double getDuration(){
-        double time = 0;
-        /*
-        if (report.size()>0) {
-            time = (float)report.get(report.size()-1).getTime()/1000;
-        }/**/
-        return time;
+        return (Measures.getMeasures().size() >0 ? Measures.getMeasures().get(Measures.getMeasures().size()-1).getTime():0);
     }
 
     private int getNumberOfStrokes(){
