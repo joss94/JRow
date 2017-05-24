@@ -6,6 +6,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
 
+import com.joss.jrow.DataProcessingThreads.DataWriteThread;
+import com.joss.jrow.Models.Measures;
+
 public class BluetoothListenService extends Service {
 
     private BluetoothListenThread listenThread;
@@ -17,7 +20,10 @@ public class BluetoothListenService extends Service {
         listenThread = new BluetoothListenThread();
         listenThread.start();
 
-        // If we get killed, after returning from here, restart
+        DataWriteThread.reset();
+        DataWriteThread.getInstance().start();
+        Measures.getMeasures().addOnNewMeasureProcessedListener(DataWriteThread.getInstance());
+
         return START_STICKY;
     }
 
@@ -25,6 +31,7 @@ public class BluetoothListenService extends Service {
     public void onDestroy(){
         super.onDestroy();
         listenThread.interrupt();
+        DataWriteThread.getInstance().interrupt();
     }
 
     @Nullable

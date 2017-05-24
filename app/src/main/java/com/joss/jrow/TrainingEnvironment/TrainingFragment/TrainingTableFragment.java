@@ -120,26 +120,28 @@ public class TrainingTableFragment extends Fragment implements Measures.OnNewMea
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle) {
-        if (sensorManager.isSensorActive(index) || index == Position.STERN) {
-            if(index == Position.STERN){
-                Training.getTraining().addToReport(reportLine);
-                reportLine = new ReportLine();
-                reportLine.setTime(time);
-                for(int i=0; i<8; i++){
-                    if(time - measures.getCatchTimes()[Position.STERN]<700 && sensorManager.isSensorActive(i)){
-                        delays.get(index).setText(context.getString(R.string.delay, (double)(time - measures.getCatchTimes()[Position.STERN])/1000));
-                        reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
-                        reportLine.setStrokeRate(Measures.getMeasures().getStrokeRate());
-                    }
-                }
-            }
-            else{
-                if(time - measures.getCatchTimes()[Position.STERN]<700){
-                    delays.get(index).setText(context.getString(R.string.delay, ((double)(time - measures.getCatchTimes()[Position.STERN]))/1000));
-                    reportLine.addCatch(index, (double)(time - measures.getCatchTimes()[Position.STERN])/1000);
+    public void onMovementChanged(int index) {
+        double delay = measures.getCatchTimes()[index] - measures.getCatchTimes()[Position.STERN];
+
+        if(index == Position.STERN){
+            Training.getTraining().addToReport(reportLine);
+            reportLine = new ReportLine();
+            reportLine.setTime(measures.getCatchTimes()[index]);
+            reportLine.setStrokeRate(measures.getStrokeRate());
+            for(int i=0; i<8; i++){
+                delay = measures.getCatchTimes()[Position.STERN] - measures.getCatchTimes()[i];
+                if(delay<700 && sensorManager.isSensorActive(i)){
+                    delays.get(index).setText(context.getString(R.string.delay, delay/1000));
+                    reportLine.addCatch(index, delay/1000, measures.getCatchAngles()[i]);
                 }
             }
         }
+        else{
+            if(delay < 700 && sensorManager.isSensorActive(index)){
+                delays.get(index).setText(context.getString(R.string.delay, delay/1000));
+                reportLine.addCatch(index, delay/1000, measures.getCatchAngles()[index]);
+            }
+        }
+
     }
 }

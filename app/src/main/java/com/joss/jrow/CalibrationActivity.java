@@ -1,12 +1,12 @@
 package com.joss.jrow;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.joss.jrow.Models.Measure;
 import com.joss.jrow.Models.Measures;
-import com.joss.jrow.Models.Training;
 
 public class CalibrationActivity extends AppCompatActivity implements View.OnClickListener, Measures.OnNewMeasureProcessedListener {
 
@@ -24,7 +24,6 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     public void onDestroy(){
         super.onDestroy();
         Measures.getMeasures().removeOnNewMeasureProcessedListener(this);
-        Training.resetTraining();
     }
 
 
@@ -34,6 +33,10 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
             case R.id.OK_button:
                 if (measure != null) {
                     Measures.getMeasures().setNeutralPosition(measure);
+                    SharedPreferences sharedPrefs = getSharedPreferences("JROW_CALIB", MODE_PRIVATE);
+                    for(int i=0; i<8; i++){
+                        sharedPrefs.edit().putLong("calib"+i, measure.getRawAngle(i)).apply();
+                    }
                 }
                 setResult(RESULT_OK);
                 finish();
@@ -47,7 +50,7 @@ public class CalibrationActivity extends AppCompatActivity implements View.OnCli
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle) {
+    public void onMovementChanged(int index) {
 
     }
 }

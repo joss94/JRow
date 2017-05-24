@@ -21,7 +21,7 @@ public class Measure extends HashMap<String, Long> {
 
     public long getTime(){
         if(get("time") != null){
-            return get("time");
+            return get("time")-Measures.getMeasures().getStartTime();
         }
         else{
             return -1;
@@ -46,7 +46,7 @@ public class Measure extends HashMap<String, Long> {
     }
 
     public double getAnglePercentage(int index){
-        double percentage = (getRawAngle(index) - Measures.getMeasures().getMinFront())/(Measures.getMeasures().getMaxBack() - Measures.getMeasures().getMinFront());
+        double percentage = (getAngle(index) - Measures.getMeasures().getMinFront())/(Measures.getMeasures().getMaxBack() - Measures.getMeasures().getMinFront());
         return Math.max(Math.min(1,percentage), percentage);
     }
 }

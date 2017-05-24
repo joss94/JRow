@@ -49,7 +49,7 @@ public abstract class DataDisplayFragment extends Fragment implements
     }
 
     @Override
-    public void onMovementChanged(final int index, final long time, double angle) {
+    public void onMovementChanged(final int index) {
         if (!ready) {
             //noinspection UnnecessaryReturnStatement
             return;

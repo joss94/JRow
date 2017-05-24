@@ -59,7 +59,7 @@ public class SerialViewFragment extends DataDisplayFragment {
     public void onNewMeasureProcessed(Measure measure) {
         super.onNewMeasureProcessed(measure);
         String result="";
-        result += "Time: " + String.valueOf((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000) + "\n";
+        result += "Time: " + String.valueOf((double) (measure.getTime())/1000) + "\n";
         for(int i=0; i<8; i++){
             result += i+": " + measure.getRawAngle(i) + "\n";
         }
@@ -69,10 +69,11 @@ public class SerialViewFragment extends DataDisplayFragment {
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle) {
-        super.onMovementChanged(index,time, angle);
+    public void onMovementChanged(int index) {
+        super.onMovementChanged(index);
         if (index == Position.STERN) {
-            serialContent.addToSerial("Catch detected at rower "+String.valueOf(index)+" at "+String.valueOf(time));
+            serialContent.addToSerial("Catch detected at rower "+
+                    String.valueOf(index)+" at "+String.valueOf(Measures.getMeasures().getCatchTimes()[Position.STERN]));
         }
     }
 

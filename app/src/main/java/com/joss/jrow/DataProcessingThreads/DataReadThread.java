@@ -36,11 +36,13 @@ public class DataReadThread extends Thread {
             return;
         }
         String[] substrings = message.split("\\%");
+        //decodeRow(substrings[substrings.length-1]);
+        //*
         for(String substring : substrings){
             if(!substring.isEmpty()){
                 decodeRow(substring);
             }
-        }
+        }/**/
     }
 
     private void decodeRow(String message){
@@ -51,6 +53,7 @@ public class DataReadThread extends Thread {
         }
 
         Measure measure = new Measure();
+
 
         String[] substrings = message.split("\\$");
         for(int i=1; i<substrings.length; i++){

@@ -90,7 +90,6 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        Training.resetTraining();
         disconnect();
     }
 
@@ -169,7 +168,10 @@ public abstract class BluetoothConnectionActivity extends AppCompatActivity impl
     }
 
     protected void disconnect(){
-        BluetoothConnectThread.getInstance().interrupt();
+        if (BluetoothConnectThread.getInstance() != null) {
+            BluetoothConnectThread.getInstance().interrupt();
+        }
+        Training.getTraining().stop();
         sendBroadcast(new Intent(BluetoothListenReceiver.STOP_LISTEN_BLUETOOTH));
     }
 

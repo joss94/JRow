@@ -76,6 +76,12 @@ public class TrainingFragment extends Fragment implements
     }
 
     @Override
+    public void onPause(){
+        super.onPause();
+        ready = false;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState){
         super.onSaveInstanceState(outState);
         getActivity().getSupportFragmentManager().putFragment(outState, "CONTROLER_FRAGMENT", controlerFragment);
@@ -124,15 +130,14 @@ public class TrainingFragment extends Fragment implements
 
             if(isResumed()){
                 displayFragment.onNewMeasureProcessed(measure);
-                if(wait>= SensorManager.getInstance().numberOfActiveSensors()){
+                //if(wait>= SensorManager.getInstance().numberOfActiveSensors()){
+
+                if(true){
                     wait=0;
                     for(int i=0; i<8; i++){
                         if (SensorManager.getInstance().isSensorActive(i)) {
-                            try {
-                                GraphData.getInstance().get(i).appendData(new DataPoint((double) (measure.getTime()- Measures.getMeasures().getStartTime())/1000, measure.getAngle(i)), true, 500);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+                            GraphData.getInstance().get(i).appendData(new DataPoint((double) (measure.getTime())/1000, measure.getAngle(i)), true, 200);
+
                         }
                     }
                 }
@@ -142,11 +147,11 @@ public class TrainingFragment extends Fragment implements
     }
 
     @Override
-    public void onMovementChanged(int index, long time, double angle){
+    public void onMovementChanged(int index){
         if (ready) {
-            tableFragment.onMovementChanged(index, time, angle);
-            displayFragment.onMovementChanged(index, time, angle);
-            controlerFragment.onMovementChanged(index, time, angle);
+            tableFragment.onMovementChanged(index);
+            displayFragment.onMovementChanged(index);
+            controlerFragment.onMovementChanged(index);
         }
     }
 
